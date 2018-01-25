@@ -1,12 +1,12 @@
 <section id='order_form' class="container">
     <div class="row">
         <h1 class="section_head">
-            Order Details
+            Fill Out Ticket Details
         </h1>
     </div>
     <div class="row">
         <div class="col-md-4 col-md-push-8">
-            <div class="panel">
+        <!--    <div class="panel">
                 <div class="panel-heading">
                     <h3 class="panel-title">
                         <i class="ico-cart mr5"></i>
@@ -41,27 +41,28 @@
             </div>
             <div class="help-block">
                 Please note you only have <span id='countdown'></span> to complete this transaction before your tickets are re-released.
-            </div>
+            </div>-->
         </div>
         <div class="col-md-8 col-md-pull-4">
             <div class="event_order_form">
-                {!! Form::open(['url' => route('postCreateOrder', ['event_id' => $event->id]), 'class' => ($order_requires_payment && @$payment_gateway->is_on_site) ? 'ajax payment-form' : 'ajax', 'data-stripe-pub-key' => isset($account_payment_gateway->config['publishableKey']) ? $account_payment_gateway->config['publishableKey'] : '']) !!}
+                <!--{!! Form::open(['url' => route('postCreateOrder', ['event_id' => $event->id]), 'class' => ($order_requires_payment && @$payment_gateway->is_on_site) ? 'ajax payment-form' : 'ajax', 'data-stripe-pub-key' => isset($account_payment_gateway->config['publishableKey']) ? $account_payment_gateway->config['publishableKey'] : '']) !!}-->
+                {!! Form::open(['url' => route('postCreateOrder', ['event_id' => $event->id])]) !!}
 
                 {!! Form::hidden('event_id', $event->id) !!}
 
-                <h3>Your Information</h3>
-
+                <!--<h3>Your Information</h3>
+                <h5>Your payment tracking id is : <?php //echo $tracking_id ?> </h5>-->
                 <div class="row">
                     <div class="col-xs-6">
                         <div class="form-group">
-                            {!! Form::label("order_first_name", 'First Name') !!}
-                            {!! Form::text("order_first_name", null, ['required' => 'required', 'class' => 'form-control']) !!}
+                            <!--{!! Form::label("order_first_name", 'First Name') !!}-->
+                            {!! Form::hidden("order_first_name", $order_first_name, ['required' => 'required', 'class' => 'form-control']) !!}
                         </div>
                     </div>
                     <div class="col-xs-6">
                         <div class="form-group">
-                            {!! Form::label("order_last_name", 'Last Name') !!}
-                            {!! Form::text("order_last_name", null, ['required' => 'required', 'class' => 'form-control']) !!}
+                            <!--{!! Form::label("order_last_name", 'Last Name') !!}-->
+                            {!! Form::hidden("order_last_name", $order_last_name, ['required' => 'required', 'class' => 'form-control']) !!}
                         </div>
                     </div>
                 </div>
@@ -69,15 +70,15 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group">
-                            {!! Form::label("order_email", 'Email') !!}
-                            {!! Form::text("order_email", null, ['required' => 'required', 'class' => 'form-control']) !!}
+                            <!--{!! Form::label("order_email", 'Email') !!}-->
+                            {!! Form::hidden("order_email", $order_email, ['required' => 'required', 'class' => 'form-control']) !!}
                         </div>
                     </div>
                 </div>
 
                 <div class="p20 pl0">
                     <a href="javascript:void(0);" class="btn btn-primary btn-xs" id="mirror_buyer_info">
-                        Copy buyer details to all ticket holders
+                        Copy your details to all ticket holders
                     </a>
                 </div>
 
@@ -141,7 +142,7 @@
 
                 @if($order_requires_payment)
 
-                <h3>Payment Information</h3>
+                <!--<h3>Payment Information</h3>-->
 
                 @if($event->enable_offline_payments)
                     <div class="offline_payment_toggle">
@@ -159,7 +160,7 @@
 
                 @endif
 
-
+            <!--commented by Donald to stop display of Bank Information Section
                 @if(@$payment_gateway->is_on_site)
                     <div class="online_payment">
                         <div class="row">
@@ -200,7 +201,7 @@
                     </div>
 
                 @endif
-
+            -->
                 @endif
 
                 @if($event->pre_order_display_message)

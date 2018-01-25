@@ -5,10 +5,9 @@
 @stop
 
 @section('content')
-    @include('Public.ViewEvent.Partials.EventHeaderSectionWithoutLinks')
-
-    @include('Public.ViewEvent.Partials.EventPesaPalPaymentSection')
+    @include('Public.ViewEvent.Partials.EventHeaderSection')
+    <?php echo '</br>Your payment was : \'</br>';print_r($payment_status);echo '\'</br>';?>
+    @include('Public.ViewEvent.Partials.EventCreateOrderSection')
     <script>var OrderExpires = {{strtotime($expires)}};</script>
     @include('Public.ViewEvent.Partials.EventFooterSection')
 @stop
-

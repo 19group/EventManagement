@@ -12,6 +12,8 @@ return [
     'payment_gateway_paypal'   => 2,
     'payment_gateway_coinbase' => 3,
 	'payment_gateway_migs'     => 4,
+    'payment_gateway_pesapal'  => 5,
+    'payment_gateway_tigopesa' => 6,
 
     'outgoing_email_noreply' => env('MAIL_FROM_ADDRESS'),
     'outgoing_email'         => env('MAIL_FROM_ADDRESS'),

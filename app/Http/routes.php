@@ -144,6 +144,13 @@ Route::group(['prefix' => 'e'], function () {
         'uses' => 'EventCheckoutController@postValidateTickets',
     ]);
 
+    //added by Donald on Jan 19, 2018 at 3:05 pm
+    Route::get('{event_id}/pesament/create', [
+        'as'   => 'showEventPesament',
+        'uses' => 'EventCheckoutController@showEventPesament',
+    ]);
+    //end of addition
+
     Route::get('{event_id}/checkout/create', [
         'as'   => 'showEventCheckout',
         'uses' => 'EventCheckoutController@showEventCheckout',
@@ -158,6 +165,10 @@ Route::group(['prefix' => 'e'], function () {
     Route::post('{event_id}/checkout/create', [
         'as'   => 'postCreateOrder',
         'uses' => 'EventCheckoutController@postCreateOrder',
+    ]);
+    Route::post('{event_id}/pesament/create', [
+        'as'   => 'completeOrder',
+        'uses' => 'EventCheckoutController@completeOrder',
     ]);
 });
 

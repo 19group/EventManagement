@@ -3,6 +3,7 @@
 /vendor
 /node_modules
 .env
+/resources/views/Public/ViewEvent/Partials/EventPesaPalPaymentSection.blade.php
 .idea
 installed
 /.settings/
@@ -11,3 +12,4 @@ installed
 /composer.phar
 _ide_helper.php
 *.swp
+/nbproject/private/

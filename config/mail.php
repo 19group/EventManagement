@@ -14,7 +14,7 @@ return [
     | Supported: "smtp", "mail", "sendmail", "mailgun", "mandrill", "log"
     |
     */
-
+//edited by Donald Jan 21 from 'driver' => env('MAIL_DRIVER', 'mail'),
     'driver' => env('MAIL_DRIVER', 'mail'),
 
     /*
@@ -27,8 +27,8 @@ return [
     | the Mailgun mail service which will provide reliable deliveries.
     |
     */
-
-    'host' => env('MAIL_HOST', 'smtp.sendgrid.net'),
+//edited by Donald Jan 21 from 'host' => env('MAIL_HOST', 'smtp.sendgrid.net'),
+    'host' => env('MAIL_HOST', 'smtp.gmail.com'),
 
     /*
     |--------------------------------------------------------------------------

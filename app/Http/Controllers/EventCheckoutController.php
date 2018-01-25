@@ -1,6 +1,11 @@
 <?php
+//loading a class that enables the use of environment variables
+//$dotenv = new Dotenv\Dotenv(base_path());
+//$dotenv->load();
 
 namespace App\Http\Controllers;
+
+//require_once (app_path().'\Pesapal\OAuth.php');
 
 use App\Events\OrderCompletedEvent;
 use App\Models\Affiliate;
@@ -21,6 +26,15 @@ use Omnipay;
 use PDF;
 use PhpSpec\Exception\Exception;
 use Validator;
+use Dotenv;
+use App\Pesapal\Classes\OAuthSignatureMethod_HMAC_SHA1 as Outhsignature;
+use App\Pesapal\Classes\OAuthConsumer as OAuthConsumer;
+use App\Pesapal\Classes\OAuthRequest as OAuthRequest;
+use App\Pesapal\Classes\OAuthUtil as OAuthUtil;
+
+
+$dotenv = new Dotenv\Dotenv(base_path());
+$dotenv->load();
 
 class EventCheckoutController extends Controller
 {
@@ -67,6 +81,12 @@ class EventCheckoutController extends Controller
         }
 
         $ticket_ids = $request->get('tickets');
+
+            //added by Donald on Tues Jan 18, 2018 at 10:02 am
+            $order_first_name = $request->get('order_first_name');
+            $order_last_name = $request->get('order_last_name');
+            $order_email = $request->get('order_email');
+            //end of addition
 
         /*
          * Remove any tickets the user has reserved
@@ -194,6 +214,11 @@ class EventCheckoutController extends Controller
             'tickets'                 => $tickets,
             'total_ticket_quantity'   => $total_ticket_quantity,
             'order_started'           => time(),
+            //added by Donald on Jan 18,2018 at 10:31am
+            'order_first_name'        => $order_first_name,
+            'order_last_name'         => $order_last_name,
+            'order_email'             => $order_email,
+            //end of addition
             'expires'                 => $order_expires_time,
             'reserved_tickets_id'     => $reservedTickets->id,
             'order_total'             => $order_total,
@@ -211,6 +236,15 @@ class EventCheckoutController extends Controller
          * If we're this far assume everything is OK and redirect them
          * to the the checkout page.
          */
+        /*if ($request->ajax()) {
+            return response()->json([
+                'status'      => 'success',
+                'redirectUrl' => route('showEventPesament', [
+                        'event_id'    => $event_id,
+                        'is_embedded' => $this->is_embedded,
+                    ]) . '#order_form',
+            ]);
+        }*/
         if ($request->ajax()) {
             return response()->json([
                 'status'      => 'success',
@@ -226,6 +260,164 @@ class EventCheckoutController extends Controller
          */
         exit('Please enable Javascript in your browser.');
     }
+    /**
+     * Show the checkout pesament page by Donald
+     *
+     * @param Request $request
+     * @param $event_id
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
+    public function showEventPesament(Request $request, $event_id)
+    {
+        $order_session = session()->get('ticket_order_' . $event_id);
+        $tracking_id = $request->get('pesapal_transaction_tracking_id');
+        $merchant_reference = $request->get('pesapal_merchant_reference');
+        session()->push('ticket_order_' . $event_id . '.tracking_id',$tracking_id);
+        session()->push('ticket_order_' . $event_id . '.merchant_reference',
+                        $merchant_reference);
+
+        //for checking if the payment was succesful or not
+        $payment_status = $this->checkTranscationStatus($tracking_id,$merchant_reference);
+        if($payment_status!='COMPLETED'){
+            $count=0;
+            while ($payment_status != 'COMPLETED' && $count<3) {
+               $payment_status = $this->checkTranscationStatus($tracking_id,$merchant_reference);
+               ++$count;
+            }
+        }
+
+        if(in_array($payment_status,['FAILED','INVALID'])){
+            if ($request->ajax()) {
+                return response()->json([
+                    'status'      => 'We are so sorry we could\'t verify your payment. Please try again paying for your order.',
+                    'redirectUrl' => route('showEventCheckout', [
+                            'event_id'    => $event_id,
+                            'is_embedded' => $this->is_embedded,
+                        ]) . '#order_form',
+                ]);
+            }
+            exit ('We couldn\'t verify your payment. Please try again.');
+        }elseif($payment_status=='PENDING'){
+            if ($request->ajax()) {
+                return response()->json([
+                    'status'      => 'Sorry, your payment seems to be taking longer to be verified. We\'ll keep on trying and inform you when we get the results.',
+                    'redirectUrl' => route('showEventCheckout', [
+                            'event_id'    => $event_id,
+                            'is_embedded' => $this->is_embedded,
+                        ]) . '#order_form',
+                ]);
+            }
+            exit ('Sorry, your payment seems to be taking longer to be verified. We\'ll keep on trying and inform you when we get the results.');
+        }
+    
+
+        if (!$order_session || $order_session['expires'] < Carbon::now()) {
+            $route_name = $this->is_embedded ? 'showEmbeddedEventPage' : 'showEventPage';
+            return redirect()->route($route_name, ['event_id' => $event_id]);
+        }
+
+        $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
+
+        $data = $order_session + [
+                'event'           => Event::findorFail($order_session['event_id']),
+                'secondsToExpire' => $secondsToExpire,
+                'is_embedded'     => $this->is_embedded,
+                'payment_status' =>$payment_status,
+            ];
+
+        if ($this->is_embedded) {
+            return view('Public.ViewEvent.Embedded.EventPesament', $data);
+        }
+
+        return view('Public.ViewEvent.EventPesament', $data);
+    }
+
+
+    /**
+     * Check the Transaction Status from Pesapal, retrieving Payment Status
+     * @param transaction_id
+     * @param ticket_reference
+     * @return transactionstatus {'PENDING|COMPLETED|FAILED|INVALID'}
+     */
+    public function checkTranscationStatus($transaction_id,$ticket_reference){
+
+    //include_once('OAuth.php');
+    //include (app_path().'\Pesapal\OAuth.php');
+
+    //pesapal params
+    $token = $params = NULL;
+
+    /* Demo Account */ // When using demo
+
+    $consumer_key = env('PESAPAL_CONSUMER_KEY');
+    $consumer_secret = 'ZdX7R/5eAA72/PEITiG1E9oGIiw='; //Demo Account
+    $apilink = 'http://demo.pesapal.com/api/QueryPaymentStatus'; // --Demo
+
+    /* Live Account */ // On Live Environment
+    /*
+    $consumer_key = '800OX7pS6uPbm5lcc+WWACg6cifFehGy';
+    $consumer_secret = 'MLotJqXChfD0ww9AvV5KziNeZNk=';
+    $apilink = 'https://www.pesapal.com/API/QueryPaymentStatus'; // -- Live
+    */
+    /* Live Account */ // On Live Environment
+
+    $signature_method = new Outhsignature;
+    //$signature_method = app('\App\Pesapal\OAuth\OAuthSignatureMethod_HMAC_SHA1()');
+
+    //$post_xml = htmlentities($post_xml);
+    $consumer = new OAuthConsumer($consumer_key, $consumer_secret);
+
+/*    //check the transaction status from pesapal
+    $result = OAuthRequest::from_consumer_and_token($consumer, $token, "GET", $apilink, $params);
+    $result->set_parameter("pesapal_merchant_reference", $ticket_reference);
+    $result->set_parameter("pesapal_transaction_tracking_id", $transaction_id);
+    $result->sign_request($signature_method, $consumer, $token);
+
+    $url= str_replace('&amp;','&',$result);
+//return [$result, $url];
+    $result = file_get_contents($url);
+
+    //Retrieve the payment Status
+    $payment_status = substr($result,22);
+
+    return $payment_status;
+*/
+
+//get transaction status
+$request_status = OAuthRequest::from_consumer_and_token($consumer, $token, "GET", $apilink, $params);
+$request_status->set_parameter("pesapal_merchant_reference", $ticket_reference);
+$request_status->set_parameter("pesapal_transaction_tracking_id",$transaction_id);
+$request_status->sign_request($signature_method, $consumer, $token);
+
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $request_status);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($ch, CURLOPT_HEADER, 1);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+if(defined('CURL_PROXY_REQUIRED')) if (CURL_PROXY_REQUIRED == 'True')
+{
+  $proxy_tunnel_flag = (defined('CURL_PROXY_TUNNEL_FLAG') && strtoupper(CURL_PROXY_TUNNEL_FLAG) == 'FALSE') ? false : true;
+  curl_setopt ($ch, CURLOPT_HTTPPROXYTUNNEL, $proxy_tunnel_flag);
+  curl_setopt ($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+  curl_setopt ($ch, CURLOPT_PROXY, CURL_PROXY_SERVER_DETAILS);
+}
+
+$response = curl_exec($ch);
+
+$header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+$raw_header  = substr($response, 0, $header_size - 4);
+$headerArray = explode("\r\n\r\n", $raw_header);
+$header      = $headerArray[count($headerArray) - 1];
+
+//transaction status
+$elements = preg_split("/=/",substr($response, $header_size));
+$payment_status = $elements[1];
+
+curl_close ($ch);
+return $payment_status;
+
+    }
+
 
     /**
      * Show the checkout page
@@ -280,6 +472,10 @@ class EventCheckoutController extends Controller
                 ])
             ]);
         }
+        //added by Donald Jan 22
+        //$request['order_first_name']=session()->get('order_first_name');
+        //$request['order_last_name']=session()->get('order_last_name');
+        //$request['order_email']=session()->get('order_email');
 
         $event = Event::findOrFail($event_id);
         $order = new Order;
@@ -301,12 +497,14 @@ class EventCheckoutController extends Controller
         /*
          * Add the request data to a session in case payment is required off-site
          */
-        session()->push('ticket_order_' . $event_id . '.request_data', $request->except(['card-number', 'card-cvc']));
+        //session()->push('ticket_order_' . $event_id . '.request_data', $request->except(['card-number', 'card-cvc']));
+        session()->push('ticket_order_' . $event_id . '.request_data', $request->except(['tracking_id', 'merchant_reference']));
 
+        //this section was re-commented by Donald on Sat 20, 2018 at 3:34 pm
         /*
          * Begin payment attempt before creating the attendees etc.
          * */
-        if ($ticket_order['order_requires_payment']) {
+    //    if ($ticket_order['order_requires_payment']) {
 
             /*
              * Check if the user has chosen to pay offline
@@ -317,13 +515,13 @@ class EventCheckoutController extends Controller
             }
 
             try {
-
+        /*
                 $gateway = Omnipay::create($ticket_order['payment_gateway']->name);
 
                 $gateway->initialize($ticket_order['account_payment_gateway']->config + [
                         'testMode' => config('attendize.enable_test_payments'),
                     ]);
-
+        */
                 $transaction_data = [
                         'amount'      => ($ticket_order['order_total'] + $ticket_order['organiser_booking_fee']),
                         'currency'    => $event->currency->code,
@@ -370,6 +568,12 @@ class EventCheckoutController extends Controller
                         $transaction_data['description'] = "Ticket sales " . $transaction_data['transactionId'];
 
                         break;
+                    case config('attendize.payment_gateway_pesapal'):
+                        $transaction_data += [
+                            'pesapal_transaction_tracking_id'=> session()->get('tracking_id'),
+                            'pesapal_merchant_reference' => session()->get('merchant_reference'),
+                        ];
+                        break;
                     default:
                         Log::error('No payment gateway configured.');
                         return repsonse()->json([
@@ -378,9 +582,13 @@ class EventCheckoutController extends Controller
                         ]);
                         break;
                 }
+                $transaction = '{';
+                foreach ($transaction_data as $key => $value) {
+                    $transaction = $transaction.'"'.$key.'":"'.$value.'",';
+                }
+                $transaction = substr($transaction,0,strlen($transaction)-1).'}';
 
-
-                $transaction = $gateway->purchase($transaction_data);
+        /*        $transaction = $gateway->purchase($transaction_data);
 
                 $response = $transaction->send();
 
@@ -388,16 +596,18 @@ class EventCheckoutController extends Controller
 
                     session()->push('ticket_order_' . $event_id . '.transaction_id',
                         $response->getTransactionReference());
+        */            session()->push('ticket_order_' . $event_id . '.transaction_id',
+                        session()->get('tracking_id'));
 
                     return $this->completeOrder($event_id);
 
-                } elseif ($response->isRedirect()) {
-
+        /*        } elseif ($response->isRedirect()) {
+            
                     /*
                      * As we're going off-site for payment we need to store some data in a session so it's available
                      * when we return
                      */
-                    session()->push('ticket_order_' . $event_id . '.transaction_data', $transaction_data);
+        /*            session()->push('ticket_order_' . $event_id . '.transaction_data', $transaction_data);
 					Log::info("Redirect url: " . $response->getRedirectUrl());
 
                     $return = [
@@ -420,19 +630,18 @@ class EventCheckoutController extends Controller
                         'message' => $response->getMessage(),
                     ]);
                 }
-            } catch (\Exeption $e) {
+        */    } catch (\Exeption $e) {
                 Log::error($e);
                 $error = 'Sorry, there was an error processing your payment. Please try again.';
             }
-
+        
             if ($error) {
                 return response()->json([
                     'status'  => 'error',
                     'message' => $error,
                 ]);
             }
-        }
-
+    //    }
 
         /*
          * No payment required so go ahead and complete the order
@@ -494,7 +703,7 @@ class EventCheckoutController extends Controller
      */
     public function completeOrder($event_id, $return_json = true)
     {
-
+        //return view('Public.ViewEvent.EventPesament', $event_id);
         DB::beginTransaction();
 
         try {
@@ -513,10 +722,10 @@ class EventCheckoutController extends Controller
             if (isset($ticket_order['transaction_id'])) {
                 $order->transaction_id = $ticket_order['transaction_id'][0];
             }
-            if ($ticket_order['order_requires_payment'] && !isset($request_data['pay_offline'])) {
+        /*    if ($ticket_order['order_requires_payment'] && !isset($request_data['pay_offline'])) {
                 $order->payment_gateway_id = $ticket_order['payment_gateway']->id;
             }
-            $order->first_name = $request_data['order_first_name'];
+        */    $order->first_name = $request_data['order_first_name'];
             $order->last_name = $request_data['order_last_name'];
             $order->email = $request_data['order_email'];
             $order->order_status_id = isset($request_data['pay_offline']) ? config('attendize.order_awaiting_payment') : config('attendize.order_complete');
@@ -526,7 +735,8 @@ class EventCheckoutController extends Controller
             $order->discount = 0.00;
             $order->account_id = $event->account->id;
             $order->event_id = $ticket_order['event_id'];
-            $order->is_payment_received = isset($request_data['pay_offline']) ? 0 : 1;
+            //$order->is_payment_received = isset($request_data['pay_offline']) ? 0 : 1;
+            $order->is_payment_received = 1;
             $order->save();
 
             /*
@@ -667,7 +877,7 @@ class EventCheckoutController extends Controller
         }
 
         DB::commit();
-
+//return view('Public.ViewEvent.EventPesament', $event_id);
         if ($return_json) {
             return response()->json([
                 'status'      => 'success',

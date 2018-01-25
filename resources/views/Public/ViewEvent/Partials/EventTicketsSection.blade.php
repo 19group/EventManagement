@@ -13,10 +13,41 @@
 
         @if($tickets->count() > 0)
 
+    <div class="row">
+        <h3>
+            Enter your information and choose tickets for purchase
+        </h3>
+    </div>
             {!! Form::open(['url' => route('postValidateTickets', ['event_id' => $event->id]), 'class' => 'ajax']) !!}
             <div class="row">
                 <div class="col-md-12">
                     <div class="content">
+                    <!--added by Donald on Jan 18, 2018 at 09:52am -->
+
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            {!! Form::label("order_first_name", 'First Name') !!}
+                            {!! Form::text("order_first_name", null, ['required' => 'required', 'class' => 'form-control']) !!}
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            {!! Form::label("order_last_name", 'Last Name') !!}
+                            {!! Form::text("order_last_name", null, ['required' => 'required', 'class' => 'form-control']) !!}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            {!! Form::label("order_email", 'Email') !!}
+                            {!! Form::text("order_email", null, ['required' => 'required', 'class' => 'form-control']) !!}
+                        </div>
+                    </div>
+                </div>
+                <!--end of addition-->
                         <div class="tickets_table_wrap">
                             <table class="table">
                                 <?php

@@ -152,6 +152,51 @@
 </section>
 
 
+<!--added by Donald on Jan 15, 2018 at 4:2pm-->
+{{--PesaPal--}}
+<section class="payment_gateway_options" id="gateway_{{config('attendize.payment_gateway_pesapal')}}">
+    <h4>PesaPal Settings</h4>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                {!! Form::label('pesapal[apiKey]', 'PesaPal Secret Key', array('class'=>'control-label ')) !!}
+                {!! Form::text('pesapal[apiKey]', $account->getGatewayConfigVal(config('attendize.payment_gateway_pesapal'), 'apiKey'),[ 'class'=>'form-control'])  !!}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                {!! Form::label('callBackUrl', 'PesaPal CallBack URL', array('class'=>'control-label ')) !!}
+                {!! Form::text('pesapal[callBackUrl]', $account->getGatewayConfigVal(config('attendize.payment_gateway_pesapal'), 'callBackUrl'),[ 'class'=>'form-control'])  !!}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                {!! Form::label('pesapal[outh_signature]', 'OUTH Signature', array('class'=>'control-label ')) !!}
+                {!! Form::text('pesapal[outh_signature]', $account->getGatewayConfigVal(config('attendize.payment_gateway_pesapal'), 'outh_signature'),[ 'class'=>'form-control'])  !!}
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+{{--TigoPesa--}}
+<section class="payment_gateway_options" id="gateway_{{config('attendize.payment_gateway_tigopesa')}}">
+    <h4>TIGOPESA Settings</h4>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                {!! Form::label('tigopesa[apiKey]', 'Your TIGOPESA Api Key', array('class'=>'control-label ')) !!}
+                {!! Form::text('tigopesa[apiKey]', $account->getGatewayConfigVal(config('attendize.payment_gateway_tigopesa'), 'apiKey'),[ 'class'=>'form-control'])  !!}
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!--end-of-addition-->
 
 
 <div class="row">
