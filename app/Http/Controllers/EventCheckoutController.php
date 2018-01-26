@@ -280,7 +280,7 @@ class EventCheckoutController extends Controller
         $payment_status = $this->checkTranscationStatus($tracking_id,$merchant_reference);
         if($payment_status!='COMPLETED'){
             $count=0;
-            while ($payment_status != 'COMPLETED' && $count<3) {
+            while ($payment_status != 'COMPLETED' && $count<4) {
                $payment_status = $this->checkTranscationStatus($tracking_id,$merchant_reference);
                ++$count;
             }
@@ -341,81 +341,32 @@ class EventCheckoutController extends Controller
      */
     public function checkTranscationStatus($transaction_id,$ticket_reference){
 
-    //include_once('OAuth.php');
-    //include (app_path().'\Pesapal\OAuth.php');
-
     //pesapal params
     $token = $params = NULL;
-
-    /* Demo Account */ // When using demo
-
     $consumer_key = env('PESAPAL_CONSUMER_KEY');
-    $consumer_secret = 'ZdX7R/5eAA72/PEITiG1E9oGIiw='; //Demo Account
+    $consumer_secret = env('PESAPAL_SECRET_KEY'); //Demo Account
     $apilink = 'http://demo.pesapal.com/api/QueryPaymentStatus'; // --Demo
 
-    /* Live Account */ // On Live Environment
-    /*
-    $consumer_key = '800OX7pS6uPbm5lcc+WWACg6cifFehGy';
-    $consumer_secret = 'MLotJqXChfD0ww9AvV5KziNeZNk=';
-    $apilink = 'https://www.pesapal.com/API/QueryPaymentStatus'; // -- Live
-    */
-    /* Live Account */ // On Live Environment
-
     $signature_method = new Outhsignature;
-    //$signature_method = app('\App\Pesapal\OAuth\OAuthSignatureMethod_HMAC_SHA1()');
-
-    //$post_xml = htmlentities($post_xml);
     $consumer = new OAuthConsumer($consumer_key, $consumer_secret);
 
-/*    //check the transaction status from pesapal
+    //check the transaction status from pesapal
     $result = OAuthRequest::from_consumer_and_token($consumer, $token, "GET", $apilink, $params);
     $result->set_parameter("pesapal_merchant_reference", $ticket_reference);
     $result->set_parameter("pesapal_transaction_tracking_id", $transaction_id);
     $result->sign_request($signature_method, $consumer, $token);
-
-    $url= str_replace('&amp;','&',$result);
-//return [$result, $url];
-    $result = file_get_contents($url);
-
-    //Retrieve the payment Status
-    $payment_status = substr($result,22);
-
+    $url=$result;
+    $ch = curl_init();
+    $timeout = 5;
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+    $data = curl_exec($ch);
+    curl_close($ch);
+    $payment_status = substr($data,22);
     return $payment_status;
-*/
-
-//get transaction status
-$request_status = OAuthRequest::from_consumer_and_token($consumer, $token, "GET", $apilink, $params);
-$request_status->set_parameter("pesapal_merchant_reference", $ticket_reference);
-$request_status->set_parameter("pesapal_transaction_tracking_id",$transaction_id);
-$request_status->sign_request($signature_method, $consumer, $token);
-
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $request_status);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-curl_setopt($ch, CURLOPT_HEADER, 1);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-if(defined('CURL_PROXY_REQUIRED')) if (CURL_PROXY_REQUIRED == 'True')
-{
-  $proxy_tunnel_flag = (defined('CURL_PROXY_TUNNEL_FLAG') && strtoupper(CURL_PROXY_TUNNEL_FLAG) == 'FALSE') ? false : true;
-  curl_setopt ($ch, CURLOPT_HTTPPROXYTUNNEL, $proxy_tunnel_flag);
-  curl_setopt ($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
-  curl_setopt ($ch, CURLOPT_PROXY, CURL_PROXY_SERVER_DETAILS);
-}
-
-$response = curl_exec($ch);
-
-$header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-$raw_header  = substr($response, 0, $header_size - 4);
-$headerArray = explode("\r\n\r\n", $raw_header);
-$header      = $headerArray[count($headerArray) - 1];
-
-//transaction status
-$elements = preg_split("/=/",substr($response, $header_size));
-$payment_status = $elements[1];
-
-curl_close ($ch);
-return $payment_status;
-
     }
 
 
