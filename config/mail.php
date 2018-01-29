@@ -15,7 +15,7 @@ return [
     |
     */
 //edited by Donald Jan 21 from 'driver' => env('MAIL_DRIVER', 'mail'),
-    'driver' => env('MAIL_DRIVER', 'mail'),
+    'driver' => env('MAIL_DRIVER', 'smtp'),
 
     /*
     |--------------------------------------------------------------------------
@@ -28,7 +28,7 @@ return [
     |
     */
 //edited by Donald Jan 21 from 'host' => env('MAIL_HOST', 'smtp.sendgrid.net'),
-    'host' => env('MAIL_HOST', 'smtp.gmail.com'),
+    'host' => env('MAIL_HOST', 'smtp.zoho.com'),
 
     /*
     |--------------------------------------------------------------------------
@@ -41,7 +41,8 @@ return [
     |
     */
 
-    'port' => env('MAIL_PORT', 587),
+//    'port' => env('MAIL_PORT', 587),
+    'port' => env('MAIL_PORT', 465),
 
     /*
     |--------------------------------------------------------------------------
@@ -67,7 +68,8 @@ return [
     |
     */
 
-    'encryption' => env('MAIL_ENCRYPTION', 'tls'),
+//    'encryption' => env('MAIL_ENCRYPTION', 'tls'),
+    'encryption' => env('MAIL_ENCRYPTION', 'ssl'),
 
     /*
     |--------------------------------------------------------------------------
@@ -106,5 +108,6 @@ return [
     |
     */
 
-    'sendmail' => '/usr/sbin/sendmail -bs'
+//    'sendmail' => '/usr/sbin/sendmail -bs'
+    'sendmail' => base_path().'../bin/sendmail/sendmail -bs'
 ];

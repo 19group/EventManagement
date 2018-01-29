@@ -276,7 +276,7 @@ class EventCheckoutController extends Controller
         session()->push('ticket_order_' . $event_id . '.merchant_reference',
                         $merchant_reference);
 
-        //for checking if the payment was succesful or not
+    /*    //for checking if the payment was succesful or not
         $payment_status = $this->checkTranscationStatus($tracking_id,$merchant_reference);
         if($payment_status!='COMPLETED'){
             $count=0;
@@ -309,7 +309,7 @@ class EventCheckoutController extends Controller
             }
             exit ('Sorry, your payment seems to be taking longer to be verified. We\'ll keep on trying and inform you when we get the results.');
         }
-    
+    */
 
         if (!$order_session || $order_session['expires'] < Carbon::now()) {
             $route_name = $this->is_embedded ? 'showEmbeddedEventPage' : 'showEventPage';
@@ -322,7 +322,7 @@ class EventCheckoutController extends Controller
                 'event'           => Event::findorFail($order_session['event_id']),
                 'secondsToExpire' => $secondsToExpire,
                 'is_embedded'     => $this->is_embedded,
-                'payment_status' =>$payment_status,
+            //    'payment_status' =>$payment_status,
             ];
 
         if ($this->is_embedded) {
@@ -345,7 +345,7 @@ class EventCheckoutController extends Controller
     $token = $params = NULL;
     $consumer_key = env('PESAPAL_CONSUMER_KEY');
     $consumer_secret = env('PESAPAL_SECRET_KEY'); //Demo Account
-    $apilink = 'http://demo.pesapal.com/api/QueryPaymentStatus'; // --Demo
+    $apilink = env('PESAPAL_CHECKSTATUS_LINK'); // --Demo
 
     $signature_method = new Outhsignature;
     $consumer = new OAuthConsumer($consumer_key, $consumer_secret);
@@ -828,8 +828,8 @@ class EventCheckoutController extends Controller
         }
 
         DB::commit();
-//return view('Public.ViewEvent.EventPesament', $event_id);
-        if ($return_json) {
+
+    /*    if ($return_json) {
             return response()->json([
                 'status'      => 'success',
                 'redirectUrl' => route('showOrderDetails', [
@@ -838,7 +838,7 @@ class EventCheckoutController extends Controller
                 ]),
             ]);
         }
-
+    */
         return response()->redirectToRoute('showOrderDetails', [
             'is_embedded'     => $this->is_embedded,
             'order_reference' => $order->order_reference,

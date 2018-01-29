@@ -3,7 +3,6 @@
 /vendor
 /node_modules
 .env
-/resources/views/Public/ViewEvent/Partials/EventPesaPalPaymentSection.blade.php
 .idea
 installed
 /.settings/
