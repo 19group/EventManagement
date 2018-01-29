@@ -1,4 +1,4 @@
-<?php include (app_path().'\Pesapal\OAuth.php');
+<?php include (app_path().'/Pesapal/OAuth.php');
 //loading a class that enables the use of environment variables
 $dotenv = new Dotenv\Dotenv(base_path());
 $dotenv->load();

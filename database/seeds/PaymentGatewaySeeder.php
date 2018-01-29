@@ -17,7 +17,7 @@ class PaymentGatewaySeeder extends Seeder
                 'name' => 'Stripe',
                 'provider_name' => 'Stripe',
                 'provider_url' => 'https://www.stripe.com',
-                'is_on_site' => 1,
+                'is_on_site' => 0,
                 'can_refund' => 1,
             ],
             [
@@ -43,6 +43,14 @@ class PaymentGatewaySeeder extends Seeder
                 'provider_name' => 'MasterCard Internet Gateway Service',
                 'provider_url' => 'https://www.mastercard.com/gateway/payment-processing/online-credit-card-and-debit-card-payment-processing.html',
                 'is_on_site' => 0,
+                'can_refund' => 0,
+            ],
+            [
+                'id' => 5,
+                'name' => 'PesaPal',
+                'provider_name' => 'PesaPal',
+                'provider_url' => 'http://demo.pesapal.com/api/PostPesapalDirectOrderV4',
+                'is_on_site' => 1,
                 'can_refund' => 0,
             ],
         ];
