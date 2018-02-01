@@ -48,8 +48,7 @@
             "app/Http/Controllers",
             "app/Models",
             "app/Attendize",
-            "vendor/vlucas/phpdotenv/src",
-            "app/Pesapal/classes"
+            "vendor/vlucas/phpdotenv/src"
         ],
         "psr-4": {
             "App\\": "app/",
