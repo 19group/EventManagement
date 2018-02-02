@@ -1,0 +1,13 @@
+/.env.testing
+/.phpstorm.meta.php
+/vendor
+/node_modules
+.env
+.idea
+installed
+/.settings/
+/.project
+/.buildpath
+/composer.phar
+_ide_helper.php
+*.swp
