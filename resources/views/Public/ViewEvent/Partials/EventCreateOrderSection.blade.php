@@ -49,7 +49,7 @@
 
                 {!! Form::hidden('event_id', $event->id) !!}
 
-                
+
 
                 <div class="row" style="display: none;">
                     <div class="col-xs-6">
@@ -77,14 +77,14 @@
 
                 <div class="p20 pl0">
                     <a href="javascript:void(0);" class="btn btn-primary btn-xs" id="mirror_buyer_info">
-                        
+
                     </a>
                 </div>
 
                 <<div class="row">
                     <div class="col-md-12">
                         <div class="ticket_holders_details" >
-                            
+
                             <?php
                                 $total_attendee_increment = 0;
                             ?>
@@ -164,7 +164,7 @@
                @if(@$payment_gateway->id==1)
                    <div class="row">
                                 <label class="col-md-12 text-center"><h3>Stripe</h3></label>
-                                
+
 
                                     <div class="col-md-6">
                                         <div class="form-group">
@@ -315,11 +315,12 @@
 
                 @endif
 
+
             <!-- PesaPal -->
                @if(@$payment_gateway->id==5)
                    <div class="row">
                             <label class="col-md-12 text-center"><h3>PesaPal</h3></label>
-                                
+
                                 @include('Public.ViewEvent.Partials.OAuth')
 
                                 <?php
@@ -327,7 +328,7 @@
                                     $token = $params = NULL;
 
                                     /*
-                                    PesaPal Sandbox is at http://demo.pesapal.com. Use this to test your developement and 
+                                    PesaPal Sandbox is at http://demo.pesapal.com. Use this to test your developement and
                                     when you are ready to go live change to https://www.pesapal.com.
                                     */
                                     $consumer_key = env('PESAPAL_CONSUMER_KEY');//Register a merchant account on
@@ -335,10 +336,10 @@
                                                        //When you are ready to go live make sure you change the key to the live account
                                                        //registered on www.pesapal.com!
                                     $consumer_secret = env('PESAPAL_CONSUMER_SECRET');// Use the secret from your test
-                                                       //account on demo.pesapal.com. When you are ready to go live make sure you 
+                                                       //account on demo.pesapal.com. When you are ready to go live make sure you
                                                        //change the secret to the live account registered on www.pesapal.com!
                                     $signature_method = new OAuthSignatureMethod_HMAC_SHA1();
-                                    $iframelink = env('IFRAME_URL');//change to      
+                                    $iframelink = env('IFRAME_URL');//change to
                                                        //https://www.pesapal.com/API/PostPesapalDirectOrderV4 when you are ready to go live!
 
                                     //get form details
@@ -353,7 +354,8 @@
                                     $email = $email;
                                     $phonenumber = '';//ONE of email or phonenumber is required
 
-                                    $callback_url = 'weconnect.club/e/'.$event_id.'/pesament/create?is_embedded=0#order_form'; //redirect url, the page that will handle the response from pesapal.
+                                    //$callback_url = env('SERVER').env('PESAPAL_CALLBACK_ROUTE'); //redirect url, the page that will handle the response from pesapal.
+                                    $callback_url = env('SERVER').'/e/'.$event_id.'/pesament/create?is_embedded=0#order_form'; //redirect url, the page that will handle the response from pesapal.
 
                                     $post_xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?><PesapalDirectOrderInfo xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" Amount=\"".$amount."\" Description=\"".$desc."\" Type=\"".$type."\" Reference=\"".$reference."\" FirstName=\"".$first_name."\" LastName=\"".$last_name."\" Email=\"".$email."\" PhoneNumber=\"".$phonenumber."\" xmlns=\"http://www.pesapal.com\" />";
                                     $post_xml = htmlentities($post_xml);
@@ -367,9 +369,9 @@
                                     $iframe_src->sign_request($signature_method, $consumer, $token);
 
 
-                                     
 
-                            
+
+
                                 ?>
 
                             <iframe src="<?php echo $iframe_src;?>" width="100%" height="500px"  scrolling="no" frameBorder="0">
@@ -405,4 +407,3 @@
 @if(session()->get('message'))
     <script>showMessage('{{session()->get('message')}}');</script>
 @endif
-
