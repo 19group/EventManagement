@@ -1,5 +1,5 @@
 {
-  "name": "Attendize",
+  "name": "attendize",
   "version": "1.0.0",
   "description": "Attendize Ticketing Platform",
   "main": "public/index.php",
@@ -21,8 +21,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/attendize/attendize.git"
+    "url": "git+https://github.com/attendize/attendize.git"
   },
   "author": "Dave Earley",
-  "license": "ISC"
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/attendize/attendize/issues"
+  },
+  "homepage": "https://github.com/attendize/attendize#readme",
+  "directories": {
+    "test": "tests"
+  }
 }
