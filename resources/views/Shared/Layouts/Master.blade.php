@@ -12,7 +12,7 @@
     -->
     <title>
         @section('title')
-            Attendize ::
+            Events ::
         @show
     </title>
 
