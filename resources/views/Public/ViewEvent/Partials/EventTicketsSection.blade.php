@@ -1,9 +1,5 @@
 <section id="tickets" class="container">
-    <div class="row">
-        <h1 class='section_head'>
-            Tickets
-        </h1>
-    </div>
+
 
 
     @if($event->start_date->isPast())
@@ -21,6 +17,12 @@
 
 
                     <!-- Added Form to Tickets Section (First name, last name and email) -->
+
+                                                    <div class="row">
+                                                        <h1 class='section_head'>
+                                                            Your Details
+                                                        </h1>
+                                                    </div>
 
                         <div class="row">
                                     <div class="col-md-6">
@@ -41,7 +43,9 @@
                                         ))  !!}
                                         </div>
                                     </div>
-                                </div>
+
+                                   </div>
+
                                  <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
@@ -54,9 +58,11 @@
                                     </div>
                                 </div>
 
-
-
-
+                                <div class="row">
+                                    <h1 class='section_head'>
+                                        Tickets
+                                    </h1>
+                                </div>
 
 
                         <div class="tickets_table_wrap">
@@ -154,6 +160,7 @@
                                 </tr>
                             </table>
                         </div>
+                        
                     </div>
                 </div>
             </div>

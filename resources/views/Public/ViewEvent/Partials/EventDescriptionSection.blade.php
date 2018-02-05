@@ -5,6 +5,12 @@
         </h1>
     </div>
     <div class="row">
+     <div class="col-md-12">
+         <div class="content event_details" property="description">
+             {!! Markdown::parse($event->description) !!}
+         </div>
+     </div>
+     <!--
         @if($event->images->count())
         <div class="col-md-7">
             <div class="content event_details" property="description">
@@ -23,5 +29,6 @@
             </div>
         </div>
         @endif
+       -->
     </div>
 </section>
