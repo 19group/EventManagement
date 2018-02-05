@@ -19,7 +19,7 @@ return [
     'outgoing_email_name'    => env('MAIL_FROM_NAME'),
     'incoming_email'         => env('MAIL_FROM_ADDRESS'),
 
-    'app_name'               => 'Attendize Event Ticketing',
+    'app_name'               => 'Event Ticketing',
     'event_default_bg_color' => '#B23333',
     'event_default_bg_image' => 'assets/images/public/EventPage/backgrounds/5.jpg',
 
@@ -57,13 +57,13 @@ return [
 
 
     'default_timezone'           => 30, #Europe/Dublin
-    'default_currency'           => 2, #Euro
+    'default_currency'           => 1, #Euro
     'default_date_format'        => 'j M, Y',
     'default_date_picker_format' => 'd M, yyyy',
     'default_datetime_format'    => 'F j, Y, g:i a',
     'default_query_cache'        => 120, #Minutes
     'default_locale'             => 'en',
-    'default_payment_gateway'    => 1, #Stripe=1 Paypal=2 BitPay=3 MIGS=4
+    'default_payment_gateway'    => 5, #Stripe=1 Paypal=2 BitPay=3 MIGS=4 Pesapal 5
 
     'cdn_url_user_assets'   => '',
     'cdn_url_static_assets' => ''

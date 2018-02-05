@@ -81,7 +81,7 @@
                     </a>
                 </div>
 
-                <<div class="row">
+                <div class="row">
                     <div class="col-md-12">
                         <div class="ticket_holders_details" >
 
@@ -392,14 +392,16 @@
                 @endif
 
                {!! Form::hidden('is_embedded', $is_embedded) !!}
+               <!--
                {!! Form::submit('Checkout', ['class' => 'btn btn-lg btn-success disabled card-submit', 'style' => 'width:100%;']) !!}
-
+-->
                 <br>
                 <br>
+                <!--
                 <center>
                 <p>Finalize payment before you can Check Out...</p>
                 </center>
-
+                -->
             </div>
         </div>
     </div>
