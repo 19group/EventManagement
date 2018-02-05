@@ -71,7 +71,8 @@
                                     {{$ticket->title}}
                                 </span>
                                             <p class="ticket-descripton mb0 text-muted" property="description">
-                                                {{$ticket->description}}
+                                                <!--{{$ticket->description}}-->
+                                                {!! Markdown::parse($ticket->description) !!}
                                             </p>
                                         </td>
                                         <td style="width:180px; text-align: right;">

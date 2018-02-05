@@ -40,7 +40,7 @@
                     <meta property="address" content="{{ urldecode($event->venue_name) }}">
                 </span>
             </div>
-
+<!--
             <div class="event_buttons">
                 <div class="row">
                     <div class="col-md-4 col-sm-4">
@@ -54,6 +54,8 @@
                     </div>
                 </div>
             </div>
+-->
+
         </div>
     </div>
 </section>
