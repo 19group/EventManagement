@@ -325,12 +325,6 @@ class EventCheckoutController extends Controller
                 return $this->completeOrder($event_id);
             }
             try {
-        /*
-                $gateway = Omnipay::create($ticket_order['payment_gateway']->name);
-                $gateway->initialize($ticket_order['account_payment_gateway']->config + [
-                        'testMode' => config('attendize.enable_test_payments'),
-                    ]);
-        */
                 $transaction_data = [
                         'amount'      => ($ticket_order['order_total'] + $ticket_order['organiser_booking_fee']),
                         'currency'    => $event->currency->code,
@@ -511,6 +505,7 @@ class EventCheckoutController extends Controller
              * Create the order
              */
             if (isset($ticket_order['transaction_id'])) {
+    //DonaldFeb9            $order->transaction_id = $ticket_order['transaction_id'][0];
                 $order->transaction_id = $ticket_order['transaction_id'][0];
             }
             if ($ticket_order['order_requires_payment'] && !isset($request_data['pay_offline'])) {

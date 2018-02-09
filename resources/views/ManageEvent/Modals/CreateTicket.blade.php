@@ -1,3 +1,27 @@
+<?php $offer=0; $toffers=[];?>
+<script>
+    $(function() {
+        var offer = 0;
+        $('#add_offer').on('click', function(e) {
+var p = document.createElement('div');
+var d = document.createElement('div');
+var r = document.createElement('span');
+var f = document.createElement("INPUT");
+f.setAttribute("type", "text");
+f.setAttribute("class", "form-control");
+f.setAttribute("placeholder", "Add another ticket offer...");
+p.setAttribute("class", "col-md-12");
+d.setAttribute("class", "form-group");
+offer+=1;
+f.setAttribute("name", "ticket_offer_" + offer);
+p.appendChild(d);
+d.appendChild(f);
+r.setAttribute("id", "offer_" + offer);
+document.getElementById("ticketoffers").appendChild(p);
+        });
+
+    });
+</script>
 <div role="dialog"  class="modal fade" style="display: none;">
    {!! Form::open(array('url' => route('postCreateTicket', array('event_id' => $event->id)), 'class' => 'ajax')) !!}
     <div class="modal-dialog">
@@ -55,6 +79,34 @@
                                         'class'=>'form-control'
                                         ))  !!}
                         </div>
+
+<!-- Added by Donald on Jan 31 -->
+   
+                        <div class="row more-options">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    {!! Form::label('ticket_offer', 'Ticket Offers', array('class'=>'control-label')) !!}
+                                    {!!  Form::text('ticket_offer_0', Input::old('ticket_offer'),
+                                                array(
+                                                'class'=>'form-control',
+                                                'id' => "ticket_offer_0",
+                                                'placeholder'=>'E.g: Ticket Holder will get a free drink at the entrance'
+                                                ))  !!}
+                                </div>
+                            </div>
+                        </div> 
+                        <div class = "row more options" id="ticketoffers">
+                            
+                        </div>
+                        <div class="row more-options">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                {!! Form::button('Add Another Offer', ['class'=>"btn btn-success", 'id'=>"add_offer"]) !!}
+                                </div>
+                            </div>
+                        </div>
+<!--end of addition-->
+
 
                         <div class="row more-options">
                             <div class="col-sm-6">

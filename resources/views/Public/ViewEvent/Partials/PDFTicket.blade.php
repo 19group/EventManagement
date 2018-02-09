@@ -87,9 +87,10 @@
                             <h4>Price</h4>
                             {{money($attendee->ticket->total_price, $order->event->currency)}} (inc. {{money($attendee->ticket->total_booking_fee, $order->event->currency)}} Fees)
                         </div>
-
+                        <?php $codedetails=$attendee->ticket_id.'#'.$order->order_reference;?>
                         <div class="barcode">
-                            {!! DNS2D::getBarcodeSVG($attendee->private_reference_number, "QRCODE", 6, 6) !!}
+                            <!--DonaldFeb9{!! DNS2D::getBarcodeSVG($attendee->private_reference_number, "QRCODE", 6, 6) !!}-->
+                            {!! DNS2D::getBarcodeSVG($codedetails, "QRCODE", 6, 6) !!}
                         </div>
                         @if($event->is_1d_barcode_enabled)
                         <div class="barcode_vertical">

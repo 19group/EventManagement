@@ -90,7 +90,12 @@ class EventTicketsController extends MyBaseController
     public function postCreateTicket(Request $request, $event_id)
     {
         $ticket = Ticket::createNew();
-
+        $f=0; $miss=0; $toc=0; $ticketoffers=[]; 
+        while($miss<3){
+          if($request->get("ticket_offer_$f")){
+            $ticketoffers[$toc]=$request->get("ticket_offer_$f");++$f;++$toc;$miss=0;
+          }else{++$miss;++$f;}
+        }
         if (!$ticket->validate($request->all())) {
             return response()->json([
                 'status'   => 'error',
@@ -109,6 +114,7 @@ class EventTicketsController extends MyBaseController
         $ticket->min_per_person = $request->get('min_per_person');
         $ticket->max_per_person = $request->get('max_per_person');
         $ticket->description = $request->get('description');
+        $ticket->ticket_offers = empty($ticketoffers) ? null : implode('#@#',$ticketoffers);
         $ticket->is_hidden = $request->get('is_hidden') ? 1 : 0;
 
         $ticket->save();
@@ -211,6 +217,18 @@ class EventTicketsController extends MyBaseController
     public function postEditTicket(Request $request, $event_id, $ticket_id)
     {
         $ticket = Ticket::scope()->findOrFail($ticket_id);
+        $f=0; $ticketoffers=[]; $toc=0; $mis=0;
+        while($mis<3){
+          if($request->get("ticket_offer_$f")){
+            $ticketoffers[$toc]=$request->get("ticket_offer_$f");++$f;++$toc;$mis=0;
+          }else{++$mis;++$f;}
+        }
+        $fad=0; $misss=0;
+        while($misss<3){
+          if($request->get("ticket_offerad_$fad")){
+            $ticketoffers[$toc]=$request->get("ticket_offerad_$fad");++$toc;++$fad;$misss=0;
+          }else{++$misss;++$fad;}
+        }
 
         /*
          * Override some validation rules
@@ -239,6 +257,7 @@ class EventTicketsController extends MyBaseController
         $ticket->end_sale_date = $request->get('end_sale_date') ? Carbon::createFromFormat('d-m-Y H:i',
             $request->get('end_sale_date')) : null;
         $ticket->description = $request->get('description');
+        $ticket->ticket_offers = empty($ticketoffers) ? null : implode('#@#',$ticketoffers);
         $ticket->min_per_person = $request->get('min_per_person');
         $ticket->max_per_person = $request->get('max_per_person');
         $ticket->is_hidden = $request->get('is_hidden') ? 1 : 0;

@@ -38,7 +38,10 @@ class PesapalAPIController extends Controller
     {
         $merchant_reference = Input::get('pesapal_merchant_reference');
         $tracking_id = Input::get('pesapal_transaction_tracking_id');
-        $route = config('pesapal.callback_route');
+    //Donald Feb9    $route = config('pesapal.callback_route');
+        $route = 'confirm';
+        session()->push('ticket_order_' . $event_id . '.transaction_id',
+                        $tracking_id);
         return redirect()->route($route,
             array('tracking_id' => $tracking_id, 'merchant_reference' => $merchant_reference));
     }
@@ -54,6 +57,8 @@ class PesapalAPIController extends Controller
             throw new PesapalException("incorrect parameters in request");
         }
         
+        session()->push('ticket_order_' . $event_id . '.transaction_id',
+                        $tracking_id);
         //return view('Public.ViewEvent.Partials.EventCreateOrderSection2');
         //dd($merchant_reference,$tracking_id);
 

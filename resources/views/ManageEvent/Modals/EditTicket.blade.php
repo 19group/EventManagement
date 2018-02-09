@@ -1,3 +1,26 @@
+<script>
+    $(function() {
+        var offerad = 0;
+$('#add_offer').on('click', function(e) {
+var p = document.createElement('div');
+var d = document.createElement('div');
+var r = document.createElement('span');
+var f = document.createElement("INPUT");
+f.setAttribute("type", "text");
+f.setAttribute("class", "form-control");
+f.setAttribute("placeholder", "Add another ticket offer...");
+p.setAttribute("class", "col-md-12");
+d.setAttribute("class", "form-group");
+offerad+=1;
+f.setAttribute("name", "ticket_offerad_" + offerad);
+p.appendChild(d);
+d.appendChild(f);
+r.setAttribute("id", "offer_" + offerad);
+document.getElementById("ticketoffers").appendChild(p);
+        });
+
+    });
+</script>
 <div role="dialog"  class="modal fade " style="display: none;">
     {!! Form::model($ticket, ['url' => route('postEditTicket', ['ticket_id' => $ticket->id, 'event_id' => $event->id]), 'class' => 'ajax']) !!}
     <div class="modal-dialog">
@@ -32,6 +55,61 @@
                     {!! Form::label('description', 'Ticket Description', ['class'=>'control-label']) !!}
                     {!!  Form::text('description', null,['class'=>'form-control']) !!}
                 </div>
+
+                <!--added by Donald-->
+                <?php if($ticket->ticket_offers){
+                    $toffers = explode('#@#',$ticket->ticket_offers);
+                    $firstholder = $toffers[0];
+                    ?>
+                <?php }else{
+                    $firstholder = 'E.g: Ticket Holder will get a free drink at the entrance';
+                    } ?>
+                <div class="row more-options">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            {!! Form::label('ticket_offer', 'Ticket Offers', array('class'=>'control-label')) !!}
+                            {!!  Form::text('ticket_offer_0', $firstholder,
+                                        array(
+                                        'class'=>'form-control',
+                                        'name' =>'ticket_offer_0',
+                                        'placeholder'=>$firstholder
+                                        ))  !!}
+                        </div>
+                    </div>
+                </div>
+                <?php if(count($toffers)>1){
+                    for($i=1;$i<count($toffers);++$i){
+                ?>
+
+                <div class="row more-options">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            {!!  Form::text('ticket_offer_$i', $toffers[$i],
+                                        [
+                                        'class'=>'form-control',
+                                        'name'=>'ticket_offer_$i',
+                                        ])  !!}
+                        </div>
+                    </div>
+                </div>
+                <?php
+
+                    }
+                } ?>
+                <div class = "row more options" id="ticketoffers">
+                            
+                </div>
+
+                <div class="row more-options">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                        {!! Form::button('Add Another Offer', ['class'=>"btn btn-success", 'id'=>"add_offer"]) !!}
+                        </div>
+                    </div>
+                </div>
+                <!--end of addition-->
+
+            
 
                 <div class="row more-options">
                     <div class="col-sm-6">
