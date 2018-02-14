@@ -59,6 +59,20 @@ class GenerateTicket extends Job implements ShouldQueue
         }
         $attendees = $query->get();
 
+        //added by DonaldFeb13
+/*    $ticket_order = session()->get('ticket_order_' . $order->event_id);
+    $request_data = $ticket_order['request_data'][0];
+    if($ticket_order['donation']>0){
+    $attendees .= [
+        'first_name' = 
+        'last_name' = 
+            {{$attendee->ticket->title}}
+            {{$attendee->reference}}
+            {{attendee->ticket->total_price)$attendee->ticket->total_booking_fee
+
+    ];*/
+        //end of addition DonaldFeb13
+
         $image_path = $event->organiser->full_logo_path;
         if ($event->images->first() != null) {
             $image_path = $event->images()->first()->image_path;
@@ -75,6 +89,21 @@ class GenerateTicket extends Job implements ShouldQueue
         PDF::setOutputMode('F'); // force to file
         PDF::html('Public.ViewEvent.Partials.PDFTicket', $data, $file_path);
 
+        //added by DonaldFeb13
+    /*        $ticket_order = session()->get('ticket_order_' . $order->event_id);
+            $request_data = $ticket_order['request_data'][0];
+                if($ticket_order['donation']>0){
+                    $dondata = [
+                        'order'     => $order,
+                        'event'     => $event,
+                        'attendees' => $attendees,
+                        'css'       => file_get_contents(public_path('assets/stylesheet/ticket.css')),
+                        'image'     => base64_encode(file_get_contents(public_path($image_path))),
+                    ];
+                    PDF::setOutputMode('F'); // force to file
+                    PDF::html('Public.ViewEvent.Partials.DonationPDFDocu', $dondata, $file_path);
+                }
+    */
         Log::info("Ticket generated!");
     }
 

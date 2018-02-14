@@ -87,10 +87,8 @@
                             <h4>Price</h4>
                             {{money($attendee->ticket->total_price, $order->event->currency)}} (inc. {{money($attendee->ticket->total_booking_fee, $order->event->currency)}} Fees)
                         </div>
-                        <?php $codedetails=$attendee->ticket_id.'#'.$order->order_reference;?>
                         <div class="barcode">
-                            <!--DonaldFeb9{!! DNS2D::getBarcodeSVG($attendee->private_reference_number, "QRCODE", 6, 6) !!}-->
-                            {!! DNS2D::getBarcodeSVG($codedetails, "QRCODE", 6, 6) !!}
+                            {!! DNS2D::getBarcodeSVG($attendee->private_reference_number, "QRCODE", 6, 6) !!}
                         </div>
                         @if($event->is_1d_barcode_enabled)
                         <div class="barcode_vertical">
@@ -101,6 +99,39 @@
                 @endif
             @endforeach
 
+<?php
+            $ticket_order = session()->get('ticket_order_' . $order->event_id);
+            $request_data = $ticket_order['request_data'][0];
+                if($ticket_order['donation']>0){ ?>
+                    <div class="ticket">
+                        <div class='logo'>
+				<img alt="{{$event->organiser->full_logo_path}}" src="data:image/png;base64, {{$image}}" />
+                        </div>
+                        <div class="event_details">
+                            <h4>Event</h4>
+                            {{$event->title}}
+                            <h4>Organiser</h4>
+                            {{$event->organiser->name}}
+                            <h4>Venue</h4>
+                            {{$event->venue_name}}
+                            <h4>Start Date / Time</h4>
+                            {{$event->start_date->format('M dS g:iA')}}
+                            <h4>End Date / Time</h4>
+                            {{$event->end_date->format('M dS g:iA')}}
+                        </div>
+                        <div class="attendee_details">
+                            <h4>Donor's Name</h4>
+                            {{$ticket_order['first_name'].' '.$ticket_order['last_name']}}
+                            <h4>Ticket Type</h4>
+                            {{$attendee->ticket->title}}
+                            <h4>Order Ref.</h4>
+                            {{$order->order_reference}}
+                            <h4>Donation Amount</h4>
+                            {{money($ticket_order['donation'], $order->event->currency)}}
+                        </div>
+                    </div>
+<?php            	}
+?>
             <div class="bottom_info">
                 {{--Attendize is provided free of charge on the condition the below hyperlink is left in place.--}}
                 {{--See https://www.attendize.com/licence.php for more information.--}}

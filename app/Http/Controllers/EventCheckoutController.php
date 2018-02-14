@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\DonationCompletedEvent;
 use App\Events\OrderCompletedEvent;
 use App\Models\Affiliate;
 use App\Models\Attendee;
 use App\Models\Event;
 use App\Models\EventStats;
 use App\Models\Order;
+use App\Models\Donation;
 use App\Models\OrderItem;
 use App\Models\QuestionAnswer;
 use App\Models\ReservedTickets;
@@ -57,10 +59,34 @@ class EventCheckoutController extends Controller
          * Order expires after X min
          */
 
-
+        $donation = 0; //DonaldFeb9
         $order_expires_time = Carbon::now()->addMinutes(config('attendize.checkout_timeout_after'));
 
         $event = Event::findOrFail($event_id);
+
+        //DonaldFeb9
+        if($request->has('donation')){
+            $donation = $request->get('donation');
+            if(!$request->has('tickets')){
+                session()->set('donation_' . $event->id, [
+                    'first_name'              => $request->get('first_name'),
+                    'last_name'               => $request->get('last_name'),
+                    'email'                   => $request->get('email'),
+                    'event_id'                => $event->id,
+                    'order_started'           => time(),
+                    'expires'                 => $order_expires_time,
+                    'donation'                => $request->get('donation'), //DonaldFeb9
+                ]);
+                $donation_session = session()->get('donation_' . $event->id);                
+                $secondsToExpire = Carbon::now()->diffInSeconds($order_expires_time);
+
+                $data = $donation_session + [
+                        'event'           => Event::findorFail($event_id),
+                        'secondsToExpire' => $secondsToExpire,
+                    ];
+                return view('Public.ViewEvent.EventDonationCheckout', $data); 
+            }
+        }//end
 
         if (!$request->has('tickets')) {
             return response()->json([
@@ -208,6 +234,7 @@ class EventCheckoutController extends Controller
             'expires'                 => $order_expires_time,
             'reserved_tickets_id'     => $reservedTickets->id,
             'order_total'             => $order_total,
+            'donation'                => $donation, //DonaldFeb9
             'booking_fee'             => $booking_fee,
             'organiser_booking_fee'   => $organiser_booking_fee,
             'total_booking_fee'       => $booking_fee + $organiser_booking_fee,
@@ -505,7 +532,6 @@ class EventCheckoutController extends Controller
              * Create the order
              */
             if (isset($ticket_order['transaction_id'])) {
-    //DonaldFeb9            $order->transaction_id = $ticket_order['transaction_id'][0];
                 $order->transaction_id = $ticket_order['transaction_id'][0];
             }
             if ($ticket_order['order_requires_payment'] && !isset($request_data['pay_offline'])) {
@@ -637,10 +663,24 @@ class EventCheckoutController extends Controller
                 }
             }
 
+    //added by DonaldFeb13
+    if($ticket_order['donation']>0){
+        
+    $orderItem = new OrderItem();
+    $orderItem->title = 'Donation';
+    $orderItem->quantity = 1;
+    $orderItem->order_id = $order->id;
+    $orderItem->unit_price = $ticket_order['donation'];
+    $orderItem->unit_booking_fee = 0;
+    $orderItem->save();
+    }
+    //end of addition DonaldFeb13
+
+
             /*
              * Kill the session
              */
-            session()->forget('ticket_order_' . $event->id);
+    //        session()->forget('ticket_order_' . $event->id);
 
             /*
              * Queue up some tasks - Emails to be sent, PDFs etc.
@@ -672,6 +712,11 @@ class EventCheckoutController extends Controller
                 ]),
             ]);
         }*/
+
+            /*
+             * Kill the session
+             */
+            session()->forget('ticket_order_' . $event->id);
 
         return response()->redirectToRoute('showOrderDetails', [
             'is_embedded'     => $this->is_embedded,

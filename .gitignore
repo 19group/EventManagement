@@ -10,4 +10,12 @@ installed
 /.buildpath
 /composer.phar
 _ide_helper.php
+/app/Events/DonationCompletedEvent.php
+/app/Jobs/SendDonationNotification.php
+/app/Listeners/DonationCompletedListener.php
+/app/Mailers/DonationMailer.php
+/app/Models/Donation.php
+/resources/views/Public/ViewEvent/EventDonationCheckout.blade.php
+/resources/views/Public/ViewEvent/Partials/DonationPDFDocu.blade.php
+/resources/views/Public/ViewEvent/Partials/EventCreateDonationSection.blade.php
 *.swp

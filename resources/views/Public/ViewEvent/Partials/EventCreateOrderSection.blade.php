@@ -13,9 +13,17 @@
                         Order Summary
                     </h3>
                 </div>
-
+<!--section edited by DonaldFeb9 -->
                 <div class="panel-body pt0">
                     <table class="table mb0 table-condensed">
+                        <?php $donhead='Donation Amount';if($donation>0){ ?>
+                            <tr>
+                                <td class="pl0"><b>Donation Amount:</b></td>
+                                <td style="text-align: right;">
+                                    {{  money($donation, $event->currency) }}
+                                </td>
+                            </tr>
+                        <?php } ?>
                         @foreach($tickets as $ticket)
                         <tr>
                             <td class="pl0">{{{$ticket['ticket']['title']}}} X <b>{{$ticket['qty']}}</b></td>
@@ -30,10 +38,10 @@
                         @endforeach
                     </table>
                 </div>
-                @if($order_total > 0)
+                @if($order_total+$donation > 0)
                 <div class="panel-footer">
                     <h5>
-                        Total: <span style="float: right;"><b>{{ money($order_total + $total_booking_fee,$event->currency) }}</b></span>
+                        Total: <span style="float: right;"><b>{{ money($order_total + $total_booking_fee + $donation,$event->currency) }}</b></span>
                     </h5>
                 </div>
                 @endif
@@ -343,7 +351,7 @@
                                                        //https://www.pesapal.com/API/PostPesapalDirectOrderV4 when you are ready to go live!
 
                                     //get form details
-                                    $amount = $order_total;
+                                    $amount = $order_total + $donation;
                                     $amount = number_format($amount, 2);//format amount to 2 decimal places
 
                                     $desc = 'Tickets';

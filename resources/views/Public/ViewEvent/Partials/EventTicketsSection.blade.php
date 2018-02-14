@@ -58,6 +58,25 @@
                                     </div>
                                 </div>
 
+<!--added by Donald --Event Donation Ability-->
+                                <span class="ticket-title semibold" property="name">
+                                    {{'Donate for this event'}}
+                                </span>
+                                <div class="row">
+                                    <div class="col-md-10">
+                                            <p class="ticket-descripton mb0 text-muted" property="description">
+                                                {{'Your contribution will not be counted as part of your ticket prices but you will be emailed of our appreciation.'}}
+                                            </p>
+                                    </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <INPUT class="form-control" type="number" name="donation" placeholder="0">
+
+                                </INPUT>
+                            </div>
+                        </div></div>
+<!--end of addition-->
+
                                 <div class="row">
                                     <h1 class='section_head'>
                                         Tickets
