@@ -286,7 +286,9 @@ class CreateUsersTable extends Migration
 
             $t->string('title');
             $t->text('description');
+            $t->text('ticket_offers')->nullable();
             $t->decimal('price', 13, 2);
+
 
             $t->integer('max_per_person')->nullable()->default(null);
             $t->integer('min_per_person')->nullable()->default(null);
