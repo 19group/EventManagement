@@ -1,6 +1,6 @@
 <script>
     $(function() {
-        var offerad = 0;
+        var offerad = 1;
 $('#add_offer').on('click', function(e) {
 var p = document.createElement('div');
 var d = document.createElement('div');
@@ -57,13 +57,13 @@ document.getElementById("ticketoffers").appendChild(p);
                 </div>
 
                 <!--added by Donald-->
-                <?php if($ticket->ticket_offers){
+                <?php if($ticket->ticket_offers!=NULL){
                     $toffers = explode('#@#',$ticket->ticket_offers);
                     $firstholder = $toffers[0];
-                    ?>
-                <?php }else{
-                    $firstholder = 'E.g: Ticket Holder will get a free drink at the entrance';
-                    } ?>
+                    
+                // }else{
+                //    $firstholder = 'E.g: Ticket Holder will get a free drink at the entrance';
+                //    } ?>
                 <div class="row more-options">
                     <div class="col-md-12">
                         <div class="form-group">
@@ -84,18 +84,35 @@ document.getElementById("ticketoffers").appendChild(p);
                 <div class="row more-options">
                     <div class="col-md-12">
                         <div class="form-group">
-                            {!!  Form::text('ticket_offer_$i', $toffers[$i],
-                                        [
+                            {!!  Form::text('ticket_offer_'.$i, $toffers[$i],
+                                        array(
                                         'class'=>'form-control',
-                                        'name'=>'ticket_offer_$i',
-                                        ])  !!}
+                                        'name'=>'ticket_offer_'.$i,
+                                        'placeholder'=>$toffers[$i]
+                                        ))  !!}
                         </div>
                     </div>
                 </div>
                 <?php
 
-                    }
-                } ?>
+                        }
+                    } 
+                } else { ?>
+                <div class="row more-options">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            {!! Form::label('ticket_offer', 'Ticket Offers', array('class'=>'control-label')) !!}
+                            {!!  Form::text('ticket_offerad_0', null,
+                                        array(
+                                        'class'=>'form-control',
+                                        'name' =>'ticket_offerad_0',
+                                        'placeholder' =>'E.g: Ticket Holder will get a free drink at the entrance'
+                                        ))  !!}
+                        </div>
+                    </div>
+                </div>
+                <?php } ?>
+
                 <div class = "row more options" id="ticketoffers">
                             
                 </div>

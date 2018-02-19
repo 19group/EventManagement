@@ -223,13 +223,13 @@ class EventTicketsController extends MyBaseController
             $ticketoffers[$toc]=$request->get("ticket_offer_$f");++$f;++$toc;$mis=0;
           }else{++$mis;++$f;}
         }
-        $fad=0; $misss=0;
+        $fad=0; $misss=0; $tocc=0; $ticketofferss=[];
         while($misss<3){
           if($request->get("ticket_offerad_$fad")){
-            $ticketoffers[$toc]=$request->get("ticket_offerad_$fad");++$toc;++$fad;$misss=0;
+            $ticketofferss[$tocc]=$request->get("ticket_offerad_$fad");++$tocc;++$fad;$misss=0;
           }else{++$misss;++$fad;}
         }
-
+        $ticketoffers = array_merge($ticketoffers,$ticketofferss);
         /*
          * Override some validation rules
          */
