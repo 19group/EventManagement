@@ -83,12 +83,12 @@
                     </div>
                 </div>
 
-                <div class="p20 pl0">
+            <!--    <div class="p20 pl0">
                     <a href="javascript:void(0);" class="btn btn-primary btn-xs" id="mirror_buyer_info">
 
                     </a>
                 </div>
-
+            -->
                 <div class="row">
                     <div class="col-md-12">
                         <div class="ticket_holders_details" >

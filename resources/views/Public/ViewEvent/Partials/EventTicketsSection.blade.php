@@ -99,7 +99,18 @@
                                                 <!--{{$ticket->description}}-->
                                                 {!! Markdown::parse($ticket->description) !!}
                                             </p>
+                                        <!--added by Donald --Ticket Offers Display-->
+                                        <?php if(strlen($ticket->ticket_offers)) {?>
+                                            <?php $toffers=explode('#@#',$ticket->ticket_offers);
+                                            echo '<p class="ticket-descripton mb0 text-muted" property="ticket offers"><b>'.'This ticket offers:- '.'</b></p>';
+                                            echo '<ul>';
+                                            foreach($toffers as $toffer){
+                                            echo '<li><p class="ticket-descripton mb0 text-muted" property="ticket offers">'.$toffer.'</p></li>';
+                                            } 
+                                            echo '</ul>' ?>
                                         </td>
+                                        <?php } ?>
+                                        <!--end of addition-->
                                         <td style="width:180px; text-align: right;">
                                             <div class="ticket-pricing" style="margin-right: 20px;">
                                                 @if($ticket->is_free)
