@@ -1,4 +1,7 @@
-<section id="tickets" class="container">
+<div class="row bg-white" style="margin-top: 15%;"">
+    
+
+<section id="tickets" class="container" ">
 
 
 
@@ -18,10 +21,12 @@
 
                     <!-- Added Form to Tickets Section (First name, last name and email) -->
 
-                                                    <div class="row">
-                                                        <h1 class='section_head'>
-                                                            Your Details
-                                                        </h1>
+                                                    <div class="container">
+                                                        <center>
+                                                            <h1 class=" section_head">
+                                                                Your Details
+                                                            </h1>
+                                                        </center>
                                                     </div>
 
                         <div class="row">
@@ -208,3 +213,4 @@
     @endif
 
 </section>
+</div>

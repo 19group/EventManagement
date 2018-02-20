@@ -13,17 +13,9 @@
                         Order Summary
                     </h3>
                 </div>
-<!--section edited by DonaldFeb9 -->
+
                 <div class="panel-body pt0">
                     <table class="table mb0 table-condensed">
-                        <?php $donhead='Donation Amount';if($donation>0){ ?>
-                            <tr>
-                                <td class="pl0"><b>Donation Amount:</b></td>
-                                <td style="text-align: right;">
-                                    {{  money($donation, $event->currency) }}
-                                </td>
-                            </tr>
-                        <?php } ?>
                         @foreach($tickets as $ticket)
                         <tr>
                             <td class="pl0">{{{$ticket['ticket']['title']}}} X <b>{{$ticket['qty']}}</b></td>
@@ -38,10 +30,10 @@
                         @endforeach
                     </table>
                 </div>
-                @if($order_total+$donation > 0)
+                @if($order_total > 0)
                 <div class="panel-footer">
                     <h5>
-                        Total: <span style="float: right;"><b>{{ money($order_total + $total_booking_fee + $donation,$event->currency) }}</b></span>
+                        Total: <span style="float: right;"><b>{{ money($order_total + $total_booking_fee,$event->currency) }}</b></span>
                     </h5>
                 </div>
                 @endif
@@ -57,7 +49,7 @@
 
                 {!! Form::hidden('event_id', $event->id) !!}
 
-
+                
 
                 <div class="row" style="display: none;">
                     <div class="col-xs-6">
@@ -85,14 +77,18 @@
 
             <!--    <div class="p20 pl0">
                     <a href="javascript:void(0);" class="btn btn-primary btn-xs" id="mirror_buyer_info">
-
+                        
                     </a>
                 </div>
+
             -->
+
+
                 <div class="row">
+
                     <div class="col-md-12">
                         <div class="ticket_holders_details" >
-
+                            
                             <?php
                                 $total_attendee_increment = 0;
                             ?>
@@ -149,7 +145,7 @@
 
                 @if($order_requires_payment)
 
-                <!--<h3>Payment Information</h3>-->
+                <h3>Payment Information</h3>
 
                 @if($event->enable_offline_payments)
                     <div class="offline_payment_toggle">
@@ -172,7 +168,7 @@
                @if(@$payment_gateway->id==1)
                    <div class="row">
                                 <label class="col-md-12 text-center"><h3>Stripe</h3></label>
-
+                                
 
                                     <div class="col-md-6">
                                         <div class="form-group">
@@ -323,12 +319,11 @@
 
                 @endif
 
-
             <!-- PesaPal -->
                @if(@$payment_gateway->id==5)
                    <div class="row">
-                            <label class="col-md-12 "><h3>Payment Information - PesaPal</h3></label>
-
+                            <label class="col-md-12 text-center"><h3>PesaPal</h3></label>
+                                
                                 @include('Public.ViewEvent.Partials.OAuth')
 
                                 <?php
@@ -336,7 +331,7 @@
                                     $token = $params = NULL;
 
                                     /*
-                                    PesaPal Sandbox is at http://demo.pesapal.com. Use this to test your developement and
+                                    PesaPal Sandbox is at http://demo.pesapal.com. Use this to test your developement and 
                                     when you are ready to go live change to https://www.pesapal.com.
                                     */
                                     $consumer_key = env('PESAPAL_CONSUMER_KEY');//Register a merchant account on
@@ -344,14 +339,14 @@
                                                        //When you are ready to go live make sure you change the key to the live account
                                                        //registered on www.pesapal.com!
                                     $consumer_secret = env('PESAPAL_CONSUMER_SECRET');// Use the secret from your test
-                                                       //account on demo.pesapal.com. When you are ready to go live make sure you
+                                                       //account on demo.pesapal.com. When you are ready to go live make sure you 
                                                        //change the secret to the live account registered on www.pesapal.com!
                                     $signature_method = new OAuthSignatureMethod_HMAC_SHA1();
-                                    $iframelink = env('IFRAME_URL');//change to
+                                    $iframelink = env('IFRAME_URL');//change to      
                                                        //https://www.pesapal.com/API/PostPesapalDirectOrderV4 when you are ready to go live!
 
                                     //get form details
-                                    $amount = $order_total + $donation;
+                                    $amount = $order_total;
                                     $amount = number_format($amount, 2);//format amount to 2 decimal places
 
                                     $desc = 'Tickets';
@@ -361,13 +356,11 @@
                                     $last_name = $last_name;
                                     $email = $email;
                                     $phonenumber = '';//ONE of email or phonenumber is required
-                                    $currency = env('PESAPAL_CURRENCY_CODE');
 
-                                    //$callback_url = env('SERVER').env('PESAPAL_CALLBACK_ROUTE'); //redirect url, the page that will handle the response from pesapal.
                                     $callback_url = env('SERVER_ROOT').'/e/'.$event_id.'/pesament/create?is_embedded=0#order_form'; //redirect url, the page that will handle the response from pesapal.
 
-                                     $post_xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?><PesapalDirectOrderInfo xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" Amount=\"".$amount."\" Description=\"".$desc."\" Type=\"".$type."\" Reference=\"".$reference."\" FirstName=\"".$first_name."\" Currency=\"".$currency."\" LastName=\"".$last_name."\" Email=\"".$email."\" PhoneNumber=\"".$phonenumber."\" xmlns=\"http://www.pesapal.com\" />";
-                                     $post_xml = htmlentities($post_xml);
+                                    $post_xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?><PesapalDirectOrderInfo xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" Amount=\"".$amount."\" Description=\"".$desc."\" Type=\"".$type."\" Reference=\"".$reference."\" FirstName=\"".$first_name."\" LastName=\"".$last_name."\" Email=\"".$email."\" PhoneNumber=\"".$phonenumber."\" xmlns=\"http://www.pesapal.com\" />";
+                                    $post_xml = htmlentities($post_xml);
 
                                     $consumer = new OAuthConsumer($consumer_key, $consumer_secret);
 
@@ -377,10 +370,8 @@
                                     $iframe_src->set_parameter("pesapal_request_data", $post_xml);
                                     $iframe_src->sign_request($signature_method, $consumer, $token);
 
-
-
-
-
+                                        
+                            
                                 ?>
 
                             <iframe src="<?php echo $iframe_src;?>" width="100%" height="500px"  scrolling="no" frameBorder="0">
@@ -401,16 +392,14 @@
                 @endif
 
                {!! Form::hidden('is_embedded', $is_embedded) !!}
-               <!--
                {!! Form::submit('Checkout', ['class' => 'btn btn-lg btn-success disabled card-submit', 'style' => 'width:100%;']) !!}
--->
+
                 <br>
                 <br>
-                <!--
                 <center>
                 <p>Finalize payment before you can Check Out...</p>
                 </center>
-                -->
+
             </div>
         </div>
     </div>
@@ -418,3 +407,4 @@
 @if(session()->get('message'))
     <script>showMessage('{{session()->get('message')}}');</script>
 @endif
+
