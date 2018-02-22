@@ -24,6 +24,10 @@
     margin-top: 0px;
 }
 
+.white-bg {
+    background-color: white;
+}
+
 .ticket hr {
     border: none;
     border-bottom: 1px solid #ccc;

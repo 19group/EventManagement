@@ -396,8 +396,16 @@
         }
 
         var target_date = new Date("{{$event->start_date->format('M')}} {{$event->start_date->format('d')}}, {{$event->start_date->format('Y')}} {{$event->start_date->format('H')}}:{{$event->start_date->format('i')}} ").getTime();
+        //added by DonaldFeb21
+        var end_date = new Date("{{$event->end_date->format('M')}} {{$event->end_date->format('d')}}, {{$event->end_date->format('Y')}} {{$event->end_date->format('H')}}:{{$event->end_date->format('i')}} ").getTime();
+        //end of addition
         var now = new Date();
         var countdown = document.getElementById("countdown");
+        //added by DonaldFeb21
+        if(end_date < now) {
+            countdown.innerHTML = 'This event has already ended.';
+        } else
+        //end of addition
         if (target_date < now) {
             countdown.innerHTML = 'This event has started.';
         } else {

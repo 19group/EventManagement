@@ -1,10 +1,10 @@
-<section id='order_form' class="row bg-white" style="margin-top: 15%">
-     <div class="container"><br><br>
+<section id='order_form' class="row bg-white" style="margin-top: 15%;">
+    <div class="container"><br>
         <h1 class="section_head">
             Order Details
         </h1>
     </div>
-     <div class="container">
+    <div class="container">
         <div class="col-md-4 col-md-push-8">
             <div class="panel">
                 <div class="panel-heading">
@@ -13,7 +13,7 @@
                         Order Summary
                     </h3>
                 </div>
-<!--section edited by DonaldFeb9 -->
+
                 <div class="panel-body pt0">
                     <table class="table mb0 table-condensed">
                         <?php $donhead='Donation Amount';if($donation>0){ ?>
@@ -352,10 +352,12 @@
 
                {!! Form::hidden('is_embedded', $is_embedded) !!}
                {!! Form::submit('Checkout', ['class' => 'btn btn-lg btn-success card-submit', 'style' => 'width:100%;']) !!}
-</br>
-</br>
-</br>
-            </div>
+
+
+               <br>
+               <br>
+               <br>
+           </div>
         </div>
     </div>
 </section>

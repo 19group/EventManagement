@@ -46,6 +46,14 @@
                 </a>
             </li>
 
+            <!--added by DonaldFeb21-->
+            <li>
+                <a href="{{route('postDeleteEvent', ['event_id' => $event->id])}}">
+                    <i class="ico-remove"></i> Delete
+                </a>
+            </li>
+            <!--end of addition-->
+
             <li>
                 <a href="{{route('showEventDashboard', ['event_id' => $event->id])}}">
                     <i class="ico-cog"></i> Manage

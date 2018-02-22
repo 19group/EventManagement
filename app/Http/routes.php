@@ -261,6 +261,13 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
             'uses' => 'OrganiserEventsController@showEvents',
         ]);
 
+        //added by DonaldFeb21
+        Route::get('/events/{event_id}/delete', [
+            'as'   => 'postDeleteEvent',
+            'uses' => 'OrganiserEventsController@postDeleteEvent',
+        ]);
+        //end of addition
+
         Route::get('{organiser_id}/customize', [
             'as'   => 'showOrganiserCustomize',
             'uses' => 'OrganiserCustomizeController@showCustomize',
@@ -381,6 +388,7 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
             'as'   => 'postDeleteTicket',
             'uses' => 'EventTicketsController@postDeleteTicket',
         ]);
+
         Route::post('{event_id}/tickets/pause', [
             'as'   => 'postPauseTicket',
             'uses' => 'EventTicketsController@postPauseTicket',
