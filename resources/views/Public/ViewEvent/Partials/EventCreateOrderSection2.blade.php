@@ -1,10 +1,10 @@
-<section id='order_form' class="container">
-    <div class="row">
+<section id='order_form' class="row bg-white" style="margin-top: 15%">
+     <div class="container"><br><br>
         <h1 class="section_head">
             Order Details
         </h1>
     </div>
-    <div class="row">
+     <div class="container">
         <div class="col-md-4 col-md-push-8">
             <div class="panel">
                 <div class="panel-heading">
@@ -172,7 +172,7 @@
               <!-- @if(@$payment_gateway->id==1)
                    <div class="row">
                                 <label class="col-md-12 text-center"><h3>Stripe</h3></label>
-                                
+
 
                                     <div class="col-md-6">
                                         <div class="form-group">
@@ -280,7 +280,7 @@
                                 </div>
                 @endif
 
-            <!-- Master Card Payment 
+            <!-- Master Card Payment
                @if(@$payment_gateway->id==4)
                     <div class="online_payment">
                         <div class="row">
@@ -323,7 +323,7 @@
 
                 @endif
 
-              
+
                @if(@$payment_gateway->id==5)
                    <div class="row">
                     <center>
@@ -337,7 +337,7 @@
 
                 @endif-->
 
-                <div class="row">
+                <div class="container-fluid">
                     <center>
                         <h1>Payment Successful.</h1><br>
                         <h2>Thank you...</h2><br>
@@ -352,7 +352,9 @@
 
                {!! Form::hidden('is_embedded', $is_embedded) !!}
                {!! Form::submit('Checkout', ['class' => 'btn btn-lg btn-success card-submit', 'style' => 'width:100%;']) !!}
-
+</br>
+</br>
+</br>
             </div>
         </div>
     </div>
@@ -360,4 +362,3 @@
 @if(session()->get('message'))
     <script>showMessage('{{session()->get('message')}}');</script>
 @endif
-

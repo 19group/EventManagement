@@ -47,8 +47,8 @@
     }
 </style>
 
-<section id="order_form" class="container">
-    <div class="row">
+<section id="order_form" class="row bg-white">
+    <div class="container">
         <div class="col-md-12 order_header">
             <span class="massive-icon">
                 <i class="ico ico-checkmark-circle"></i>
@@ -60,7 +60,7 @@
         </div>
     </div>
 
-    <div class="row">
+    <div class="container">
         <div class="col-md-12">
             <div class="content event_view_order">
 
@@ -254,4 +254,3 @@
         </div>
     </div>
 </section>
-

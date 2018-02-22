@@ -1,5 +1,5 @@
-<section id="organiser" class="container">
-    <div class="row">
+<section id="organiser" class="row bg-white" style="margin-top: 10%; padding:5%;">
+    <div class="container pull-right">
         <div class="col-md-12">
             <div class="event_organiser_details" property="organizer" typeof="Organization">
                 <div class="logo">
@@ -69,4 +69,3 @@
         </div>
     </div>
 </section>
-

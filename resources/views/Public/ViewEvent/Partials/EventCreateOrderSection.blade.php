@@ -1,10 +1,10 @@
-<section id='order_form' class="container">
-    <div class="row">
+<section id='order_form' class="row bg-white" style="margin-top: 15%">
+    <div class="container"><br><br>
         <h1 class="section_head">
             Order Details
         </h1>
     </div>
-    <div class="row">
+  <div class="container">
         <div class="col-md-4 col-md-push-8">
             <div class="panel">
                 <div class="panel-heading">
