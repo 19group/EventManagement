@@ -1,6 +1,6 @@
-<div class="row bg-white" style="margin-top: 15%;">
+<div class="row bg-white" style="margin-top: 15%;"">
 
-<section id="tickets" class="container">
+<section id="tickets" class="container" ">
 
 
 

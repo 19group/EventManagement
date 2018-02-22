@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\Organiser;
 use Illuminate\Http\Request;
-use DB;
-use Log;
 
 class OrganiserEventsController extends MyBaseController
 {
@@ -43,48 +41,4 @@ class OrganiserEventsController extends MyBaseController
 
         return view('ManageOrganiser.Events', $data);
     }
-
-    //added by DonaldFeb22
-
-    /**
-     * Deleted an event
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function postDeleteEvent(Request $request, $event_id)
-    {
-        $data['event_id'] = $event_id;
-        $event = Event::where('id','=', $event_id)->first();
-
-        /*
-         * Don't allow deletion of events with some tickets having been sold already.
-         */
-        if ($event->sales_volume > 0 || $event->organiser_fees_volume > 0) {
-            return response()->json([
-                'status'  => 'error',
-                'message' => 'Sorry, you can\'t delete this event as some income has already been generated',
-                'event'      => $event->title,
-            ]);
-        }
-        $organiser_id = $event->organiser_id;
-        if ($event->delete()) {  
-            session()->flash('message', $event->title.' Event Successfully Deleted.');
-            return response()->redirectToRoute('showOrganiserEvents', [  
-                'organiser_id'      => $organiser_id,
-            ]);
-        }
-
-        Log::error('Event Failed to delete', [
-            'event' => $event,
-        ]);
-
-        return response()->json([
-            'status'  => 'error',
-            'id'      => $event->id,
-            'message' => 'Whoops! Looks like something went wrong. Please try again.',
-        ]);
-    }
-
-    //end of addition
 }

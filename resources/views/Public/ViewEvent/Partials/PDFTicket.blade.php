@@ -32,7 +32,6 @@
                 background: {{$event->ticket_bg_color}} !important;
                 color: {{$event->ticket_sub_text_color}} !important;
                 border-left-color: {{$event->ticket_border_color}} !important;
-
             }
             .ticket h4 {color: {{$event->ticket_text_color}} !important;}
             .ticket .logo {
@@ -44,10 +43,8 @@
                 border-bottom: 1px solid {{$event->ticket_border_color}} !important;
                 border-top: 1px solid {{$event->ticket_border_color}} !important;
             }
-
             table{
 					}
-
 					table td,
 					table tr{
 					padding: 0; /* 'cellpadding' equivalent */
@@ -121,6 +118,7 @@
                     		<td>
                     		 	<h6>Status</h6><h5><b>Valid</b></h5>
                     		</td>
+
                     	</tr>
                     	<tr style="padding: 5px;">
                     		<td>
@@ -169,6 +167,7 @@
                             <h4>Price</h4>
                             {{money($attendee->ticket->total_price, $order->event->currency)}} (inc. {{money($attendee->ticket->total_booking_fee, $order->event->currency)}} Fees)
                         </div>-->
+
 
                     </div>
                 @endif

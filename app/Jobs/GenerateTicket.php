@@ -44,12 +44,10 @@ class GenerateTicket extends Job implements ShouldQueue
         $file_path = public_path(config('attendize.event_pdf_tickets_path')) . '/' . $file_name;
         $file_with_ext = $file_path . ".pdf";
 
-    //commented by DonaldFeb22
-    //    if (file_exists($file_with_ext)) {
-    //        Log::info("Use ticket from cache: " . $file_with_ext);
-    //        return;
-    //    }
-    //end of commented section
+        if (file_exists($file_with_ext)) {
+            Log::info("Use ticket from cache: " . $file_with_ext);
+            return;
+        }
 
         $order = Order::where('order_reference', $this->order_reference)->first();
         Log::info($order);
@@ -60,6 +58,20 @@ class GenerateTicket extends Job implements ShouldQueue
             $query = $query->where('reference_index', '=', $this->attendee_reference_index);
         }
         $attendees = $query->get();
+
+        //added by DonaldFeb13
+/*    $ticket_order = session()->get('ticket_order_' . $order->event_id);
+    $request_data = $ticket_order['request_data'][0];
+    if($ticket_order['donation']>0){
+    $attendees .= [
+        'first_name' = 
+        'last_name' = 
+            {{$attendee->ticket->title}}
+            {{$attendee->reference}}
+            {{attendee->ticket->total_price)$attendee->ticket->total_booking_fee
+
+    ];*/
+        //end of addition DonaldFeb13
 
         $image_path = $event->organiser->full_logo_path;
         if ($event->images->first() != null) {
@@ -76,6 +88,22 @@ class GenerateTicket extends Job implements ShouldQueue
 
         PDF::setOutputMode('F'); // force to file
         PDF::html('Public.ViewEvent.Partials.PDFTicket', $data, $file_path);
+
+        //added by DonaldFeb13
+    /*        $ticket_order = session()->get('ticket_order_' . $order->event_id);
+            $request_data = $ticket_order['request_data'][0];
+                if($ticket_order['donation']>0){
+                    $dondata = [
+                        'order'     => $order,
+                        'event'     => $event,
+                        'attendees' => $attendees,
+                        'css'       => file_get_contents(public_path('assets/stylesheet/ticket.css')),
+                        'image'     => base64_encode(file_get_contents(public_path($image_path))),
+                    ];
+                    PDF::setOutputMode('F'); // force to file
+                    PDF::html('Public.ViewEvent.Partials.DonationPDFDocu', $dondata, $file_path);
+                }
+    */
         Log::info("Ticket generated!");
     }
 

@@ -23,14 +23,6 @@
                     <span class="text">Tickets</span>
                 </a>
             </li>
-            <!--added by Donald-->
-            <li class="{{ Request::is('*tickets*') ? 'active' : '' }}">
-                <a href="{{route('showEventTickets', array('event_id' => $event->id))}}">
-                    <span class="figure"><i class="ico-ticket"></i></span>
-                    <span class="text">Coupons</span>
-                </a>
-            </li>
-            <!--end of addition-->
             <li class="{{ Request::is('*orders*') ? 'active' : '' }}">
                 <a href="{{route('showEventOrders', array('event_id' => $event->id))}}">
                     <span class="figure"><i class="ico-cart"></i></span>
