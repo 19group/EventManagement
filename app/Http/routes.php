@@ -261,6 +261,13 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
             'uses' => 'OrganiserEventsController@showEvents',
         ]);
 
+        //added by DonaldFeb21
+        Route::get('/events/{event_id}/delete', [
+            'as'   => 'postDeleteEvent',
+            'uses' => 'OrganiserEventsController@postDeleteEvent',
+        ]);
+        //end of addition
+
         Route::get('{organiser_id}/customize', [
             'as'   => 'showOrganiserCustomize',
             'uses' => 'OrganiserCustomizeController@showCustomize',
@@ -745,4 +752,3 @@ Route::get('/terms_and_conditions', [
         return 'TODO: add terms and cond';
     }
 ]);
-

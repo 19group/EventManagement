@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Models\Event;
 use App\Models\EventImage;
 use App\Models\Organiser;
@@ -11,7 +9,6 @@ use Illuminate\Http\Request;
 use Image;
 use Log;
 use Validator;
-
 class EventController extends MyBaseController
 {
     /**
@@ -27,10 +24,8 @@ class EventController extends MyBaseController
             'organisers'   => Organiser::scope()->lists('name', 'id'),
             'organiser_id' => $request->get('organiser_id') ? $request->get('organiser_id') : false,
         ];
-
         return view('ManageOrganiser.Modals.CreateEvent', $data);
     }
-
     /**
      * Create an event
      *
@@ -40,25 +35,20 @@ class EventController extends MyBaseController
     public function postCreateEvent(Request $request)
     {
         $event = Event::createNew();
-
         if (!$event->validate($request->all())) {
             return response()->json([
                 'status'   => 'error',
                 'messages' => $event->errors(),
             ]);
         }
-
         $event->title = $request->get('title');
         $event->description = strip_tags($request->get('description'));
         $event->start_date = $request->get('start_date') ? Carbon::createFromFormat('d-m-Y H:i',
             $request->get('start_date')) : null;
-
         /*
          * Venue location info (Usually auto-filled from google maps)
          */
-
         $is_auto_address = (trim($request->get('place_id')) !== '');
-
         if ($is_auto_address) { /* Google auto filled */
             $event->venue_name = $request->get('name');
             $event->venue_name_full = $request->get('venue_name_full');
@@ -82,10 +72,8 @@ class EventController extends MyBaseController
             $event->location_post_code = $request->get('location_post_code');
             $event->location_is_manual = 1;
         }
-
         $event->end_date = $request->get('end_date') ? Carbon::createFromFormat('d-m-Y H:i',
             $request->get('end_date')) : null;
-
         $event->currency_id = Auth::user()->account->currency_id;
         //$event->timezone_id = Auth::user()->account->timezone_id;
         /*
@@ -93,11 +81,8 @@ class EventController extends MyBaseController
          */
         $event->bg_type = 'image';
         $event->bg_image_path = config('attendize.event_default_bg_image');
-
-
         if ($request->get('organiser_name')) {
             $organiser = Organiser::createNew(false, false, true);
-
             $rules = [
                 'organiser_name'  => ['required'],
                 'organiser_email' => ['required', 'email'],
@@ -105,16 +90,13 @@ class EventController extends MyBaseController
             $messages = [
                 'organiser_name.required' => 'You must give a name for the event organiser.',
             ];
-
             $validator = Validator::make($request->all(), $rules, $messages);
-
             if ($validator->fails()) {
                 return response()->json([
                     'status'   => 'error',
                     'messages' => $validator->messages()->toArray(),
                 ]);
             }
-
             $organiser->name = $request->get('organiser_name');
             $organiser->about = $request->get('organiser_about');
             $organiser->email = $request->get('organiser_email');
@@ -122,7 +104,6 @@ class EventController extends MyBaseController
             $organiser->twitter = $request->get('organiser_twitter');
             $organiser->save();
             $event->organiser_id = $organiser->id;
-
         } elseif ($request->get('organiser_id')) {
             $event->organiser_id = $request->get('organiser_id');
         } else { /* Somethings gone horribly wrong */
@@ -131,7 +112,6 @@ class EventController extends MyBaseController
                 'messages' => 'There was an issue finding the organiser.',
             ]);
         }
-
         /*
          * Set the event defaults.
          * @todo these could do mass assigned
@@ -156,45 +136,33 @@ class EventController extends MyBaseController
             $event->ticket_text_color = $defaults->ticket_text_color;
             $event->ticket_sub_text_color = $defaults->ticket_sub_text_color;
         }
-
-
         try {
             $event->save();
         } catch (\Exception $e) {
             Log::error($e);
-
             return response()->json([
                 'status'   => 'error',
                 'messages' => 'Whoops! There was a problem creating your event. Please try again.',
             ]);
         }
-
         if ($request->hasFile('event_image')) {
             $path = public_path() . '/' . config('attendize.event_images_path');
             $filename = 'event_image-' . md5(time() . $event->id) . '.' . strtolower($request->file('event_image')->getClientOriginalExtension());
-
             $file_full_path = $path . '/' . $filename;
-
             $request->file('event_image')->move($path, $filename);
-
             $img = Image::make($file_full_path);
-
             $img->resize(800, null, function ($constraint) {
                 $constraint->aspectRatio();
                 $constraint->upsize();
             });
-
             $img->save($file_full_path);
-
             /* Upload to s3 */
             \Storage::put(config('attendize.event_images_path') . '/' . $filename, file_get_contents($file_full_path));
-
             $eventImage = EventImage::createNew();
             $eventImage->image_path = config('attendize.event_images_path') . '/' . $filename;
             $eventImage->event_id = $event->id;
             $eventImage->save();
         }
-
         return response()->json([
             'status'      => 'success',
             'id'          => $event->id,
@@ -204,7 +172,6 @@ class EventController extends MyBaseController
             ]),
         ]);
     }
-
     /**
      * Edit an event
      *
@@ -215,26 +182,22 @@ class EventController extends MyBaseController
     public function postEditEvent(Request $request, $event_id)
     {
         $event = Event::scope()->findOrFail($event_id);
-
         if (!$event->validate($request->all())) {
             return response()->json([
                 'status'   => 'error',
                 'messages' => $event->errors(),
             ]);
         }
-
         $event->is_live = $request->get('is_live');
         $event->title = $request->get('title');
         $event->description = strip_tags($request->get('description'));
         $event->start_date = $request->get('start_date') ? Carbon::createFromFormat('d-m-Y H:i',
             $request->get('start_date')) : null;
-
         /*
          * If the google place ID is the same as before then don't update the venue
          */
         if (($request->get('place_id') !== $event->location_google_place_id) || $event->location_google_place_id == '') {
             $is_auto_address = (trim($request->get('place_id')) !== '');
-
             if ($is_auto_address) { /* Google auto filled */
                 $event->venue_name = $request->get('name');
                 $event->venue_name_full = $request->get('venue_name_full');
@@ -267,43 +230,30 @@ class EventController extends MyBaseController
                 $event->location_street_number = '';
             }
         }
-
         $event->end_date = $request->get('end_date') ? Carbon::createFromFormat('d-m-Y H:i',
             $request->get('end_date')) : null;
-
         if ($request->get('remove_current_image') == '1') {
             EventImage::where('event_id', '=', $event->id)->delete();
         }
-
         $event->save();
-
         if ($request->hasFile('event_image')) {
             $path = public_path() . '/' . config('attendize.event_images_path');
             $filename = 'event_image-' . md5(time() . $event->id) . '.' . strtolower($request->file('event_image')->getClientOriginalExtension());
-
             $file_full_path = $path . '/' . $filename;
-
             $request->file('event_image')->move($path, $filename);
-
             $img = Image::make($file_full_path);
-
             $img->resize(800, null, function ($constraint) {
                 $constraint->aspectRatio();
                 $constraint->upsize();
             });
-
             $img->save($file_full_path);
-
             \Storage::put(config('attendize.event_images_path') . '/' . $filename, file_get_contents($file_full_path));
-
             EventImage::where('event_id', '=', $event->id)->delete();
-
             $eventImage = EventImage::createNew();
             $eventImage->image_path = config('attendize.event_images_path') . '/' . $filename;
             $eventImage->event_id = $event->id;
             $eventImage->save();
         }
-
         return response()->json([
             'status'      => 'success',
             'id'          => $event->id,
@@ -311,7 +261,6 @@ class EventController extends MyBaseController
             'redirectUrl' => '',
         ]);
     }
-
     /**
      * Upload event image
      *
@@ -323,27 +272,60 @@ class EventController extends MyBaseController
         if ($request->hasFile('event_image')) {
             $the_file = \File::get($request->file('event_image')->getRealPath());
             $file_name = 'event_details_image-' . md5(microtime()) . '.' . strtolower($request->file('event_image')->getClientOriginalExtension());
-
             $relative_path_to_file = config('attendize.event_images_path') . '/' . $file_name;
             $full_path_to_file = public_path() . '/' . $relative_path_to_file;
-
             $img = Image::make($the_file);
-
             $img->resize(1000, null, function ($constraint) {
                 $constraint->aspectRatio();
                 $constraint->upsize();
             });
-
             $img->save($full_path_to_file);
             if (\Storage::put($file_name, $the_file)) {
                 return response()->json([
                     'link' => '/' . $relative_path_to_file,
                 ]);
             }
-
             return response()->json([
                 'error' => 'There was a problem uploading your image.',
             ]);
         }
     }
+    //added by DonaldFeb22
+    /**
+     * Deleted an event
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function postDeleteEvent(Request $request, $event_id)
+    {
+        $data['event_id'] = $event_id;
+        $event = Event::where('id','=', $event_id)->first();
+        /*
+         * Don't allow deletion of events with some tickets having been sold already.
+         */
+        if ($event->sales_volume > 0 || $event->organiser_fees_volume > 0) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Sorry, you can\'t delete this event as some income has already been generated',
+                'event'      => $event->title,
+            ]);
+        }
+        $organiser_id = $event->organiser_id;
+        if ($event->delete()) {
+            session()->flash('message', $event->title.' Event Successfully Deleted.');
+            return response()->redirectToRoute('showOrganiserEvents', [
+                'organiser_id'      => $organiser_id,
+            ]);
+        }
+        Log::error('Event Failed to delete', [
+            'event' => $event,
+        ]);
+        return response()->json([
+            'status'  => 'error',
+            'id'      => $event->id,
+            'message' => 'Whoops! Looks like something went wrong. Please try again.',
+        ]);
+    }
+    //end of addition
 }

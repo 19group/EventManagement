@@ -22,11 +22,9 @@
                 forcePlaceholderSize: true,
                 placeholderClass: 'col-md-4 col-sm-6 col-xs-12',
             }).bind('sortupdate', function (e, ui) {
-
                 var data = $('.sortable .ticket').map(function () {
                     return $(this).data('ticket-id');
                 }).get();
-
                 $.ajax({
                     type: 'POST',
                     url: '{{ route('postUpdateTicketsOrder' ,['event_id' => $event->id]) }}',
@@ -58,7 +56,6 @@
                         class='loadModal btn btn-success' type="button"><i class="ico-ticket"></i> Create Ticket
                 </button>
             </div>
-            @if(false)
                 <div class="btn-group btn-group-responsive ">
                     <button data-modal-id='TicketQuestions'
                             data-href="{{route('showTicketQuestions', array('event_id'=>$event->id))}}" type="button"
@@ -71,7 +68,6 @@
                         <i class="ico-tags"></i> Coupon Codes
                     </button>
                 </div>
-            @endif
         </div>
         <!--/ Toolbar -->
     </div>
@@ -182,6 +178,13 @@
                                         @else
                                             {{\App\Models\TicketStatus::find($ticket->sale_status)->name}}
                                         @endif
+                                        <!--added by DonaldFeb21-->
+                                                <span class="pauseTicketSales label label-info"
+                                                      data-id="{{$ticket->id}}"
+                                                      data-route="{{route('postDeleteTicket', ['ticket_id'=>$ticket->id])}}">
+                                    <i class="ico-remove"></i> Delete
+                                </span>
+                                        <!--end of addition-->
                                     </a>
                                 </li>
                             </ul>

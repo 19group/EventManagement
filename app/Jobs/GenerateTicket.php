@@ -44,10 +44,14 @@ class GenerateTicket extends Job implements ShouldQueue
         $file_path = public_path(config('attendize.event_pdf_tickets_path')) . '/' . $file_name;
         $file_with_ext = $file_path . ".pdf";
 
-        if (file_exists($file_with_ext)) {
+        //Commented by Donald --- Because it makes the process not run after a ticket is cached
+        /*if (file_exists($file_with_ext)) {
             Log::info("Use ticket from cache: " . $file_with_ext);
             return;
         }
+        */
+
+
 
         $order = Order::where('order_reference', $this->order_reference)->first();
         Log::info($order);
@@ -64,8 +68,8 @@ class GenerateTicket extends Job implements ShouldQueue
     $request_data = $ticket_order['request_data'][0];
     if($ticket_order['donation']>0){
     $attendees .= [
-        'first_name' = 
-        'last_name' = 
+        'first_name' =
+        'last_name' =
             {{$attendee->ticket->title}}
             {{$attendee->reference}}
             {{attendee->ticket->total_price)$attendee->ticket->total_booking_fee
