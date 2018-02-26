@@ -14,6 +14,7 @@
         </style>
 
         <style>
+
             .bottom_info {
                 text-align: center;
                 padding: 20px;
@@ -22,16 +23,20 @@
             .bottom_info a {
                 color: #000 !important;
             }
+
             .top_info {
                 position: fixed;
                 left: 41%;
                 top: 0px;
             }
+
+
             .ticket {
                 border: 1px solid {{$event->ticket_border_color}} !important;
                 background: {{$event->ticket_bg_color}} !important;
                 color: {{$event->ticket_sub_text_color}} !important;
                 border-left-color: {{$event->ticket_border_color}} !important;
+
             }
             .ticket h4 {color: {{$event->ticket_text_color}} !important;}
             .ticket .logo {
@@ -43,9 +48,11 @@
                 border-bottom: 1px solid {{$event->ticket_border_color}} !important;
                 border-top: 1px solid {{$event->ticket_border_color}} !important;
             }
+
             table{
 					}
-					table td,
+
+					table td, 
 					table tr{
 					padding: 0; /* 'cellpadding' equivalent */
 					}
@@ -59,6 +66,7 @@
 			.blue {
 				color: #2a7db3;
 			}
+
         </style>
 
     </head>
@@ -85,40 +93,40 @@
 
                     	<tr>
                     		<td>
-                    		 	<h6>Order ref.</h6><h5><b>{{$order->order_reference}}</b></h5>
+                    		 	<h5><b>Order ref.</b></h5><h6>{{$order->order_reference}}</h6> 
                     		</td>
                     		<td class="shade">
-                    		 	<h6>Venue</h6><h5><b>{{$event->venue_name}}</b></h5>
+                    		 	<h5><b>Venue</b></h5><h6>{{$event->venue_name}}</h6> 
                     		</td>
                     		<td>
-                    		 	<h6>Ticket type</h6><h5><b>{{$attendee->ticket->title}}</b></h5>
+                    		 	<h5><b>Ticket type</b></h5><h6>{{$attendee->ticket->title}}</h6> 
                     		</td>
-
+                    		                    		
                     	</tr>
 
                     	<tr>
                     		<td>
-                    		 	<h6>Attendee ref.</h6><h5><b>{{$attendee->reference}}</b></h5>
+                    		 	<h5><b>Attendee ref.</b></h5><h6>{{$attendee->reference}}</h6> 
                     		</td>
                     		<td class="shade">
-                    		 	<h6>Event starts @</h6><h5><b>{{$event->start_date->format('M dS g:iA')}}</b></h5>
+                    		 	<h5><b>Event starts @</b></h5><h6>{{$event->start_date->format('M dS g:iA')}}</h6> 
                     		</td>
                     		<td>
-                    		 	<h6>Price</h6><h5><b>{{money($attendee->ticket->total_price, $order->event->currency)}} (inc. {{money($attendee->ticket->total_booking_fee, $order->event->currency)}} Fees)</b></h5>
+                    		 	<h5><b>Price</b></h5><h6>{{money($attendee->ticket->total_price, $order->event->currency)}} (inc. {{money($attendee->ticket->total_booking_fee, $order->event->currency)}} Fees)</h6> 
                     		</td>
                     	</tr>
 
                     	<tr style="border-top: solid 0.5px #dbdbdb; border-style: dashed">
                     		<td>
-                    			<h6>Ticket Holder</h6><h5><b>{{$attendee->first_name.' '.$attendee->last_name}}</b></h5>
+                    			<h5><b>Ticket Holder</b></h5><h6>{{$attendee->first_name.' '.$attendee->last_name}}</h6> 
                     		</td>
                     		<td class="shade">
-                    		 	<h6>Event ends</h6><h5><b>{{$event->end_date->format('M dS g:iA')}}</b></h5>
+                    		 	<h5><b>Event ends</b></h5><h6>{{$event->end_date->format('M dS g:iA')}}</h6> 
                     		</td>
                     		<td>
-                    		 	<h6>Status</h6><h5><b>Valid</b></h5>
+                    		 	<h5><b>Status</b></h5><h6>Valid</h6> 
                     		</td>
-
+                    		
                     	</tr>
                     	<tr style="padding: 5px;">
                     		<td>
@@ -127,22 +135,24 @@
                     		</td>
                     		<td style="border-left: solid 0.5px #dbdbdb; border-style: dashed"><br>
 		                            {!! DNS2D::getBarcodeSVG($attendee->private_reference_number, "QRCODE", 4, 4) !!}
-
+		                        
 		                        @if($event->is_1d_barcode_enabled)
-
+		                       
 		                            {!! DNS1D::getBarcodeSVG($attendee->private_reference_number, "C39+", 1, 50) !!}
-
+		                       
 		                        @endif
                     		</td>
-
+                    		
                     	</tr>
 
                     </table>
 
+                    		<!--   Commented by Frank    -->
 
                         <!--<div class='logo'>
 				<img alt="{{$event->organiser->full_logo_path}}" src="data:image/png;base64, {{$image}}" />
                         </div>
+
                         <div class="event_details">
                             <h4>Event</h4>
                             {{$event->title}}
@@ -155,9 +165,11 @@
                             <h4>End Date / Time</h4>
                             {{$event->end_date->format('M dS g:iA')}}
                         </div>
+
                         <div class="attendee_details">
                             <h4>Name</h4>
                             {{$attendee->first_name.' '.$attendee->last_name}}
+
                             <h4>Ticket Type</h4>
                             {{$attendee->ticket->title}}
                             <h4>Order Ref.</h4>
@@ -168,13 +180,15 @@
                             {{money($attendee->ticket->total_price, $order->event->currency)}} (inc. {{money($attendee->ticket->total_booking_fee, $order->event->currency)}} Fees)
                         </div>-->
 
-
+                       
                     </div>
                 @endif
             @endforeach
 
             <div class="bottom_info">
-               <!--@include('Shared.Partials.PoweredBy')-->
+                {{--Attendize is provided free of charge on the condition the below hyperlink is left in place.--}}
+                {{--See https://www.attendize.com/licence.php for more information.--}}
+                @include('Shared.Partials.PoweredBy')
             </div>
         </div>
     </body>

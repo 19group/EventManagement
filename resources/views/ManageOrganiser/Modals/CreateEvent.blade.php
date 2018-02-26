@@ -148,6 +148,7 @@
                                data-toggle-class=".address-automatic, .address-manual"
                                data-show-less-text="or <b>Select from existing venues</b>" href="javascript:void(0);"
                                class="in-form-link show-more-options clear_location">
+                               <p class="text-danger">  {{ $validLocation }}  </p>
                                 or <b>Enter address manually</b>
                             </a>
                         </span>

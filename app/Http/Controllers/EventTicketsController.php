@@ -81,6 +81,13 @@ class EventTicketsController extends MyBaseController
         ]);
     }
 
+    public function showCreateCoupon($event_id)
+    {
+        return view('ManageEvent.Modals.CreateCoupon', [
+            'event' => Event::scope()->find($event_id),
+        ]);
+    }
+
     /**
      * Creates a ticket
      *

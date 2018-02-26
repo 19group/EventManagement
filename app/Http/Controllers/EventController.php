@@ -22,6 +22,19 @@ class EventController extends MyBaseController
         $data = [
             'modal_id'     => $request->get('modal_id'),
             'organisers'   => Organiser::scope()->lists('name', 'id'),
+            'validLocation'   => '',
+            'organiser_id' => $request->get('organiser_id') ? $request->get('organiser_id') : false,
+        ];
+        return view('ManageOrganiser.Modals.CreateEvent', $data);
+    }
+
+   
+    public function validateLocation(Request $request)
+    {
+        $data = [
+            'modal_id'     => $request->get('modal_id'),
+            'organisers'   => Organiser::scope()->lists('name', 'id'),
+            'validLocation'   => 'Enter a valid location...!',
             'organiser_id' => $request->get('organiser_id') ? $request->get('organiser_id') : false,
         ];
         return view('ManageOrganiser.Modals.CreateEvent', $data);
@@ -45,6 +58,16 @@ class EventController extends MyBaseController
         $event->description = strip_tags($request->get('description'));
         $event->start_date = $request->get('start_date') ? Carbon::createFromFormat('d-m-Y H:i',
             $request->get('start_date')) : null;
+
+        $map_address = (($request->get('country')) == '');
+        $venue_address = (($request->get('location_venue_name')) == '');
+
+        if ($map_address&&$venue_address) {
+            
+            return $this->validateLocation($request);
+        }
+
+
         /*
          * Venue location info (Usually auto-filled from google maps)
          */

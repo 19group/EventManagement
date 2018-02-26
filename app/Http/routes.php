@@ -380,6 +380,10 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
             'as'   => 'showCreateTicket',
             'uses' => 'EventTicketsController@showCreateTicket',
         ]);
+        Route::get('{event_id}/coupon/create', [
+            'as'   => 'showCreateCoupon',
+            'uses' => 'EventTicketsController@showCreateCoupon',
+        ]);
         Route::post('{event_id}/tickets/create', [
             'as'   => 'postCreateTicket',
             'uses' => 'EventTicketsController@postCreateTicket',

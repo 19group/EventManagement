@@ -64,9 +64,10 @@
                     </button>
                 </div>
                 <div class="btn-group btn-group-responsive">
-                    <button type="button" class="btn btn-success">
-                        <i class="ico-tags"></i> Coupon Codes
-                    </button>
+                   <button data-modal-id='CreateTicket'
+                        data-href="{{route('showCreateCoupon', array('event_id'=>$event->id))}}"
+                        class='loadModal btn' type="button"><i class="glyphicon glyphicon-tag"></i> Create Coupons
+                </button>
                 </div>
         </div>
         <!--/ Toolbar -->
