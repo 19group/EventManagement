@@ -64,36 +64,17 @@ class EventCheckoutController extends Controller
 
         $event = Event::findOrFail($event_id);
 
-        //DonaldFeb9
-        if($request->has('donation')){
-            $donation = $request->get('donation');
-            if(!$request->has('tickets')){
-                session()->set('donation_' . $event->id, [
-                    'first_name'              => $request->get('first_name'),
-                    'last_name'               => $request->get('last_name'),
-                    'email'                   => $request->get('email'),
-                    'event_id'                => $event->id,
-                    'order_started'           => time(),
-                    'expires'                 => $order_expires_time,
-                    'donation'                => $request->get('donation'), //DonaldFeb9
-                ]);
-                $donation_session = session()->get('donation_' . $event->id);                
-                $secondsToExpire = Carbon::now()->diffInSeconds($order_expires_time);
-
-                $data = $donation_session + [
-                        'event'           => Event::findorFail($event_id),
-                        'secondsToExpire' => $secondsToExpire,
-                    ];
-                return view('Public.ViewEvent.EventDonationCheckout', $data); 
-            }
-        }//end
-
         if (!$request->has('tickets')) {
             return response()->json([
                 'status'  => 'error',
                 'message' => 'No tickets selected',
             ]);
         }
+
+        //DonaldFeb26
+        if($request->has('donation')){
+            $donation = $request->get('donation');
+        }//end
 
 
         $ticket_ids = $request->get('tickets');

@@ -185,6 +185,91 @@
                 @endif
             @endforeach
 
+
+            <!--added by DonaldFeb26-->
+            	<?php $donor = session()->get('ticket_order_' . $event->id);
+            			if($donor['donation']>0){ ?>
+                    <div class="ticket">
+
+                    <table class="text-center">
+                    	<tr style="background: #303030; color: #dbdbdb;">
+                    		<td colspan="2" class="text-left" style="padding-left: 2%" >
+                    			<h3><b>{{$event->title}}</b></h3>
+                    		</td>
+                    		<td class="text-right" style="padding-right: 2%" >
+                    			<h3><b><span class="yellow">Foss</span><span class="blue">4g</span> </b></h3>
+                    		</td>
+                    	</tr>
+                    	<tr>
+                    		<td><h5><b>DONATION DETAILS</b></h5></td>
+                    		<td class="shade"><h5><b>EVENT DETAILS</b></h5></td>
+                    		<!--commented by DonaldFeb26--<td><h5><b>TICKET DETAILS</b></h5></td>--endcomment1-->
+                    	</tr>
+
+                    	<tr>
+                    		<td>
+                    		 	<h5><b>Order ref.</b></h5><h6>{{$order->order_reference}}</h6> 
+                    		</td>
+                    		<td class="shade">
+                    		 	<h5><b>Venue</b></h5><h6>{{$event->venue_name}}</h6> 
+                    		</td>
+                    		<!--commented by DonaldFeb26--<td>
+                    		 	<h5><b>Ticket type</b></h5><h6>{{$attendee->ticket->title}}</h6> 
+                    		</td>--endcomment1-->
+                    		                    		
+                    	</tr>
+
+                    	<tr>
+                    		<!--commented by DonaldFeb26--<td>
+                    		 	<h5><b>Attendee ref.</b></h5><h6>{{$attendee->reference}}</h6> 
+                    		</td>--endcomment1-->
+                    		<td class="shade">
+                    		 	<h5><b>Event starts @</b></h5><h6>{{$event->start_date->format('M dS g:iA')}}</h6> 
+                    		</td>
+                    		<td>
+                    		 	<h5><b>Donated Amount</b></h5><h6>{{money($donor['donation'], $order->event->currency)}}</h6> 
+                    		</td>
+                    	</tr>
+
+                    	<tr style="border-top: solid 0.5px #dbdbdb; border-style: dashed">
+                    		<td>
+                    			<h5><b>Donor's Name</b></h5><h6>{{$donor['first_name'].' '.$donor['last_name']}}</h6> 
+                    		</td>
+                    		<td class="shade">
+                    		 	<h5><b>Event ends</b></h5><h6>{{$event->end_date->format('M dS g:iA')}}</h6> 
+                    		</td>
+                    		<td>
+                    		 	<h5><b>Status</b></h5><h6>Received</h6> 
+                    		</td>
+                    		
+                    	</tr>
+                    	<!--commented by DonaldFeb26--<tr style="padding: 5px;">
+                    		<td>
+                    		</td>
+                    		<td>
+                    		</td>
+                    		<td style="border-left: solid 0.5px #dbdbdb; border-style: dashed"><br>
+		                            {!! DNS2D::getBarcodeSVG($attendee->private_reference_number, "QRCODE", 4, 4) !!}
+		                        
+		                        @if($event->is_1d_barcode_enabled)
+		                       
+		                            {!! DNS1D::getBarcodeSVG($attendee->private_reference_number, "C39+", 1, 50) !!}
+		                       
+		                        @endif
+                    		</td>
+                    		
+                    	</tr>--endcomment1-->
+
+                    </table>
+                       
+                    </div>
+
+                <?php } ?>
+
+            <!--end of addition DonaldFeb26-->
+
+
+
             <div class="bottom_info">
                 {{--Attendize is provided free of charge on the condition the below hyperlink is left in place.--}}
                 {{--See https://www.attendize.com/licence.php for more information.--}}
