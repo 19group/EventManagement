@@ -32,6 +32,8 @@ document.getElementById("ticketoffers").appendChild(p);
                     <i class="ico-ticket"></i>
                     Create Coupon</h3>
             </div>
+            <!--<form action="coupon/postCreate" method="post">-->
+                {{ csrf_field() }}
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-12">
@@ -42,16 +44,16 @@ document.getElementById("ticketoffers").appendChild(p);
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <input id="discount" class="form-control" type="number" name="" placeholder="Enter number of coupons to generate">
+                            <input id="discount" class="form-control" type="number" name="discount" placeholder="Enter % discount">
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <button class="btn btn-info" onclick="generate_coupons()">
+                        <button class="btn btn-info" type="button" onclick="generate_coupons()">
                             Generate Coupons
                         </button>
                     </div>
                     <div class="col-md-5">
-                        <div class="col-md-12 form-group" id="tokens">
+                        <div class="col-md-12 form-group" id="target_div">
                         </div>
                     </div>
                 </div>
@@ -67,12 +69,13 @@ document.getElementById("ticketoffers").appendChild(p);
                             </button>
                         </div>
                         <div class="col-md-6">
-                             <button class="btn btn-success">
+                             <button class="btn btn-success" type="submit" value="submit">
                                 Save
                             </button>
                         </div>
                     </div>
                 </div>
+                <!--</form>-->
 
 
 
@@ -127,15 +130,15 @@ document.getElementById("ticketoffers").appendChild(p);
 
         var coupons_limit = document.getElementById('max_coupons').value;
 
-        var token = [];
+        var token_no = [];
 
-        if (max_coupons!='') {
+        if (coupons_limit!='') {
 
             for (i = 0; i <coupons_limit; i++) { 
                     
-                token[i] = (Math.random().toString(36).substring(2, 12));
+                token_no[i] = (Math.random().toString(36).substring(2, 12));
 
-                    document.getElementById('tokens').innerHTML += "<br><button class='btn btn-warning form-control' name='token"+ i +"'>"+ token[i] +"</button><br>" ;
+                    document.getElementById('target_div').innerHTML += "<br><input id='' class='form-control text-center text-uppercase' disabled type='text' name='token_no["+ i +"]' value='"+ token_no[i] +"'><br>" ;
                     //document.getElementById('tokens').innerHTML += "<input id='discount' class='form-control btn btn-info' disabled type='number' name= " + token[i] + " placeholder="+token[i]+">" ;
 
 
@@ -145,5 +148,11 @@ document.getElementById("ticketoffers").appendChild(p);
 
                 }
         }
+        else{
+                    document.getElementById('target_div').innerHTML += "<br><p> Insert a valid number first.</p><br>" ;
+
+        }
+
+        return true;
     }
 </script>

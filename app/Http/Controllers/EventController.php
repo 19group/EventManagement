@@ -11,14 +11,21 @@ use Log;
 use Validator;
 class EventController extends MyBaseController
 {
+
+    //private $temp_request;
     /**
      * Show the 'Create Event' Modal
      *
      * @param Request $request
      * @return \Illuminate\View\View
      */
+
+
     public function showCreateEvent(Request $request)
     {
+
+        //$this->temp_request = $request;
+
         $data = [
             'modal_id'     => $request->get('modal_id'),
             'organisers'   => Organiser::scope()->lists('name', 'id'),
@@ -26,6 +33,7 @@ class EventController extends MyBaseController
             'organiser_id' => $request->get('organiser_id') ? $request->get('organiser_id') : false,
         ];
         return view('ManageOrganiser.Modals.CreateEvent', $data);
+  
     }
 
    
@@ -64,7 +72,7 @@ class EventController extends MyBaseController
 
         if ($map_address&&$venue_address) {
             
-            return $this->validateLocation($request);
+            $this->validateLocation();
         }
 
 

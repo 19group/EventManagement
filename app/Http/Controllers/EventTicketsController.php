@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Ticket;
+use App\Coupon;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Log;
+use Illuminate\Support\Facades\Input;
 
 /*
   Attendize.com   - Event Management & Ticketing
@@ -134,6 +136,41 @@ class EventTicketsController extends MyBaseController
             'message'     => 'Refreshing...',
             'redirectUrl' => route('showEventTickets', [
                 'event_id' => $event_id,
+            ]),
+        ]);
+    }
+
+
+
+    public function postCreateCoupon(Request $request)
+    {
+        $coupon = new Coupon;
+        //$coupons = Input::all();
+        //$coupons = $request->get('token[]');
+        //$discount = $request->get('discount');
+
+        $input = $request->all();
+        //$input2 = $request->all()->except('discount');
+        $discount = $input['discount'];
+
+        //$arr = [];
+
+          for ($i = 0; $i < count($input); $i++) {
+
+            //$coupon->coupon_code = $input[$i];
+            $coupon->discount = $discount;
+              //array_push($arr, ['coupon_code' => $coupon[$i], 'discount' => $discount, 'state'=> 'Valid']);
+                }
+
+                $coupon->save();
+
+                 return response()->json([
+            
+            'status'      => 'success',
+            'id'          => '2',
+            'message'     => 'Refreshing...',
+            'redirectUrl' => route('showEventTickets', [
+                'event_id' => '1',
             ]),
         ]);
     }

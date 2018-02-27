@@ -290,6 +290,7 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
             'as'   => 'postEditOrganiserPageDesign',
             'uses' => 'OrganiserCustomizeController@postEditOrganiserPageDesign'
         ]);
+
     });
 
     /*
@@ -387,6 +388,10 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
         Route::post('{event_id}/tickets/create', [
             'as'   => 'postCreateTicket',
             'uses' => 'EventTicketsController@postCreateTicket',
+        ]);
+        Route::post('{event_id}/tickets/postCreateCoupons', [
+            'as'   => 'postCreateCoupons',
+            'uses' => 'EventTicketsController@postCreateCoupon',
         ]);
         Route::post('{event_id}/tickets/delete', [
             'as'   => 'postDeleteTicket',
