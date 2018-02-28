@@ -74,6 +74,9 @@ use App\Models\OrderItem;
 
     </head>
     <body style="background-color: #FFFFFF; font-family: Arial, Helvetica, sans-serif;">
+	<!--added by DonaldFeb28 to set control variables for limiting number of tickets in a page-->
+	<?php $ticketsinpage = 3; $spacefixer = $ticketsinpage; $target = count($attendees); ?>
+	<!--end of addition by DonaldFeb28-->
         <div class="row">
             @foreach($attendees as $attendee)
                 @if(!$attendee->is_cancelled)
@@ -185,7 +188,13 @@ use App\Models\OrderItem;
 
                        
                     </div>
+                    <!--added/edited by DonaldFeb28 trying limiting number of tickets in page-->
+                    <?php --$spacefixer; 
+                    	  if($spacefixer==0 && $target>0){ $spacefixer=$ticketsinpage; $blankspace='80px'; echo "</div><div style='height:".$blankspace."'></div> <div class='row'>"; }
+                    	?>
                 @endif
+                <?php --$target; ?>
+                <!--end of adding/editing by DonaldFeb28-->
             @endforeach
 
 
@@ -198,6 +207,9 @@ use App\Models\OrderItem;
             				'first_name' => $order->first_name,
             				'last_name' => $order->last_name,
             			];
+        			/*commented by DonaldFeb28 left as unconfirmed won't happen(just unlikely)
+            			if($spacefixer==0){ $blankspace='80px'; echo "</div><div style='height:".$blankspace."'></div> <div class='row'>"; }
+        			endofcomments by DonaldFeb28*/
     			?>
                     <div class="ticket">
 
