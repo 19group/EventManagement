@@ -661,7 +661,7 @@ class EventCheckoutController extends Controller
             /*
              * Kill the session
              */
-    //        session()->forget('ticket_order_' . $event->id);
+            session()->forget('ticket_order_' . $event->id);
 
             /*
              * Queue up some tasks - Emails to be sent, PDFs etc.
@@ -694,10 +694,6 @@ class EventCheckoutController extends Controller
             ]);
         }*/
 
-            /*
-             * Kill the session
-             */
-            session()->forget('ticket_order_' . $event->id);
 
         return response()->redirectToRoute('showOrderDetails', [
             'is_embedded'     => $this->is_embedded,

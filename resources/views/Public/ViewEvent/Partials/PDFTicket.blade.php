@@ -1,3 +1,6 @@
+<?php 
+use App\Models\OrderItem;
+?>
 <html>
     <!--    Keep this page lean as possible.-->
     <head>
@@ -186,9 +189,16 @@
             @endforeach
 
 
-            <!--added by DonaldFeb26-->
-            	<?php $donor = session()->get('ticket_order_' . $event->id);
-            			if($donor['donation']>0){ ?>
+            <!--added by DonaldFeb26 edited by DonaldFeb28-->
+            	<?php 
+            		if(OrderItem::where(['order_id'=>$order->id, 'title'=>'Donation'])){
+            			$donationorder = OrderItem::where(['order_id'=>$order->id, 'title'=>'Donation'])->first();
+            			$donor = [
+            				'donation' => $donationorder->unit_price,
+            				'first_name' => $order->first_name,
+            				'last_name' => $order->last_name,
+            			];
+    			?>
                     <div class="ticket">
 
                     <table class="text-center">
@@ -203,7 +213,7 @@
                     	<tr>
                     		<td><h5><b>DONATION DETAILS</b></h5></td>
                     		<td class="shade"><h5><b>EVENT DETAILS</b></h5></td>
-                    		<!--commented by DonaldFeb26--<td><h5><b>TICKET DETAILS</b></h5></td>--endcomment1-->
+                    		<td><h5><b><!--commented by DonaldFeb26--TICKET DETAILS--endcomment1--></b></h5></td>
                     	</tr>
 
                     	<tr>
@@ -213,16 +223,16 @@
                     		<td class="shade">
                     		 	<h5><b>Venue</b></h5><h6>{{$event->venue_name}}</h6> 
                     		</td>
-                    		<!--commented by DonaldFeb26--<td>
-                    		 	<h5><b>Ticket type</b></h5><h6>{{$attendee->ticket->title}}</h6> 
-                    		</td>--endcomment1-->
+                    		<td>
+                    		 	<!--commented by DonaldFeb26--<h5><b>Ticket type</b></h5><h6>{{$attendee->ticket->title}}</h6>--endcomment1--> 
+                    		</td>
                     		                    		
                     	</tr>
 
                     	<tr>
-                    		<!--commented by DonaldFeb26--<td>
-                    		 	<h5><b>Attendee ref.</b></h5><h6>{{$attendee->reference}}</h6> 
-                    		</td>--endcomment1-->
+                    		<td>
+                    		 	<!--commented by DonaldFeb26--<h5><b>Attendee ref.</b></h5><h6>{{$attendee->reference}}</h6>--endcomment1--> 
+                    		</td>
                     		<td class="shade">
                     		 	<h5><b>Event starts @</b></h5><h6>{{$event->start_date->format('M dS g:iA')}}</h6> 
                     		</td>
