@@ -94,6 +94,9 @@
                             </th>
                             </thead>
                             <tbody>
+                            <!--added by DonaldFeb28-->
+                            <?php $total_amt_calc = 0; ?>
+                            <!--end of addition-->
                                 @foreach($order->orderItems as $order_item)
                                 <tr>
                                     <td>
@@ -123,6 +126,9 @@
                                         FREE
                                         @else
                                         {{money(($order_item->unit_price + $order_item->unit_booking_fee) * ($order_item->quantity), $order->event->currency)}}
+                                        <!--added by DonaldFeb28-->
+                                        <?php $total_amt_calc += ($order_item->unit_price + $order_item->unit_booking_fee) * ($order_item->quantity); ?>
+                                        <!--end of addition DonaldFeb28-->
                                         @endif
 
                                     </td>
@@ -139,7 +145,8 @@
                                         <b>Sub Total</b>
                                     </td>
                                     <td colspan="2">
-                                        {{money($order->total_amount, $order->event->currency)}}
+                                        <!--edited by DonaldFeb28 replacing $order->total_amount-->
+                                        {{money($total_amt_calc, $order->event->currency)}}
                                     </td>
                                 </tr>
                             </tbody>
