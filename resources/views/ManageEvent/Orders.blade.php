@@ -1,3 +1,4 @@
+<?php use App\Models\OrderItem; ?>
 @extends('Shared.Layouts.Master')
 
 @section('title')
@@ -59,13 +60,14 @@ Event Orders
 
 @section('content')
 <!--Start Attendees table-->
+<?php $donation=0;?>
 <div class="row">
 
     @if($orders->count())
 
     <div class="col-md-12">
 
-        <!-- START panel -->
+        <!-- START  panel -->
         <div class="panel">
             <div class="table-responsive ">
                 <table class="table">
@@ -113,9 +115,12 @@ Event Orders
                                     data-href="{{route('showMessageOrder', ['order_id'=>$order->id])}}"
                                 > {{$order->email}}</a>
                             </td>
+                            <?php if(OrderItem::where(['title'=>'Donation','order_id'=>$order->id])){
+                                $donation = OrderItem::where(['title'=>'Donation','order_id'=>$order->id])->first()->unit_price;
+                            } ?>
                             <td>
-                                <a href="#" class="hint--top" data-hint="{{money($order->amount, $event->currency)}} + {{money($order->organiser_booking_fee, $event->currency)}} Organiser Booking Fee">
-                                    {{money($order->amount + $order->organiser_booking_fee, $event->currency)}}
+                                <a href="#" class="hint--top" data-hint="{{money($order->amount, $event->currency)}} + {{money($order->organiser_booking_fee, $event->currency)}} + {{money($donation, $event->currency)}} Organiser Booking Fee">
+                                    {{money($order->amount + $donation + $order->organiser_booking_fee, $event->currency)}}
                                     @if($order->is_refunded || $order->is_partially_refunded)
 
                                     @endif

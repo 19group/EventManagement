@@ -182,7 +182,8 @@
                                         <!--added by DonaldFeb21-->
                                                 <span class="pauseTicketSales label label-info"
                                                       data-id="{{$ticket->id}}"
-                                                      data-route="{{route('postDeleteTicket', ['ticket_id'=>$ticket->id])}}">
+                                                      id = "delete"
+                                                      data-route="{{route('postDeleteTicket', ['ticket_id'=>$ticket->id])}}" onClick="if(confirm('Oh you really sure want to delete this ticket?')){return false; }else{return false;}">
                                     <i class="ico-remove"></i> Delete
                                 </span>
                                         <!--end of addition-->

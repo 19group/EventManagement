@@ -4,6 +4,7 @@
 /node_modules
 .env
 .idea
+.gitignore
 installed
 /.settings/
 /.project
@@ -18,5 +19,8 @@ _ide_helper.php
 /resources/views/Public/ViewEvent/EventDonationCheckout.blade.php
 /resources/views/Public/ViewEvent/Partials/DonationPDFDocu.blade.php
 /resources/views/Public/ViewEvent/Partials/EventCreateDonationSection.blade.php
+/resources/views/ManageEvent/Modals/DeleteEvent.blade.php
+/resources/views/ManageEvent/Modals/DeleteTicket.blade.php
+/app/Http/routes.php
 *.swp
 /public/user_content

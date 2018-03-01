@@ -48,7 +48,7 @@
 
             <!--added by DonaldFeb21-->
             <li>
-                <a href="{{route('postDeleteEvent', ['event_id' => $event->id])}}">
+                <a href="{{route('postDeleteEvent', ['event_id' => $event->id])}}" onClick="return confirm('Oh you really sure want to delete this event?');">
                     <i class="ico-remove"></i> Delete
                 </a>
             </li>
