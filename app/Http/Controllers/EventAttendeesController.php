@@ -122,7 +122,7 @@ class EventAttendeesController extends MyBaseController
         $data = [
             'attendees'  => $coupon,
             'event'      => $event,
-            // Revisit on adding sorting functionality.
+            // Revisit on adding sorting functionality
             //'sort_by'    => $sort_by,
             //'sort_order' => $sort_order,
             //'q'          => $searchQuery ? $searchQuery : '',

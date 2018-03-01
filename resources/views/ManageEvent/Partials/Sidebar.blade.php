@@ -26,7 +26,7 @@
             <!--added by Donald-->
             <li class="{{ Request::is('*tickets*') ? 'active' : '' }}">
                 <a href="{{route('showEventCoupons', array('event_id' => $event->id))}}">
-                    <span class="figure"><i class="ico-ticket"></i></span>
+                    <span class="figure"><i class="glyphicon glyphicon-tag"></i></i></span>
                     <span class="text">Coupons</span>
                 </a>
             </li>
