@@ -154,7 +154,7 @@ class EventTicketsController extends MyBaseController
                 'coupon_code' => str_random(10),
                 'discount' => $discount,
                 'state' => 'Valid',
-                'event_id' =>  $event_id,
+                'event' =>  $event_id,
               ]);
             }
 

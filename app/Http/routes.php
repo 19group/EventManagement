@@ -418,6 +418,23 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
             'uses' => 'EventTicketQuestionsController@postCreateQuestion',
         ]);
 
+
+        /*
+        *
+        * -------
+        * Coupons
+        *--------
+        *
+        */
+        Route::get('{event_id}/coupons/', [
+            'as'   => 'showEventCoupons',
+            'uses' => 'EventAttendeesController@showCoupons',
+        ]);
+
+
+
+
+
         /*
          * -------
          * Attendees

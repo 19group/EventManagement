@@ -7,6 +7,7 @@ use App\Jobs\SendAttendeeInvite;
 use App\Jobs\SendAttendeeTicket;
 use App\Jobs\SendMessageToAttendees;
 use App\Models\Attendee;
+use App\Coupon;
 use App\Models\Event;
 use App\Models\EventStats;
 use App\Models\Message;
@@ -74,6 +75,62 @@ class EventAttendeesController extends MyBaseController
         ];
 
         return view('ManageEvent.Attendees', $data);
+    }
+
+
+    public function showCoupons(Request $request, $event_id)
+    {
+
+        $event = Event::scope()->find($event_id);
+
+
+        /* Commented by Frank 
+
+        $allowed_sorts = ['discount', 'email', 'user'];
+
+        $searchQuery = $request->get('q');
+        $sort_order = $request->get('sort_order') == 'asc' ? 'asc' : 'desc';
+        $sort_by = (in_array($request->get('sort_by'), $allowed_sorts) ? $request->get('sort_by') : 'created_at');
+
+        $event = Event::scope()->find($event_id);
+
+        if ($searchQuery) {
+            $attendees = $event->coupon()
+                ->withoutCancelled()
+                //->join('orders', 'orders.id', '=', 'attendees.order_id')
+                ->where(function ($query) use ($searchQuery) {
+                    $query->where('discount', 'like', $searchQuery . '%');
+                        //->orWhere('attendees.first_name', 'like', $searchQuery . '%')
+                        //->orWhere('attendees.email', 'like', $searchQuery . '%')
+                        //->orWhere('attendees.last_name', 'like', $searchQuery . '%');
+                })
+                ->orderBy(($sort_by == 'discount' ? 'orders.' : 'attendees.') . $sort_by, $sort_order)
+                ->select('attendees.*', 'orders.discount')
+                ->paginate();
+        } else {
+            $attendees = $event->attendees()
+                //->join('orders', 'orders.id', '=', 'attendees.order_id')
+                ->withoutCancelled()
+                ->orderBy(($sort_by == 'discount' ? 'orders.' : 'attendees.') . $sort_by, $sort_order)
+                ->select('attendees.*', 'discount')
+                ->paginate();
+        }*/
+
+        $coupon = DB::table('coupons')->get();
+
+
+        $data = [
+            'attendees'  => $coupon,
+            'event'      => $event,
+            // Revisit on adding sorting functionality.
+            //'sort_by'    => $sort_by,
+            //'sort_order' => $sort_order,
+            //'q'          => $searchQuery ? $searchQuery : '',
+        ];
+
+        //dd($data);
+
+        return view('ManageEvent.Coupons', $data);
     }
 
     /**
