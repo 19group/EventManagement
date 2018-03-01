@@ -52,6 +52,24 @@ use App\Models\OrderItem;
                 border-top: 1px solid {{$event->ticket_border_color}} !important;
             }
 
+            .donation {
+                border: 1px solid {{$event->ticket_border_color}} !important;
+                background: {{$event->ticket_bg_color}} !important;
+                color: {{$event->ticket_sub_text_color}} !important;
+                border-left-color: {{$event->ticket_border_color}} !important;
+
+            }
+            .donation h4 {color: {{$event->ticket_text_color}} !important;}
+            .donation .logo {
+                border-left: 1px solid {{$event->ticket_border_color}} !important;
+                border-bottom: 1px solid {{$event->ticket_border_color}} !important;
+            }
+            .donation .barcode {
+                border-right: 1px solid {{$event->ticket_border_color}} !important;
+                border-bottom: 1px solid {{$event->ticket_border_color}} !important;
+                border-top: 1px solid {{$event->ticket_border_color}} !important;
+            }
+
             table{
 					}
 
@@ -88,7 +106,7 @@ use App\Models\OrderItem;
                     			<h3><b>{{$event->title}}</b></h3>
                     		</td>
                     		<td class="text-right" style="padding-right: 2%" >
-                    			<h3><b><span class="yellow">Foss</span><span class="blue">4g</span> </b></h3>
+                    			<img alt="{{$event->title}}" src="{{config('attendize.cdn_url_user_assets').'/'.$event->images->first()['image_path']}}" property="image">
                     		</td>
                     	</tr>
                     	<tr>
@@ -211,7 +229,7 @@ use App\Models\OrderItem;
             			if($spacefixer==0){ $blankspace='80px'; echo "</div><div style='height:".$blankspace."'></div> <div class='row'>"; }
         			endofcomments by DonaldFeb28*/
     			?>
-                    <div class="ticket">
+                    <div class="donation">
 
                     <table class="text-center">
                     	<tr style="background: #303030; color: #dbdbdb;">
@@ -219,51 +237,60 @@ use App\Models\OrderItem;
                     			<h3><b>{{$event->title}}</b></h3>
                     		</td>
                     		<td class="text-right" style="padding-right: 2%" >
-                    			<h3><b><span class="yellow">Foss</span><span class="blue">4g</span> </b></h3>
+                    			<h5 class="text-white">Donation</h5>
                     		</td>
                     	</tr>
                     	<tr>
                     		<td><h5><b>DONATION DETAILS</b></h5></td>
                     		<td class="shade"><h5><b>EVENT DETAILS</b></h5></td>
-                    		<td><h5><b><!--commented by DonaldFeb26--TICKET DETAILS--endcomment1--></b></h5></td>
+                    		<td><h5><b>ORDER DETAILS</b></h5></td>
                     	</tr>
 
                     	<tr>
                     		<td>
-                    		 	<h5><b>Order ref.</b></h5><h6>{{$order->order_reference}}</h6> 
+                    		 	<h5><b>Donor's Name</b></h5><h6>{{$donor['first_name'].' '.$donor['last_name']}}</h6> 
                     		</td>
                     		<td class="shade">
                     		 	<h5><b>Venue</b></h5><h6>{{$event->venue_name}}</h6> 
                     		</td>
                     		<td>
-                    		 	<!--commented by DonaldFeb26--<h5><b>Ticket type</b></h5><h6>{{$attendee->ticket->title}}</h6>--endcomment1--> 
+                    			<h5><b>Order ref.</b></h5><h6>{{$order->order_reference}}</h6>
                     		</td>
                     		                    		
                     	</tr>
 
                     	<tr>
-                    		<td>
-                    		 	<!--commented by DonaldFeb26--<h5><b>Attendee ref.</b></h5><h6>{{$attendee->reference}}</h6>--endcomment1--> 
+                    		<td >
+                    		 	<h5><b>Donated Amount</b></h5><h6>{{money($donor['donation'], $order->event->currency)}}</h6>
                     		</td>
                     		<td class="shade">
                     		 	<h5><b>Event starts @</b></h5><h6>{{$event->start_date->format('M dS g:iA')}}</h6> 
                     		</td>
                     		<td>
-                    		 	<h5><b>Donated Amount</b></h5><h6>{{money($donor['donation'], $order->event->currency)}}</h6> 
+                    		 	 <h5><b>Status</b></h5><h6>Received</h6>
                     		</td>
                     	</tr>
 
-                    	<tr style="border-top: solid 0.5px #dbdbdb; border-style: dashed">
+                    	<tr>
                     		<td>
-                    			<h5><b>Donor's Name</b></h5><h6>{{$donor['first_name'].' '.$donor['last_name']}}</h6> 
+                    			
                     		</td>
                     		<td class="shade">
                     		 	<h5><b>Event ends</b></h5><h6>{{$event->end_date->format('M dS g:iA')}}</h6> 
                     		</td>
                     		<td>
-                    		 	<h5><b>Status</b></h5><h6>Received</h6> 
+                    		 	 
                     		</td>
                     		
+                    		
+                    	</tr>
+                    	<tr>
+                    		<td>
+                    			
+                    		</td>
+                    		<td class="shade">
+                                &nbsp;
+                    		</td>
                     	</tr>
                     	<!--commented by DonaldFeb26--<tr style="padding: 5px;">
                     		<td>
