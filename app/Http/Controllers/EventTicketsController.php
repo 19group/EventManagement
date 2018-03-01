@@ -142,37 +142,23 @@ class EventTicketsController extends MyBaseController
 
 
 
-    public function postCreateCoupon(Request $request)
+    public function postCreateCoupon(Request $request, $event_id)
     {
-        $coupon = new Coupon;
-        //$coupons = Input::all();
-        //$coupons = $request->get('token[]');
-        //$discount = $request->get('discount');
+       $coupons_limit = $request->get('max_coupons');
+       $discount = $request->get('discount');
 
-        $input = $request->all();
-        //$input2 = $request->all()->except('discount');
-        $discount = $input['discount'];
+       //dd($request->all());
 
-        //$arr = [];
+            for ($i = 0; $i < $coupons_limit; $i++) {
+              Coupon::create([
+                'coupon_code' => str_random(10),
+                'discount' => $discount,
+                'state' => 'Valid',
+                'event_id' =>  $event_id,
+              ]);
+            }
 
-          for ($i = 0; $i < count($input); $i++) {
-
-            //$coupon->coupon_code = $input[$i];
-            $coupon->discount = $discount;
-              //array_push($arr, ['coupon_code' => $coupon[$i], 'discount' => $discount, 'state'=> 'Valid']);
-                }
-
-                $coupon->save();
-
-                 return response()->json([
-            
-            'status'      => 'success',
-            'id'          => '2',
-            'message'     => 'Refreshing...',
-            'redirectUrl' => route('showEventTickets', [
-                'event_id' => '1',
-            ]),
-        ]);
+            return redirect()->back();
     }
 
     /**

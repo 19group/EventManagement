@@ -32,14 +32,14 @@ document.getElementById("ticketoffers").appendChild(p);
                     <i class="ico-ticket"></i>
                     Create Coupon</h3>
             </div>
-            <!--<form action="coupon/postCreate" method="post">-->
+            <form action="tickets/postCreateCoupons" method="post">
                 {{ csrf_field() }}
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group">
                             <label class="col-md-12">Generate Coupons</label>
-                            <input id="max_coupons" class="form-control" type="number" name="" placeholder="Enter number of coupons to generate">
+                            <input id="max_coupons" class="form-control" type="number" name="max_coupons" placeholder="Enter number of coupons to generate">
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -47,11 +47,7 @@ document.getElementById("ticketoffers").appendChild(p);
                             <input id="discount" class="form-control" type="number" name="discount" placeholder="Enter % discount">
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <button class="btn btn-info" type="button" onclick="generate_coupons()">
-                            Generate Coupons
-                        </button>
-                    </div>
+                    
                     <div class="col-md-5">
                         <div class="col-md-12 form-group" id="target_div">
                         </div>
@@ -70,7 +66,7 @@ document.getElementById("ticketoffers").appendChild(p);
                         </div>
                         <div class="col-md-6">
                              <button class="btn btn-success" type="submit" value="submit">
-                                Save
+                                Generate
                             </button>
                         </div>
                     </div>
