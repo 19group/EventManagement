@@ -106,7 +106,7 @@ use App\Models\OrderItem;
                     			<h3><b>{{$event->title}}</b></h3>
                     		</td>
                     		<td class="text-right" style="padding-right: 2%" >
-                    			<img alt="{{$event->title}}" src="{{config('attendize.cdn_url_user_assets').'/'.$event->images->first()['image_path']}}" property="image">
+                    			<img alt="{{$event->organiser->full_logo_path}}" height="50" src="data:image/png;base64, {{$image}}" />
                     		</td>
                     	</tr>
                     	<tr>
