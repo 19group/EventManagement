@@ -393,11 +393,7 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
             'as'   => 'postCreateCoupons',
             'uses' => 'EventTicketsController@postCreateCoupon',
         ]);
-        Route::post('{event_id}/delete/confirm', [
-            'as'   => 'preDeleteTicket',
-            'uses' => 'EventTicketsController@preDeleteTicket',
-        ]);
-        Route::post('{event_id}/tickets/delete', [
+        Route::get('{ticket_id}/tickets/delete', [
             'as'   => 'postDeleteTicket',
             'uses' => 'EventTicketsController@postDeleteTicket',
         ]);

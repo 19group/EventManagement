@@ -11,6 +11,7 @@ installed
 /.buildpath
 /composer.phar
 _ide_helper.php
+/app/Http/routes.php
 /app/Events/DonationCompletedEvent.php
 /app/Jobs/SendDonationNotification.php
 /app/Listeners/DonationCompletedListener.php
@@ -21,6 +22,5 @@ _ide_helper.php
 /resources/views/Public/ViewEvent/Partials/EventCreateDonationSection.blade.php
 /resources/views/ManageEvent/Modals/DeleteEvent.blade.php
 /resources/views/ManageEvent/Modals/DeleteTicket.blade.php
-/app/Http/routes.php
 *.swp
 /public/user_content

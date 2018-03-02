@@ -200,11 +200,10 @@ class EventTicketsController extends MyBaseController
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function postDeleteTicket(Request $request)
+    public function postDeleteTicket(Request $request, $ticket_id)
     {
-        $ticket_id = $request->get('ticket_id');
-
-        $ticket = Ticket::scope()->find($ticket_id);
+        $data['ticket_id'] = $ticket_id;
+        $ticket = Ticket::where('id','=', $ticket_id)->first();
 
         /*
          * Don't allow deletion of tickets which have been sold already.
@@ -217,11 +216,11 @@ class EventTicketsController extends MyBaseController
             ]);
         }
 
+        $event_id = $ticket->event_id;
         if ($ticket->delete()) {
-            return response()->json([
-                'status'  => 'success',
-                'message' => 'Ticket Successfully Deleted',
-                'id'      => $ticket->id,
+            session()->flash('message', $ticket->title.' Ticket Successfully Deleted.');
+            return response()->redirectToRoute('showEventTickets', [
+                'event_id'      => $event_id,
             ]);
         }
 

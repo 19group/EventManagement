@@ -179,16 +179,15 @@
                                         @else
                                             {{\App\Models\TicketStatus::find($ticket->sale_status)->name}}
                                         @endif
-                                        <!--added by DonaldFeb21-->
-                                                <span class="pauseTicketSales label label-info"
-                                                      data-id="{{$ticket->id}}"
-                                                      id = "delete"
-                                                      data-route="{{route('postDeleteTicket', ['ticket_id'=>$ticket->id])}}" onClick="if(confirm('Oh you really sure want to delete this ticket?')){return false; }else{return false;}">
-                                    <i class="ico-remove"></i> Delete
-                                </span>
-                                        <!--end of addition-->
                                     </a>
                                 </li>
+            <!--added by DonaldMar2-->
+            <li>
+                <a href="{{route('postDeleteTicket', ['ticket_id' => $ticket->id])}}" onClick="return confirm('Oh you really sure want to delete this event?');">
+                    <i class="ico-remove"></i> Delete
+                </a>
+            </li>
+            <!--end of addition DonaldMar2-->
                             </ul>
                         </div>
                     </div>

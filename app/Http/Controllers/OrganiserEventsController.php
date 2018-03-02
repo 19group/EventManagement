@@ -35,6 +35,7 @@ class OrganiserEventsController extends MyBaseController
         ];
         return view('ManageOrganiser.Events', $data);
     }
+
     //added by DonaldFeb22
     /**
      * Deleted an event
@@ -72,5 +73,5 @@ class OrganiserEventsController extends MyBaseController
             'message' => 'Whoops! Looks like something went wrong. Please try again.',
         ]);
     }
-    //end of addition
+    //end of additions
 }
