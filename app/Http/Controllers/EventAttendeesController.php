@@ -116,7 +116,7 @@ class EventAttendeesController extends MyBaseController
                 ->paginate();
         }*/
 
-        $coupon = DB::table('coupons')->get();
+        $coupon = DB::table('coupons')->where('event_id', $event_id)->get();
 
 
         $data = [
