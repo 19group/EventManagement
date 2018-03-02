@@ -31,7 +31,7 @@
                         <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            {!! Form::label('first_name', 'First Name', array('class'=>'control-label required')) !!}
+                                            {!! Form::label('first_name', 'First Name', array('class'=>'font-weight-bold control-label required')) !!}
                                             {!!  Form::text('first_name', Input::old('first_name'),
                                         array(
                                         'class'=>'form-control','required'=>'yes'
@@ -40,7 +40,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            {!! Form::label('last_name', 'Last Name', array('class'=>'control-label required')) !!}
+                                            {!! Form::label('last_name', 'Last Name', array('class'=>'font-weight-bold control-label required')) !!}
                                             {!!  Form::text('last_name', Input::old('last_name'),
                                         array(
                                         'class'=>'form-control ','required'
@@ -53,7 +53,7 @@
                                  <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            {!! Form::label('email', 'Email', array('class'=>'control-label required')) !!}
+                                            {!! Form::label('email', 'Email', array('class'=>'font-weight-bold control-label required')) !!}
                                             {!!  Form::text('email', Input::old('email'),
                                         array(
                                         'class'=>'form-control','required'

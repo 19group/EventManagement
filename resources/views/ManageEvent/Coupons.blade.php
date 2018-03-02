@@ -5,6 +5,52 @@
 Event Attendees
 @stop
 
+<style type="text/css">
+    
+    #snackbar {
+                visibility: hidden;
+                min-width: 150px;
+                margin-left: -125px;
+                background-color: #5fa9da;
+                color: #fff;
+                text-align: center;
+                border-radius: 2px;
+                padding: 10px;
+                position: fixed;
+                z-index: 1;
+                left: 50%;
+                bottom: 30px;
+                font-size: 17px;
+            }
+
+            #snackbar.show {
+                visibility: visible;
+                -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+                animation: fadein 0.5s, fadeout 0.5s 2.5s;
+            }
+
+            @-webkit-keyframes fadein {
+                from {bottom: 0; opacity: 0;} 
+                to {bottom: 30px; opacity: 1;}
+            }
+
+            @keyframes fadein {
+                from {bottom: 0; opacity: 0;}
+                to {bottom: 30px; opacity: 1;}
+            }
+
+            @-webkit-keyframes fadeout {
+                from {bottom: 30px; opacity: 1;} 
+                to {bottom: 0; opacity: 0;}
+            }
+
+            @keyframes fadeout {
+                from {bottom: 30px; opacity: 1;}
+                to {bottom: 0; opacity: 0;}
+            }
+
+</style>
+
 
 @section('page_title')
 <i class="ico-users"></i>
@@ -90,10 +136,12 @@ Coupons
                            </th>
                         </tr>
                     </thead>
+                    <div id="snackbar">Coupon token copied..</div>
                     <tbody>
                         @foreach($attendees as $attendee)
                         <tr>
-                            <td><button class="btn btn-danger" style="width: 150px">{{$attendee->coupon_code}}</button></td>
+                            <!--<td><input type="" class="btn btn-danger" style="width: 150px" value="{{$attendee->coupon_code}}" disabled /></td>-->
+                            <td><button class="btn btn-danger" onClick="copy(this)" style="width: 150px;">{{$attendee->coupon_code}}</button></td>
                             <td>
                                  {{$attendee->discount}} %
                             </td>
@@ -116,6 +164,28 @@ Coupons
     <div class="col-md-12">
     </div>
 </div>    <!--/End attendees table-->
+
+<script type="text/javascript">
+
+function copy(that){
+
+    var inp =document.createElement('input');
+    document.body.appendChild(inp)
+    inp.value =that.textContent
+    inp.select();
+    document.execCommand('copy',false);
+    inp.remove();
+    //alert('Copied');
+
+    var x = document.getElementById("snackbar")
+    x.className = "show";
+    setTimeout(function(){ x.className = x.className.replace("show", ""); }, 2000);
+
+
+}
+
+
+</script>
 
 @stop
 
