@@ -30,6 +30,12 @@
                     <span class="text">Coupons</span>
                 </a>
             </li>
+            <li class="{{ Request::is('*tickets*') ? 'active' : '' }}">
+                <a href="{{route('showSideEvents', array('event_id' => $event->id))}}">
+                    <span class="figure"><i class="glyphicon glyphicon-tag"></i></i></span>
+                    <span class="text">Side Events</span>
+                </a>
+            </li>
             <!--end of addition-->
             <li class="{{ Request::is('*orders*') ? 'active' : '' }}">
                 <a href="{{route('showEventOrders', array('event_id' => $event->id))}}">

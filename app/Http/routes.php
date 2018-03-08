@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 /*
  * Include our API routes file
@@ -261,7 +261,19 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
             'uses' => 'OrganiserEventsController@showEvents',
         ]);
 
-        //added by DonaldFeb21
+        //added by DonaldFeb21 DonaldMar2
+        Route::get('{event_id}/choosesideevents', [
+            'as'   => 'chooseSideEvents',
+            'uses' => 'OrganiserEventsController@chooseSideEvents',
+        ]); 
+        Route::post('{event_id}/postChooseSideEvents', [
+            'as'   => 'postChooseSideEvents',
+            'uses' => 'OrganiserEventsController@postChooseSideEvents',
+        ]); 
+        Route::get('{event_id}/sideevents', [
+            'as'   => 'showSideEvents',
+            'uses' => 'OrganiserEventsController@showSideEvents',
+        ]); 
         Route::get('/events/{event_id}/delete', [
             'as'   => 'postDeleteEvent',
             'uses' => 'OrganiserEventsController@postDeleteEvent',

@@ -5,8 +5,73 @@ use App\Models\Organiser;
 use Illuminate\Http\Request;
 use DB;
 use Log;
+use DateTime;
 class OrganiserEventsController extends MyBaseController
 {
+
+    /**
+     * added by DonaldMar2
+     * Show the organiser events page
+     *
+     * @param Request $request
+     * @param $organiser_id
+     * @return mixed
+     */
+    public function chooseSideEvents(Request $request, $event_id)
+    {
+        $event = Event::scope()->findOrfail($event_id);
+        $closeevents = Event::scope()->whereBetween('start_date', array(new DateTime('2018-01-01 15:26:00'), new DateTime( '2018-12-31 15:26:00')))->get();
+        $data = [ 
+            'sideevents'    => $closeevents,
+            'event'         => $event,
+        ];
+        return view('ManageEvent.Modals.SideEventsChoices', $data);
+    }
+
+
+    /**
+     * @param Request $request
+     * @param $organiser_id
+     * @return mixed
+     */
+    public function postChooseSideEvents(Request $request, $event_id)
+    {
+        $event = Event::scope()->findOrfail($event_id);
+        $side_events=[]; $sc=0;
+        $closeevents = Event::scope()->whereBetween('start_date', array(new DateTime('2018-01-01 15:26:00'), new DateTime( '2018-12-31 15:26:00')))->get();
+        for($i=0;$i<count($closeevents);++$i){
+            $name = 'side_event_'.$i;
+            if($request->has($name)){
+                $side_events[$sc]=Event::where(['id'=>$request->get($name)])->first(); ++$sc;
+            }
+        }
+
+        $data = [ 
+            'sideevents'    => $side_events,
+            'event'         => $event,
+        ];
+        return view('ManageEvent.SideEvents', $data);
+    }
+    //end of addition DonaldMar2
+
+
+    /**
+     * @param Request $request
+     * @param $organiser_id
+     * @return mixed
+     */
+    public function showSideEvents(Request $request, $event_id)
+    {
+        $event = Event::scope()->findOrfail($event_id);
+        $closeevents = Event::scope()->whereBetween('start_date', array(new DateTime('2018-03-01 15:26:00'), new DateTime( '2018-12-31 15:26:00')))->get();
+        $data = [ 
+            'sideevents'    => $closeevents,
+            'event'         => $event,
+        ];
+        return view('ManageEvent.SideEvents', $data);
+    }
+    //end of addition DonaldMar2
+
     /**
      * Show the organiser events page
      *
