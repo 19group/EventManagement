@@ -285,8 +285,10 @@ class CreateUsersTable extends Migration
             $t->foreign('event_id')->references('id')->on('events')->onDelete('cascade');
 
             $t->string('title');
+            $t->string('type', 120)->nullable();
             $t->text('description');
             $t->text('ticket_offers')->nullable();
+            $t->text('ticket_extras')->nullable();
             $t->decimal('price', 13, 2);
 
 

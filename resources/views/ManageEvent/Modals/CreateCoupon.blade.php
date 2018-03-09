@@ -36,20 +36,39 @@ document.getElementById("ticketoffers").appendChild(p);
                 {{ csrf_field() }}
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-md-6">
                         <div class="form-group">
-                            <label class="col-md-12">Generate Coupons</label>
+                            <label class="col-md-12">Number of Coupons</label>
                             <input id="max_coupons" class="form-control" type="number" name="max_coupons" placeholder="Enter number of coupons to generate">
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="form-group">
-                            <input id="discount" class="form-control" type="number" name="discount" placeholder="Enter % discount">
+                            <label class="col-md-12">Associated Ticket</label> 
+        <?php $ticket_assocs = \App\Models\Ticket::where(['event_id'=>$event->id])->get(); $s=0; foreach($ticket_assocs as $assocs){$ticks[$s]=$assocs->title; ++$s;}?>
+    {!! Form::select('assoc_ticket', $ticks, 'assoc_ticket', ['class' => 'form-control gateway_selector']) !!}
+                            <!--<input id="discount" class="form-control" type="number" name="discount" placeholder="Enter % discount">-->
                         </div>
                     </div>
-                    
-                    <div class="col-md-5">
-                        <div class="col-md-12 form-group" id="target_div">
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="col-md-12">Enter Coupon Mode (Exact Amount OR Percentage Discount)</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="col-md-12">Coupon's Exact Amount</label>
+                            <input id="exact_amt" class="form-control" type="number" name="exact_amt" placeholder="Enter number of coupons to generate">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="col-md-12">Coupon's Percentage Discount</label>
+                            <input id="perc_discount" class="form-control" type="number" name="percentage" placeholder="Enter % discount">
                         </div>
                     </div>
                 </div>

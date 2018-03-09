@@ -20,13 +20,15 @@
 
                     <!-- Added Form to Tickets Section (First name, last name and email) -->
 
-                                                    <div class="container">
-                                                        <center>
-                                                            <h1 class=" section_head">
-                                                                Your Details
-                                                            </h1>
-                                                        </center>
-                                                    </div>
+                    <div style="width:60%; float:left">
+
+                        <div class="container">
+                            <center>
+                                <h4>
+                                    Your Details
+                                </h4>
+                            </center>
+                        </div>
 
                         <div class="row">
                                     <div class="col-md-6">
@@ -48,19 +50,43 @@
                                         </div>
                                     </div>
 
-                                   </div>
+                       </div>
 
-                                 <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            {!! Form::label('email', 'Email', array('class'=>'font-weight-bold control-label required')) !!}
-                                            {!!  Form::text('email', Input::old('email'),
-                                        array(
-                                        'class'=>'form-control','required'
-                                        ))  !!}
-                                        </div>
-                                    </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {!! Form::label('email', 'Email', array('class'=>'font-weight-bold control-label required')) !!}
+                                    {!!  Form::text('email', Input::old('email'),
+                                array(
+                                'class'=>'form-control','required'
+                                ))  !!}
                                 </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div style="width: 35%; float: right;">
+                        <h4> SIDE EVENTS (<I>Events associated with this event</I>)</h4>
+                    <?php foreach ($sideevent as $minevent){?>
+                        <hr>
+                        Title : {{$minevent->title}} </br>
+                        Description : {{$minevent->description}} </br>
+                        Price: {{$minevent->price}} </br>
+                                            <div class="col-md-3">
+                                                    <select name="ticket_{{$minevent->id}}" class="form-control"
+                                                            style="text-align: center">
+                                                        @if ($minevent->count() > 1)
+                                                            <option value="0">0</option>
+                                                        @endif
+                                                        @for($i=$minevent->min_per_person; $i<=$minevent->max_per_person; $i++)
+                                                            <option value="{{$i}}">{{$i}}</option>
+                                                        @endfor
+                                                    </select>
+                                            </div>
+
+                    <?php } ?>
+
+                    </div>
 
 <!--added by Donald --Event Donation Ability-->
                                 <span class="ticket-title semibold" property="name">

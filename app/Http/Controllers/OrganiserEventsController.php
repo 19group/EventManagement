@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 use App\Models\Event;
+use App\Models\Ticket;
 use App\Models\Organiser;
 use Illuminate\Http\Request;
 use DB;
@@ -20,7 +21,7 @@ class OrganiserEventsController extends MyBaseController
     public function chooseSideEvents(Request $request, $event_id)
     {
         $event = Event::scope()->findOrfail($event_id);
-        $closeevents = Event::scope()->whereBetween('start_date', array(new DateTime('2018-01-01 15:26:00'), new DateTime( '2018-12-31 15:26:00')))->get();
+        $closeevents = Event::scope()->whereBetween('start_date', array(new DateTime($event->start_date), new DateTime($event->end_date)))->get();
         $data = [ 
             'sideevents'    => $closeevents,
             'event'         => $event,
@@ -38,7 +39,7 @@ class OrganiserEventsController extends MyBaseController
     {
         $event = Event::scope()->findOrfail($event_id);
         $side_events=[]; $sc=0;
-        $closeevents = Event::scope()->whereBetween('start_date', array(new DateTime('2018-01-01 15:26:00'), new DateTime( '2018-12-31 15:26:00')))->get();
+        $closeevents = Event::scope()->whereBetween('start_date', array(new DateTime($event->start_date), new DateTime($event->end_date)))->get();
         for($i=0;$i<count($closeevents);++$i){
             $name = 'side_event_'.$i;
             if($request->has($name)){
@@ -52,6 +53,65 @@ class OrganiserEventsController extends MyBaseController
         ];
         return view('ManageEvent.SideEvents', $data);
     }
+
+
+    /**
+     * @param Request $request
+     * @param $organiser_id
+     * @return mixed
+     */
+    public function showReCreateSideEvent($event_id)
+    {
+        return view('ManageEvent.Modals.ReCreateSideEvent', [
+            'event' => Event::scope()->find($event_id),
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @param $organiser_id
+     * @return mixed
+     */
+    public function postReCreateSideEvent(Request $request, $event_id)
+    {
+        $event = Event::scope()->findOrfail($event_id);
+        
+        $ticket = Ticket::createNew();
+        if (!$ticket->validate($request->all())) {
+            return response()->json([
+                'status'   => 'error',
+                'messages' => $ticket->errors(),
+            ]);
+        }
+
+        $ticket->event_id = $event_id;
+        $ticket->type = 'SIDEEVENT';
+        $ticket->title = $request->get('title');
+        $ticket->quantity_available = !$request->get('quantity_available') ? null : $request->get('quantity_available');
+        $ticket->start_sale_date = $request->get('start_sale_date') ? Carbon::createFromFormat('d-m-Y H:i',
+            $request->get('start_sale_date')) : null;
+        $ticket->end_sale_date = $request->get('end_sale_date') ? Carbon::createFromFormat('d-m-Y H:i',
+            $request->get('end_sale_date')) : null;
+        $ticket->price = $request->get('price');
+        $ticket->min_per_person = $request->get('min_per_person');
+        $ticket->max_per_person = $request->get('max_per_person');
+        $ticket->description = $request->get('description');
+        $ticket->is_hidden = 0;
+
+        $ticket->save();
+
+        session()->flash('message', 'Successfully Created SideEvent');
+
+        return response()->json([
+            'status'      => 'success',
+            'id'          => $ticket->id,
+            'message'     => 'Refreshing...',
+            'redirectUrl' => route('showEventTickets', [
+                'event_id' => $event_id,
+            ]),
+        ]);
+    }
+
     //end of addition DonaldMar2
 
 
@@ -62,6 +122,8 @@ class OrganiserEventsController extends MyBaseController
      */
     public function showSideEvents(Request $request, $event_id)
     {
+        /** commented by Donald Mar9 due to change of approach
+
         $event = Event::scope()->findOrfail($event_id);
         $closeevents = Event::scope()->whereBetween('start_date', array(new DateTime('2018-03-01 15:26:00'), new DateTime( '2018-12-31 15:26:00')))->get();
         $data = [ 
@@ -69,8 +131,16 @@ class OrganiserEventsController extends MyBaseController
             'event'         => $event,
         ];
         return view('ManageEvent.SideEvents', $data);
+        */
+        $event = Event::scope()->findOrfail($event_id);
+        $closeevents = Ticket::scope()->where(['event_id'=>$event->id, 'type'=>'SIDEEVENT'])->get();
+        $data = [ 
+            'sideevents'    => $closeevents,
+            'event'         => $event,
+        ];
+        return view('ManageEvent.ReSideEvents', $data);
     }
-    //end of addition DonaldMar2
+    //end of addition DonaldMar2 DonaldMar9
 
     /**
      * Show the organiser events page

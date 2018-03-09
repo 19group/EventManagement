@@ -65,9 +65,9 @@
                 </div>
                 <!--added by DonaldMar2-->
                 <div class="btn-group btn-group-responsive">
-                   <button data-modal-id='CreateSideEvent'
-                        data-href="{{route('showSideEvents', array('event_id'=>$event->id))}}"
-                        class='loadModal btn' type="button"><i class="glyphicon glyphicon-tag"></i> Create Side Events
+                   <button data-modal-id='CreateTicket'
+                        data-href="{{route('showReCreateSideEvent', array('event_id'=>$event->id))}}"
+                        class='loadModal btn btn-success' type="button"><i class="glyphicon glyphicon-tag"></i> Create Side Event
                 </button>
                 </div>
                 <!--end of addition DonaldMar2-->
@@ -185,7 +185,7 @@
                                 </li>
             <!--added by DonaldMar2-->
             <li>
-                <a href="{{route('postDeleteTicket', ['ticket_id' => $ticket->id])}}" onClick="return confirm('Oh you really sure want to delete this event?');">
+                <a href="{{route('postDeleteTicket', ['ticket_id' => $ticket->id])}}" onClick="return confirm('Oh you really sure want to delete this ticket?');">
                     <i class="ico-remove"></i> Delete
                 </a>
             </li>
