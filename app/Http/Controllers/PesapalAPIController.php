@@ -49,14 +49,19 @@ class PesapalAPIController extends Controller
     function handleIPN(Request $request, $event_id)
     {
         if (/*Input::has('pesapal_notification_type') && */Input::has('pesapal_merchant_reference') && Input::has('pesapal_transaction_tracking_id')) {
-            $notification_type = Input::get('pesapal_notification_type');
+            //$notification_type = Input::get('pesapal_notification_type');
+												$notification_type = "CHANGE";
             $merchant_reference = Input::get('pesapal_merchant_reference');
             $tracking_id = Input::get('pesapal_transaction_tracking_id');
-            Pesapal::redirectToIPN($notification_type, $merchant_reference, $tracking_id);
+
+           $response =  Pesapal::getTransactionStatus($notification_type, $merchant_reference, $tracking_id);
+										
+											$status = $response['status'];
+
         } else {
             throw new PesapalException("incorrect parameters in request");
         }
-        
+
         session()->push('ticket_order_' . $event_id . '.transaction_id',
                         $tracking_id);
         //return view('Public.ViewEvent.Partials.EventCreateOrderSection2');
@@ -64,7 +69,7 @@ class PesapalAPIController extends Controller
 
         $order_session = session()->get('ticket_order_' . $event_id);
 
-       
+
 
         $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
 
@@ -78,7 +83,14 @@ class PesapalAPIController extends Controller
             return view('Public.ViewEvent.Embedded.EventPageCheckout', $data);
         }
 
-        return view('Public.ViewEvent.EventPageCheckout2', $data);
-    
+								if($status == "COMPLETED"){
+								return view('Public.ViewEvent.EventPageCheckout2', $data);
+								}
+								else {
+								return view ('Public.ViewEvent.EventPageCheckout');
+								}
+
+
+
     }
 }
