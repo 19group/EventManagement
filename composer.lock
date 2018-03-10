@@ -4695,64 +4695,6 @@
             "time": "2017-08-15 16:48:10"
         },
         {
-            "name": "knox/pesapal",
-            "version": "1.3.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/knox2/Pesapal.git",
-                "reference": "9bebe2096d982b3e4edfb697eef74c276828dc86"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/knox2/Pesapal/zipball/9bebe2096d982b3e4edfb697eef74c276828dc86",
-                "reference": "9bebe2096d982b3e4edfb697eef74c276828dc86",
-                "shasum": ""
-            },
-            "require": {
-                "illuminate/support": "5.*",
-                "php": ">=5.5.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Knox\\Pesapal\\PesapalServiceProvider"
-                    ],
-                    "aliases": {
-                        "Pesapal": "Knox\\Pesapal\\Facades\\Pesapal"
-                    }
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Knox\\Pesapal\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Timothy Radier",
-                    "email": "timothyradier@gmail.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "A laravel package that integrates into the pesapal api",
-            "homepage": "https://github.com/knox2/pesapal",
-            "keywords": [
-                "Orange Money",
-                "laravel 5",
-                "mastercard",
-                "mpesa",
-                "payments",
-                "pesapal",
-                "visa"
-            ],
-            "time": "2018-01-25 22:15:36"
-        },
-        {
             "name": "phpdocumentor/reflection-common",
             "version": "1.0.1",
             "source": {
