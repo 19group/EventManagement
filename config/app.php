@@ -156,7 +156,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         App\Providers\HelpersServiceProvider::class,
         Collective\Html\HtmlServiceProvider::class,
-        Knox\Pesapal\PesapalServiceProvider::class,
+        Studio19\Pesapal\PesapalServiceProvider::class,
 
         /*
          * Third Party Service Providers...
@@ -233,7 +233,7 @@ return [
         'Purifier'     => Mews\Purifier\Facades\Purifier::class,
         'Markdown'     => MaxHoffmann\Parsedown\ParsedownFacade::class,
         'Omnipay'      => Omnipay\Omnipay::class,
-        'Pesapal'      => Knox\Pesapal\Facades\Pesapal::class,
+        'Pesapal'      => Studio19\Pesapal\Facades\Pesapal::class,
        // 'Omnipay'      => Omnipay\Omnipay::class,
 
     ],
