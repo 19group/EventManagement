@@ -66,6 +66,7 @@
 
                     </div>
                     <div style="width: 35%; float: right;">
+
                         <h4> SIDE EVENTS (<I>Events associated with this event</I>)</h4>
                     <?php foreach ($sideevent as $minevent){?>
                         <hr>
@@ -73,6 +74,7 @@
                         Description : {{$minevent->description}} </br>
                         Price: {{$minevent->price}} </br>
                                             <div class="col-md-3">
+                                                    {!! Form::hidden('tickets[]', $minevent->id) !!}
                                                     <select name="ticket_{{$minevent->id}}" class="form-control"
                                                             style="text-align: center">
                                                         @if ($minevent->count() > 1)

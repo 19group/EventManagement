@@ -105,6 +105,22 @@ class EventTicketsController extends MyBaseController
             $ticketoffers[$toc]=$request->get("ticket_offer_$f");++$f;++$toc;$miss=0;
           }else{++$miss;++$f;}
         }
+        $g=0; $mix=0; $oxc=0; $ticketextras=[]; 
+        while($mix<3){
+          if($request->has("ticket_extra_$g")){
+            $ticketextras[$oxc]=$request->get("ticket_extra_$g");
+            if($request->has("ticket_extra_option_$g") && $request->get("$ticket_extra_amt_$g")){
+              $ticketextras[$oxc]=$ticketextras[$oxc].'@*#'.$request->get("ticket_extra_amt_$g").'@*#'.$request->get("$ticket_extra_option_$g");++$g;++$oxc;$mix=0;
+            }elseif($request->has("$ticket_extra_amt_$g")){
+              $ticketextras[$oxc]=$ticketextras[$oxc].'@*#'.$request->get("ticket_extra_amt_$g").'@*#';++$g;++$oxc;$mix=0;
+            }else{
+              return response()->json([
+                  'status'   => 'error',
+                  'messages' => 'it appears one ticket extra was not correctly filled. Make sure for each ticket extra, there is corresponding extra offer amount',
+              ]);
+            }
+          }else{++$mix;++$g;}
+        }
         if (!$ticket->validate($request->all())) {
             return response()->json([
                 'status'   => 'error',
@@ -124,6 +140,7 @@ class EventTicketsController extends MyBaseController
         $ticket->max_per_person = $request->get('max_per_person');
         $ticket->description = $request->get('description');
         $ticket->ticket_offers = empty($ticketoffers) ? null : implode('#@#',$ticketoffers);
+        $ticket->ticket_extras = empty($ticketextras) ? null : implode('{+}',$ticketextras);
         $ticket->is_hidden = $request->get('is_hidden') ? 1 : 0;
 
         $ticket->save();
