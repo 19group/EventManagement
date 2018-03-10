@@ -63,14 +63,14 @@
                         <i class="ico-question"></i> Questions
                     </button>
                 </div>
-                <!--added by DonaldMar2-->
+                <!--added by DonaldMar2
                 <div class="btn-group btn-group-responsive">
                    <button data-modal-id='CreateTicket'
                         data-href="{{route('showReCreateSideEvent', array('event_id'=>$event->id))}}"
                         class='loadModal btn btn-success' type="button"><i class="glyphicon glyphicon-tag"></i> Create Side Event
                 </button>
                 </div>
-                <!--end of addition DonaldMar2-->
+                end of addition DonaldMar2-->
         </div>
         <!--/ Toolbar -->
     </div>
