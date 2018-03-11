@@ -1,4 +1,4 @@
-<?php 
+<?php
 use App\Models\OrderItem;
 ?>
 <html>
@@ -73,7 +73,7 @@ use App\Models\OrderItem;
             table{
 					}
 
-					table td, 
+					table td,
 					table tr{
 					padding: 0; /* 'cellpadding' equivalent */
 					}
@@ -93,7 +93,12 @@ use App\Models\OrderItem;
     </head>
     <body style="background-color: #FFFFFF; font-family: Arial, Helvetica, sans-serif;">
 	<!--added by DonaldFeb28 to set control variables for limiting number of tickets in a page-->
-	<?php $ticketsinpage = 3; $spacefixer = $ticketsinpage; $target = count($attendees); ?>
+	<?php
+
+ $ticketsinpage = 3; $spacefixer = $ticketsinpage; $target = count($attendees);
+
+
+ ?>
 	<!--end of addition by DonaldFeb28-->
         <div class="row">
             @foreach($attendees as $attendee)
@@ -117,40 +122,40 @@ use App\Models\OrderItem;
 
                     	<tr>
                     		<td>
-                    		 	<h5><b>Order ref.</b></h5><h6>{{$order->order_reference}}</h6> 
+                    		 	<h5><b>Order ref.</b></h5><h6>{{$order->order_reference}}</h6>
                     		</td>
                     		<td class="shade">
-                    		 	<h5><b>Venue</b></h5><h6>{{$event->venue_name}}</h6> 
+                    		 	<h5><b>Venue</b></h5><h6>{{$event->venue_name}}</h6>
                     		</td>
                     		<td>
-                    		 	<h5><b>Ticket type</b></h5><h6>{{$attendee->ticket->title}}</h6> 
+                    		 	<h5><b>Ticket type</b></h5><h6>{{$attendee->ticket->title}}</h6>
                     		</td>
-                    		                    		
+
                     	</tr>
 
                     	<tr>
                     		<td>
-                    		 	<h5><b>Attendee ref.</b></h5><h6>{{$attendee->reference}}</h6> 
+                    		 	<h5><b>Attendee ref.</b></h5><h6>{{$attendee->reference}}</h6>
                     		</td>
                     		<td class="shade">
-                    		 	<h5><b>Event starts @</b></h5><h6>{{$event->start_date->format('M dS g:iA')}}</h6> 
+                    		 	<h5><b>Event starts @</b></h5><h6>{{$event->start_date->format('M dS g:iA')}}</h6>
                     		</td>
                     		<td>
-                    		 	<h5><b>Price</b></h5><h6>{{money($attendee->ticket->total_price, $order->event->currency)}} (inc. {{money($attendee->ticket->total_booking_fee, $order->event->currency)}} Fees)</h6> 
+                    		 	<h5><b>Price</b></h5><h6>{{money($attendee->ticket->total_price, $order->event->currency)}} (inc. {{money($attendee->ticket->total_booking_fee, $order->event->currency)}} Fees)</h6>
                     		</td>
                     	</tr>
 
                     	<tr style="border-top: solid 0.5px #dbdbdb; border-style: dashed">
                     		<td>
-                    			<h5><b>Ticket Holder</b></h5><h6>{{$attendee->first_name.' '.$attendee->last_name}}</h6> 
+                    			<h5><b>Ticket Holder</b></h5><h6>{{$attendee->first_name.' '.$attendee->last_name}}</h6>
                     		</td>
                     		<td class="shade">
-                    		 	<h5><b>Event ends</b></h5><h6>{{$event->end_date->format('M dS g:iA')}}</h6> 
+                    		 	<h5><b>Event ends</b></h5><h6>{{$event->end_date->format('M dS g:iA')}}</h6>
                     		</td>
                     		<td>
-                    		 	<h5><b>Status</b></h5><h6>Valid</h6> 
+                    		 	<h5><b>Status</b></h5><h6>Valid</h6>
                     		</td>
-                    		
+
                     	</tr>
                     	<tr style="padding: 5px;">
                     		<td>
@@ -159,14 +164,14 @@ use App\Models\OrderItem;
                     		</td>
                     		<td style="border-left: solid 0.5px #dbdbdb; border-style: dashed"><br>
 		                            {!! DNS2D::getBarcodeSVG($attendee->private_reference_number, "QRCODE", 4, 4) !!}
-		                        
+
 		                        @if($event->is_1d_barcode_enabled)
-		                       
+
 		                            {!! DNS1D::getBarcodeSVG($attendee->private_reference_number, "C39+", 1, 50) !!}
-		                       
+
 		                        @endif
                     		</td>
-                    		
+
                     	</tr>
 
                     </table>
@@ -204,10 +209,10 @@ use App\Models\OrderItem;
                             {{money($attendee->ticket->total_price, $order->event->currency)}} (inc. {{money($attendee->ticket->total_booking_fee, $order->event->currency)}} Fees)
                         </div>-->
 
-                       
+
                     </div>
                     <!--added/edited by DonaldFeb28 trying limiting number of tickets in page-->
-                    <?php --$spacefixer; 
+                    <?php --$spacefixer;
                     	  if($spacefixer==0 && $target>0){ $spacefixer=$ticketsinpage; $blankspace='80px'; echo "</div><div style='height:".$blankspace."'></div> <div class='row'>"; }
                     	?>
                 @endif
@@ -217,14 +222,20 @@ use App\Models\OrderItem;
 
 
             <!--added by DonaldFeb26 edited by DonaldFeb28-->
-            	<?php 
-            		if(OrderItem::where(['order_id'=>$order->id, 'title'=>'Donation'])){
-            			$donationorder = OrderItem::where(['order_id'=>$order->id, 'title'=>'Donation'])->first();
-            			$donor = [
+            	<?php
+             // TODO prevent quering the database to just figure out if there is donation or not
+             $order = OrderItem::where(['order_id'=>$order->id, 'title'=>'Donation']);
+
+             	if($order->count() != 0){
+
+            			$donationorder = $order->first();
+               //dd($donationorder,$order);
+               $donor = [
             				'donation' => $donationorder->unit_price,
             				'first_name' => $order->first_name,
             				'last_name' => $order->last_name,
             			];
+
         			/*commented by DonaldFeb28 left as unconfirmed won't happen(just unlikely)
             			if($spacefixer==0){ $blankspace='80px'; echo "</div><div style='height:".$blankspace."'></div> <div class='row'>"; }
         			endofcomments by DonaldFeb28*/
@@ -248,15 +259,15 @@ use App\Models\OrderItem;
 
                     	<tr>
                     		<td>
-                    		 	<h5><b>Donor's Name</b></h5><h6>{{$donor['first_name'].' '.$donor['last_name']}}</h6> 
+                    		 	<h5><b>Donor's Name</b></h5><h6>{{$donor['first_name'].' '.$donor['last_name']}}</h6>
                     		</td>
                     		<td class="shade">
-                    		 	<h5><b>Venue</b></h5><h6>{{$event->venue_name}}</h6> 
+                    		 	<h5><b>Venue</b></h5><h6>{{$event->venue_name}}</h6>
                     		</td>
                     		<td>
                     			<h5><b>Order ref.</b></h5><h6>{{$order->order_reference}}</h6>
                     		</td>
-                    		                    		
+
                     	</tr>
 
                     	<tr>
@@ -264,7 +275,7 @@ use App\Models\OrderItem;
                     		 	<h5><b>Donated Amount</b></h5><h6>{{money($donor['donation'], $order->event->currency)}}</h6>
                     		</td>
                     		<td class="shade">
-                    		 	<h5><b>Event starts @</b></h5><h6>{{$event->start_date->format('M dS g:iA')}}</h6> 
+                    		 	<h5><b>Event starts @</b></h5><h6>{{$event->start_date->format('M dS g:iA')}}</h6>
                     		</td>
                     		<td>
                     		 	 <h5><b>Status</b></h5><h6>Received</h6>
@@ -273,20 +284,20 @@ use App\Models\OrderItem;
 
                     	<tr>
                     		<td>
-                    			
+
                     		</td>
                     		<td class="shade">
-                    		 	<h5><b>Event ends</b></h5><h6>{{$event->end_date->format('M dS g:iA')}}</h6> 
+                    		 	<h5><b>Event ends</b></h5><h6>{{$event->end_date->format('M dS g:iA')}}</h6>
                     		</td>
                     		<td>
-                    		 	 
+
                     		</td>
-                    		
-                    		
+
+
                     	</tr>
                     	<tr>
                     		<td>
-                    			
+
                     		</td>
                     		<td class="shade">
                                 &nbsp;
@@ -299,18 +310,18 @@ use App\Models\OrderItem;
                     		</td>
                     		<td style="border-left: solid 0.5px #dbdbdb; border-style: dashed"><br>
 		                            {!! DNS2D::getBarcodeSVG($attendee->private_reference_number, "QRCODE", 4, 4) !!}
-		                        
+
 		                        @if($event->is_1d_barcode_enabled)
-		                       
+
 		                            {!! DNS1D::getBarcodeSVG($attendee->private_reference_number, "C39+", 1, 50) !!}
-		                       
+
 		                        @endif
                     		</td>
-                    		
+
                     	</tr>--endcomment1-->
 
                     </table>
-                       
+
                     </div>
 
                 <?php } ?>

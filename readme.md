@@ -41,3 +41,38 @@ Upcoming changes in v2.0.0
  - Coupon/discount code support
  - Support for more payment providers
  - WordPress Plug-in
+
+
+ <h3>Installation</h3>
+ Do a git clone to this repository
+ After cloning to the following
+
+ #Do a composer install, This Installs Dependencies that are in the composer.json file
+
+ - composer install
+
+ #Copy the .env.example file to .env and make the necessary changes to the environment file, including adding the database, and pesapal configurations, remembering that the default database is mysql
+
+ cp .env.example .env
+
+#Install the platform, this will prompt you of your first_name, lastname, email, and password, this is the admin account.
+
+php artisan attendize:install
+
+YOU CAN NOW ACCESS THE PLATFORM ON YOUR ROOT FOLDER
+
+There are two ways of accessing.
+
+1. Through Apache server
+
+[server_root]/[application_folder]/public
+
+example is
+
+localhost/EventManagement/public
+
+2. Through PHP artisan server , On Which you need to run
+
+php artisan serve
+
+And
