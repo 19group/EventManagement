@@ -96,7 +96,7 @@
                          </div>
 
                           <!-- Tickets -->
-                          <div class="col-md-8">
+                          <div class="col-md-7">
 
 
                             <div class="tickets_table_wrap">
@@ -207,25 +207,32 @@
                           </div>
 
                           <!--Side event container -->
-                          <div class="col-md-4">
+                          <div class="col-md-5">
                              <h4> SIDE EVENTS</h4>
                                <?php foreach ($sideevent as $minevent){?>
                                    <hr>
-                                   Title : {{$minevent->title}} </br>
-                                   Description : {{$minevent->description}} </br>
-                                   Price: {{$minevent->price}} </br>
-                                                       <div class="col-md-3">
-                                                               {!! Form::hidden('tickets[]', $minevent->id) !!}
-                                                               <select name="ticket_{{$minevent->id}}" class="form-control"
-                                                                       style="text-align: center">
-                                                                   @if ($minevent->count() > 1)
-                                                                       <option value="0">0</option>
-                                                                   @endif
-                                                                   @for($i=$minevent->min_per_person; $i<=$minevent->max_per_person; $i++)
-                                                                       <option value="{{$i}}">{{$i}}</option>
-                                                                   @endfor
-                                                               </select>
-                                                       </div>
+                                   <p><b>Title : {{$minevent->title}} </b></p>
+                                   <p><b>Description :</b> {{$minevent->description}} </br></p>
+                                   <div class="row">
+                                         <div class="col-sm-6">
+                                          <b>
+                                           Price:
+                                           <span title='{{money($ticket->price, $event->currency)}} Ticket Price + {{money($ticket->total_booking_fee, $event->currency)}} Booking Fees'>{{money($minevent->price, $event->currency)}} </span>
+                                          </b>
+                                         </div>
+                                         <div class="col-sm-6">
+                                                 {!! Form::hidden('tickets[]', $minevent->id) !!}
+                                                 <select name="ticket_{{$minevent->id}}" class="form-control"
+                                                         style="text-align: center">
+                                                     @if ($minevent->count() > 1)
+                                                         <option value="0">0</option>
+                                                     @endif
+                                                     @for($i=$minevent->min_per_person; $i<=$minevent->max_per_person; $i++)
+                                                         <option value="{{$i}}">{{$i}}</option>
+                                                     @endfor
+                                                 </select>
+                                         </div>
+                                   </div>
                                <?php } ?>
                           </div>
 

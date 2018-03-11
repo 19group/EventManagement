@@ -2926,12 +2926,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Studio19/Pesapal.git",
-                "reference": "c12b3bdff104a789055600772374fa717ffc419f"
+                "reference": "c0e6abae081df24e96bf81338cc9ff008961892b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Studio19/Pesapal/zipball/c12b3bdff104a789055600772374fa717ffc419f",
-                "reference": "c12b3bdff104a789055600772374fa717ffc419f",
+                "url": "https://api.github.com/repos/Studio19/Pesapal/zipball/c0e6abae081df24e96bf81338cc9ff008961892b",
+                "reference": "c0e6abae081df24e96bf81338cc9ff008961892b",
                 "shasum": ""
             },
             "require": {
@@ -2976,7 +2976,7 @@
                 "pesapal",
                 "visa"
             ],
-            "time": "2018-03-10 14:21:35"
+            "time": "2018-03-11 14:03:18"
         },
         {
             "name": "swiftmailer/swiftmailer",

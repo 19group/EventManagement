@@ -97,7 +97,6 @@ use App\Models\OrderItem;
 
  $ticketsinpage = 3; $spacefixer = $ticketsinpage; $target = count($attendees);
 
-
  ?>
 	<!--end of addition by DonaldFeb28-->
         <div class="row">
@@ -224,12 +223,12 @@ use App\Models\OrderItem;
             <!--added by DonaldFeb26 edited by DonaldFeb28-->
             	<?php
              // TODO prevent quering the database to just figure out if there is donation or not
-             $order = OrderItem::where(['order_id'=>$order->id, 'title'=>'Donation']);
+             $order_donation = OrderItem::where(['order_id'=>$order->id, 'title'=>'Donation']);
 
-             	if($order->count() != 0){
+              if($order_donation->count() != 0){
 
-            			$donationorder = $order->first();
-               //dd($donationorder,$order);
+            			$donationorder = $order_donation->first();
+               //dd("Donation Order" .$order->first_name);
                $donor = [
             				'donation' => $donationorder->unit_price,
             				'first_name' => $order->first_name,
