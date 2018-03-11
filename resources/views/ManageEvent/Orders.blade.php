@@ -60,7 +60,10 @@ Event Orders
 
 @section('content')
 <!--Start Attendees table-->
-<?php $donation=0;?>
+<?php
+//dd("I am here now");
+$donation=0;
+?>
 <div class="row">
 
     @if($orders->count())
@@ -115,9 +118,14 @@ Event Orders
                                     data-href="{{route('showMessageOrder', ['order_id'=>$order->id])}}"
                                 > {{$order->email}}</a>
                             </td>
-                            <?php if(OrderItem::where(['title'=>'Donation','order_id'=>$order->id])){
-                                $donation = OrderItem::where(['title'=>'Donation','order_id'=>$order->id])->first()->unit_price;
-                            } ?>
+                            <?php
+                            
+                            //Check if the order has donation, so as to add it to the ovarall order amount;
+                            $order_donation = OrderItem::where(['title'=>'Donation','order_id'=>$order->id]);
+                            if($order_donation->count() != 0){
+                                $donation = $order_donation->first()->unit_price;
+                            }
+                            ?>
                             <td>
                                 <a href="#" class="hint--top" data-hint="{{money($order->amount, $event->currency)}} + {{money($order->organiser_booking_fee, $event->currency)}} + {{money($donation, $event->currency)}} Organiser Booking Fee">
                                     {{money($order->amount + $donation + $order->organiser_booking_fee, $event->currency)}}

@@ -2,6 +2,13 @@
 body {
   min-height: 100%;
 }
+.side-events{
+background-color: #3D5A61;
+color:white;
+padding-top:5px;
+padding-bottom:15px;
+}
+
 .humane,
 .humane-flatty {
   position: fixed;

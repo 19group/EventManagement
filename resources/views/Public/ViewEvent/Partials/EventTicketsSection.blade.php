@@ -199,7 +199,6 @@
                                           </div>
 
                                       @endif
-                                      {!!Form::submit('Register', ['class' => 'btn btn-lg btn-primary pull-right'])!!}
                                   </td>
                               </tr>
                                </table>
@@ -207,18 +206,16 @@
                           </div>
 
                           <!--Side event container -->
-                          <div class="col-md-5">
+                          <div class="col-md-5 side-events">
                              <h4> SIDE EVENTS</h4>
                                <?php foreach ($sideevent as $minevent){?>
                                    <hr>
-                                   <p><b>Title : {{$minevent->title}} </b></p>
-                                   <p><b>Description :</b> {{$minevent->description}} </br></p>
+                                   <p><b>{{$minevent->title}} </b></p>
+                                   <p>{{$minevent->description}} </br></p>
                                    <div class="row">
                                          <div class="col-sm-6">
-                                          <b>
-                                           Price:
-                                           <span title='{{money($ticket->price, $event->currency)}} Ticket Price + {{money($ticket->total_booking_fee, $event->currency)}} Booking Fees'>{{money($minevent->price, $event->currency)}} </span>
-                                          </b>
+                                          <b class="col-sm-6" left>Price:</b>
+                                           <span class="col-sm-6" title='{{money($ticket->price, $event->currency)}} Ticket Price + {{money($ticket->total_booking_fee, $event->currency)}} Booking Fees'>{{money($minevent->price, $event->currency)}} </span>
                                          </div>
                                          <div class="col-sm-6">
                                                  {!! Form::hidden('tickets[]', $minevent->id) !!}
@@ -235,7 +232,8 @@
                                    </div>
                                <?php } ?>
                           </div>
-
+                          <hr />
+                          {!!Form::submit('Register', ['class' => 'btn btn-lg btn-primary pull-right'])!!}
                         </div>
 
                     </div> <!-- End Content -->
