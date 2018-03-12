@@ -8,6 +8,7 @@ use App\Coupon;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Log;
+use DB;
 use Illuminate\Support\Facades\Input;
 
 /*
@@ -84,9 +85,15 @@ class EventTicketsController extends MyBaseController
     }
 
     public function showCreateCoupon($event_id)
-    {
-        return view('ManageEvent.Modals.CreateCoupon', [
-            'event' => Event::scope()->find($event_id),
+    { 
+
+      $tickets = DB::table('tickets')->where('event_id','=', $event_id)->get(['id', 'title']);
+
+      //dd($tickets);
+
+       return view('ManageEvent.Modals.CreateCoupon', [
+            'event' => Event::scope()->find($event_id), 
+            'ticks' => $tickets,
         ]);
     }
 
@@ -161,16 +168,21 @@ class EventTicketsController extends MyBaseController
 
     public function postCreateCoupon(Request $request, $event_id)
     {
-       $coupons_limit = $request->get('max_coupons');
-       $discount = $request->get('discount');
+       //$coupons_limit = $request->get('max_coupons');
+       //$discount = $request->get('discount');
+       //$input = $request();
 
-       //dd($request->all());
+       //$input = Input::all();
+       //dd($input);
 
-            for ($i = 0; $i < $coupons_limit; $i++) {
+
+            for ($i = 0; $i < $request->get('max_coupons'); $i++) {
               Coupon::create([
                 'coupon_code' => str_random(10),
-                'discount' => $discount,
+                'discount' => $request->get('discount'),
+                'exact_amount' => $request->get('exact_amt'),
                 'state' => 'Valid',
+                'ticket' =>  $request->get('title'),
                 'event_id' =>  $event_id,
               ]);
             }

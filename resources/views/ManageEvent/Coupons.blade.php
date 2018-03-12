@@ -126,7 +126,13 @@ Coupons
                                Coupon code
                             </th>
                             <th>
+                               Associated Ticket
+                            </th>
+                            <th>
                                Discount
+                            </th>
+                            <th>
+                               Exact Amount
                             </th>
                             <th>
                                State
@@ -141,11 +147,33 @@ Coupons
                         @foreach($attendees as $attendee)
                         <tr>
                             <!--<td><input type="" class="btn btn-danger" style="width: 150px" value="{{$attendee->coupon_code}}" disabled /></td>-->
-                            <td><button class="btn btn-danger" onClick="copy(this)" style="width: 150px;">{{$attendee->coupon_code}}</button></td>
+                            <td><button class="btn btn-danger" onClick="copy(this)" style="width: 110px;">{{$attendee->coupon_code}}</button></td>
                             <td>
-                                 {{$attendee->discount}} %
+                                 {{$attendee->ticket}}
                             </td>
                             <td>
+                               <?php if($attendee->discount!='')
+                                 
+                                 echo($attendee->discount.'%');
+
+                                 else 
+
+                                    echo("-");
+
+                                 ?>
+                            </td>
+                            <td>
+                                <?php if($attendee->exact_amount!='')
+                                 
+                                 echo($attendee->exact_amount);
+
+                                 else 
+
+                                    echo("-");
+
+                                 ?>
+                            </td>
+                             <td>
                                 {{$attendee->state}}
                             </td>
                             <td>
@@ -183,6 +211,8 @@ function copy(that){
 
 
 }
+
+
 
 
 </script>
