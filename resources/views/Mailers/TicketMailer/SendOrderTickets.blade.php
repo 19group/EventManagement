@@ -1,11 +1,15 @@
 @extends('Emails.Layouts.Master')
 
 @section('message_content')
-Hello,<br><br>
+Hello {{$order->full_name}},<br><br>
+
+Welcome to {{$order->event->title}} in Dar es Salaam!<br><br>
+
+We look forward to welcoming you to our city and for you to<br><br>
 
 Your order for the event <b>{{$order->event->title}}</b> was successful.<br><br>
 
-Your tickets are attached to this email. You can also view you order details and download your tickets at: {{route('showOrderDetails', ['order_reference' => $order->order_reference])}}
+Your tickets are attached to this email. You can also view you order details and download your tickets at: {{route('showOrderDetails', ['order_reference' => $order->order_reference])}}<br><br>
 
 @if(!$order->is_payment_received)
 <br><br>
@@ -98,5 +102,9 @@ Order Email: <b>{{$order->email}}</b><br>
     <br><br>
 </div>
 <br><br>
-Thank you
+If you have any questions regarding the event, please feel free to reply to this email.<br><br>
+
+Thankyou, and We look forward to seeing you at the event,<br>
+FOSS4G 2018 Dar es Salaam Local Organising Committee (DLOC)<br>
+
 @stop
