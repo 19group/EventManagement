@@ -4,6 +4,7 @@ use App\Models\Event;
 use App\Models\Ticket;
 use App\Models\Organiser;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use DB;
 use Log;
 use DateTime;
@@ -84,6 +85,15 @@ class OrganiserEventsController extends MyBaseController
             ]);
         }
 
+        $f=0; $miss=0; $esc=0; $scheduleopts=[]; 
+        while($miss<3){
+          if($request->has("start_schedule_$f") && $request->has("end_schedule_$f")){
+            $scheduleopts[$esc]=Carbon::createFromFormat('d-m-Y H:i',
+            $request->get("start_schedule_$f"))."<==>".Carbon::createFromFormat('d-m-Y H:i',
+            $request->get("end_schedule_$f"));++$f;++$esc;$miss=0;
+          }else{++$miss;++$f;}
+        }
+
         $ticket->event_id = $event_id;
         $ticket->type = 'SIDEEVENT';
         $ticket->title = $request->get('title');
@@ -96,6 +106,7 @@ class OrganiserEventsController extends MyBaseController
         $ticket->min_per_person = $request->get('min_per_person');
         $ticket->max_per_person = $request->get('max_per_person');
         $ticket->description = $request->get('description');
+        $ticket->ticket_offers = empty($scheduleopts) ? null : implode("+++", $scheduleopts);
         $ticket->is_hidden = 0;
 
         $ticket->save();
@@ -106,13 +117,94 @@ class OrganiserEventsController extends MyBaseController
             'status'      => 'success',
             'id'          => $ticket->id,
             'message'     => 'Refreshing...',
-            'redirectUrl' => route('showEventTickets', [
+            'redirectUrl' => route('showSideEvents', [
                 'event_id' => $event_id,
             ]),
         ]);
     }
 
-    //end of addition DonaldMar2
+    /**
+     * @param Request $request
+     * @param $event_id
+     * @param $ticket_id
+     * @return mixed
+     */
+    public function postEditSideEvent(Request $request, $event_id,  $ticket_id)
+    {
+        $event = Event::scope()->findOrfail($event_id);
+        
+        $ticket = Ticket::scope()->findOrFail($ticket_id);
+        if (!$ticket->validate($request->all())) {
+            return response()->json([
+                'status'   => 'error',
+                'messages' => $ticket->errors(),
+            ]);
+        }
+        $of=0; $omiss=0; $esc=0; $scheduleopts=[]; 
+        while($omiss<3){
+          if($request->get("ogstart_schedule_$of") && $request->get("ogend_schedule_$of")){
+            $scheduleopts[$esc]=Carbon::createFromFormat('d-m-Y H:i',
+            $request->get("ogstart_schedule_$of"))."<==>".Carbon::createFromFormat('d-m-Y H:i',
+            $request->get("ogend_schedule_$of"));++$of;++$esc;$omiss=0;
+          }else{++$omiss;++$of;}
+        }
+
+        $f=0; $miss=0;
+        while($miss<3){
+          if($request->get("start_schedule_$f") && $request->get("end_schedule_$f")){
+            $scheduleopts[$esc]=Carbon::createFromFormat('d-m-Y H:i',
+            $request->get("start_schedule_$f"))."<==>".Carbon::createFromFormat('d-m-Y H:i',
+            $request->get("end_schedule_$f"));++$f;++$esc;$miss=0;
+          }else{++$miss;++$f;}
+        }
+
+        $ticket->event_id = $event_id;
+        $ticket->type = 'SIDEEVENT';
+        $ticket->title = $request->get('title');
+        $ticket->quantity_available = !$request->get('quantity_available') ? null : $request->get('quantity_available');
+        $ticket->start_sale_date = $request->get('start_sale_date') ? Carbon::createFromFormat('d-m-Y H:i',
+            $request->get('start_sale_date')) : null;
+        $ticket->end_sale_date = $request->get('end_sale_date') ? Carbon::createFromFormat('d-m-Y H:i',
+            $request->get('end_sale_date')) : null;
+        $ticket->price = $request->get('price');
+        $ticket->min_per_person = $request->get('min_per_person');
+        $ticket->max_per_person = $request->get('max_per_person');
+        $ticket->description = $request->get('description');
+        $ticket->ticket_offers = empty($scheduleopts) ? null : implode("+++", $scheduleopts);
+        $ticket->is_hidden = 0;
+
+        $ticket->save();
+
+        session()->flash('message', 'Successfully Edited Side Event');
+
+        return response()->json([
+            'status'      => 'success',
+            'id'          => $ticket->id,
+            'message'     => 'Refreshing...',
+            'redirectUrl' => route('showSideEvents', [
+                'event_id' => $event_id,
+            ]),
+        ]);
+    }
+
+    /**
+     * Show the edit sideevent modal
+     *
+     * @param $event_id
+     * @param $sideevent_id
+     * @return mixed
+     */
+    public function showEditSideEvent($event_id, $sideevent_id)
+    {
+        $data = [
+            'event'  => Event::scope()->find($event_id),
+            'ticket' => Ticket::scope()->find($sideevent_id),
+        ];
+
+        return view('ManageEvent.Modals.EditSideEvent', $data);
+    }
+
+    //end of addition DonaldMar2 DonaldMar12
 
 
     /**

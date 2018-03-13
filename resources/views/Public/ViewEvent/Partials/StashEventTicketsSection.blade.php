@@ -299,7 +299,7 @@
                                                      @if ($minevent->count() > 1)
                                                          <option value="0">0</option>
                                                      @endif
-                                                     @for($i=$minevent->min_per_person; $i<=$minevent->max_per_person; $i++)
+                                                     @for($i=$minevent->min_per_person; $i<=15; $i++)
                                                          <option value="{{$i}}">{{$i}}</option>
                                                      @endfor
                                                  </select>
@@ -309,7 +309,7 @@
                                             $toffers = explode('+++',$minevent->ticket_offers);
                                    echo "<p><b> Choose the schedule/schedules for your side event ticket(s) </b></p>";
                                             for($i=0;$i<count($toffers);++$i){
-                                                $sched = explode('<==>',$toffers[$i]);
+                                                $sched = explode('<==>',$toffers[$i]); 
                                                 $checkbox = ' From '.date('d-M-Y H:i', strtotime($sched[0])).' To '.date('d-M-Y H:i', strtotime($sched[1])); ?>
                                       <div class="row">
                                       {{ Form::checkbox($minevent->id."selscheds[]",$checkbox) }} {{ $checkbox}}

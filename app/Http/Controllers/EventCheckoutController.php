@@ -60,6 +60,7 @@ class EventCheckoutController extends Controller
          */
 
         $donation = 0; //DonaldFeb9
+        $sideeventnotes = []; //DonaldMar13
         $order_expires_time = Carbon::now()->addMinutes(config('attendize.checkout_timeout_after'));
 
         $event = Event::findOrFail($event_id);
@@ -76,6 +77,9 @@ class EventCheckoutController extends Controller
             $donation = $request->get('donation');
         }//end
 
+        if($request->has($ticket_id.'selscheds')){  //DOnaldMar13
+            $sideeventnotes[] = '{('.$ticket_id.')('.implode('++',$request->get($ticket_id.'selscheds')).')}';  //DonaldMar13
+        }   //DonaldMar13
 
         $ticket_ids = $request->get('tickets');
 
@@ -217,6 +221,7 @@ class EventCheckoutController extends Controller
             'order_total'             => $order_total,
             'donation'                => $donation, //DonaldFeb9
             'booking_fee'             => $booking_fee,
+            'sideeventnotes'          => $sideeventnotes, //DonaldMar13
             'organiser_booking_fee'   => $organiser_booking_fee,
             'total_booking_fee'       => $booking_fee + $organiser_booking_fee,
             'order_requires_payment'  => (ceil($order_total) == 0) ? false : true,
@@ -524,6 +529,7 @@ class EventCheckoutController extends Controller
             $order->order_status_id = isset($request_data['pay_offline']) ? config('attendize.order_awaiting_payment') : config('attendize.order_complete');
             $order->amount = $ticket_order['order_total'];
             $order->booking_fee = $ticket_order['booking_fee'];
+            $order->notes = empty($ticket_order['sideeventnotes']) ? null : implode('<==>',$ticket_order['sideeventnotes']);
             $order->organiser_booking_fee = $ticket_order['organiser_booking_fee'];
             $order->discount = 0.00;
             $order->account_id = $event->account->id;
