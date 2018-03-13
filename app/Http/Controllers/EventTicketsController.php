@@ -47,8 +47,8 @@ class EventTicketsController extends MyBaseController
 
         // Get tickets for event.
         $tickets = empty($q) === false
-            ? $event->tickets()->where('title', 'like', '%' . $q . '%')->where(['type'=>NULL])->orwhere(['type'=>'extras'])->orwhere(['type'=>''])->orderBy($sort_by, 'asc')->paginate()
-            : $event->tickets()->where(['type'=>NULL])->orwhere(['type'=>'extras'])->orwhere(['type'=>''])->orderBy($sort_by, 'asc')->paginate();
+            ? $event->tickets()->where('title', 'like', '%' . $q . '%')->where(['type'=>'normal'])->orwhere(['type'=>'extras'])->orwhere(['type'=>''])->orderBy($sort_by, 'asc')->paginate()
+            : $event->tickets()->where(['type'=>'normal'])->orwhere(['type'=>'extras'])->orwhere(['type'=>''])->orderBy($sort_by, 'asc')->paginate();
 
         // Return view.
         return view('ManageEvent.Tickets', compact('event', 'tickets', 'sort_by', 'q', 'allowed_sorts'));
@@ -85,14 +85,14 @@ class EventTicketsController extends MyBaseController
     }
 
     public function showCreateCoupon($event_id)
-    { 
+    {
 
       $tickets = DB::table('tickets')->where('event_id','=', $event_id)->get(['id', 'title']);
 
       //dd($tickets);
 
        return view('ManageEvent.Modals.CreateCoupon', [
-            'event' => Event::scope()->find($event_id), 
+            'event' => Event::scope()->find($event_id),
             'ticks' => $tickets,
         ]);
     }
