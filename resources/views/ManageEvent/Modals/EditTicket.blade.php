@@ -51,6 +51,7 @@ document.getElementById("ticketoffers").appendChild(p);
                     </div>
                 </div>
 
+
                 <div class="form-group more-options">
                     {!! Form::label('description', 'Ticket Description', ['class'=>'control-label']) !!}
                     {!!  Form::text('description', null,['class'=>'form-control']) !!}
@@ -60,7 +61,7 @@ document.getElementById("ticketoffers").appendChild(p);
                 <?php if($ticket->ticket_offers!=NULL){
                     $toffers = explode('#@#',$ticket->ticket_offers);
                     $firstholder = $toffers[0];
-                    
+
                 // }else{
                 //    $firstholder = 'E.g: Ticket Holder will get a free drink at the entrance';
                 //    } ?>
@@ -96,7 +97,7 @@ document.getElementById("ticketoffers").appendChild(p);
                 <?php
 
                         }
-                    } 
+                    }
                 } else { ?>
                 <div class="row more-options">
                     <div class="col-md-12">
@@ -114,7 +115,7 @@ document.getElementById("ticketoffers").appendChild(p);
                 <?php } ?>
 
                 <div class = "row more options" id="ticketoffers">
-                            
+
                 </div>
 
                 <div class="row more-options">
@@ -126,7 +127,7 @@ document.getElementById("ticketoffers").appendChild(p);
                 </div>
                 <!--end of addition-->
 
-            
+
 
                 <div class="row more-options">
                     <div class="col-sm-6">
@@ -176,6 +177,15 @@ document.getElementById("ticketoffers").appendChild(p);
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                             {!! Form::label('type', 'Ticket Type', array('class'=>' control-label')) !!}
+                             {!! Form::select('type', ['Normal', 'extras'=>'Extras', 'SIDEEVENT'=>'Side Event'],null, ['class' => 'form-control']) !!}
+
+                        </div>
+                    </div>
+                </div>
                 <div class="row more-options">
                     <div class="col-md-12">
                         <div class="form-group">
@@ -187,6 +197,7 @@ document.getElementById("ticketoffers").appendChild(p);
                         </div>
                     </div>
                 </div>
+
                 <a href="javascript:void(0);" class="show-more-options">
                     More Options
                 </a>

@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Input;
  */
 
 class EventTicketsController extends MyBaseController
-{ 
+{
     /**
      * @param Request $request
      * @param $event_id
@@ -46,8 +46,8 @@ class EventTicketsController extends MyBaseController
 
         // Get tickets for event.
         $tickets = empty($q) === false
-            ? $event->tickets()->where('title', 'like', '%' . $q . '%')->where(['type'=>NULL])->orderBy($sort_by, 'asc')->paginate()
-            : $event->tickets()->where(['type'=>NULL])->orderBy($sort_by, 'asc')->paginate();
+            ? $event->tickets()->where('title', 'like', '%' . $q . '%')->where(['type'=>NULL])->orwhere(['type'=>'extras'])->orwhere(['type'=>''])->orderBy($sort_by, 'asc')->paginate()
+            : $event->tickets()->where(['type'=>NULL])->orwhere(['type'=>'extras'])->orwhere(['type'=>''])->orderBy($sort_by, 'asc')->paginate();
 
         // Return view.
         return view('ManageEvent.Tickets', compact('event', 'tickets', 'sort_by', 'q', 'allowed_sorts'));
@@ -98,14 +98,15 @@ class EventTicketsController extends MyBaseController
      */
     public function postCreateTicket(Request $request, $event_id)
     {
-        $ticket = Ticket::createNew();
-        $f=0; $miss=0; $toc=0; $ticketoffers=[]; 
+
+       $ticket = Ticket::createNew();
+        $f=0; $miss=0; $toc=0; $ticketoffers=[];
         while($miss<3){
           if($request->get("ticket_offer_$f")){
             $ticketoffers[$toc]=$request->get("ticket_offer_$f");++$f;++$toc;$miss=0;
           }else{++$miss;++$f;}
         }
-        $g=0; $mix=0; $oxc=0; $ticketextras=[]; 
+        $g=0; $mix=0; $oxc=0; $ticketextras=[];
         while($mix<3){
           if($request->has("ticket_extra_$g")){
             $ticketextras[$oxc]=$request->get("ticket_extra_$g");
@@ -128,6 +129,8 @@ class EventTicketsController extends MyBaseController
             ]);
         }
 
+
+
         $ticket->event_id = $event_id;
         $ticket->title = $request->get('title');
         $ticket->quantity_available = !$request->get('quantity_available') ? null : $request->get('quantity_available');
@@ -139,6 +142,7 @@ class EventTicketsController extends MyBaseController
         $ticket->min_per_person = $request->get('min_per_person');
         $ticket->max_per_person = $request->get('max_per_person');
         $ticket->description = $request->get('description');
+        $ticket->type = $request->get('type');
         $ticket->ticket_offers = empty($ticketoffers) ? null : implode('#@#',$ticketoffers);
         $ticket->ticket_extras = empty($ticketextras) ? null : implode('{+}',$ticketextras);
         $ticket->is_hidden = $request->get('is_hidden') ? 1 : 0;
@@ -303,6 +307,7 @@ class EventTicketsController extends MyBaseController
         $ticket->end_sale_date = $request->get('end_sale_date') ? Carbon::createFromFormat('d-m-Y H:i',
             $request->get('end_sale_date')) : null;
         $ticket->description = $request->get('description');
+        $ticket->type = $request->get('type');
         $ticket->ticket_offers = empty($ticketoffers) ? null : implode('#@#',$ticketoffers);
         $ticket->min_per_person = $request->get('min_per_person');
         $ticket->max_per_person = $request->get('max_per_person');

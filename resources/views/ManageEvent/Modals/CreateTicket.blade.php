@@ -59,7 +59,7 @@
                         </div>
 
 <!-- Added by Donald on Jan 31 -->
-   
+
                         <div class="row more-options">
                             <div class="col-md-12">
                                 <div class="form-group">
@@ -72,9 +72,9 @@
                                                 ))  !!}
                                 </div>
                             </div>
-                        </div> 
+                        </div>
                         <div class = "row more options" id="ticketoffers">
-                            
+
                         </div>
                         <div class="row more-options">
                             <div class="col-md-12">
@@ -86,7 +86,7 @@
 <!--end of addition-->
 
 <!-- Added by Donald on March 9 -->
-   
+
                         <div class="row more-options">
                             <div class="col-md-12">
                                 <div class="form-group">
@@ -99,8 +99,8 @@
                                                 ))  !!}
                                 </div>
                             </div>
-                        </div> 
-   
+                        </div>
+
                         <div class="row more-options">
                             <div class="col-md-8">
                                 <div class="form-group">
@@ -122,14 +122,14 @@
                                                 ))  !!}
                                 </div>
                             </div>
-                        </div> 
+                        </div>
 
                         <div class = "row more options" id="ticketextras">
-                            
+
                         </div>
 
                         <div class = "row more options" id="extrasinfos">
-                            
+
                         </div>
                         <div class="row more-options">
                             <div class="col-md-12">
@@ -200,6 +200,14 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                     {!! Form::label('type', 'Ticket Type', array('class'=>' control-label')) !!}
+                                     {!! Form::select('type', ['normal' =>'Normal', 'extras'=>'Extras', 'SIDEEVENT'=>'Side Event'],null, ['class' => 'form-control']) !!}
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
 
@@ -224,7 +232,7 @@
 
 <script>
 $(function() {
-        
+
     var offer = 0; var extra=0;
     $('#add_offer').on('click', function(e) {
         var p = document.createElement('div');
@@ -240,7 +248,7 @@ $(function() {
         f.setAttribute("name", "ticket_offer_" + offer);
         p.appendChild(d);
         d.appendChild(f);
-        r.setAttribute("id", "offer_" + offer); 
+        r.setAttribute("id", "offer_" + offer);
         document.getElementById("ticketoffers").appendChild(p);
     });
 
@@ -258,11 +266,11 @@ $(function() {
         i.setAttribute("name", "ticket_extra_" + extra);
         m.appendChild(k);
         k.appendChild(i);
-        s.setAttribute("id", "extra_" + extra); 
+        s.setAttribute("id", "extra_" + extra);
         document.getElementById("ticketextras").appendChild(m);
 
 
-        var na = document.createElement('div');  
+        var na = document.createElement('div');
         var ne = document.createElement('div');
         var la = document.createElement('div');
         var le = document.createElement('div');
@@ -286,8 +294,8 @@ $(function() {
         ne.appendChild(le);
         la.appendChild(ja);
         le.appendChild(je);
-        ja.setAttribute("id", "ticket_extra_option_" + extra); 
-        je.setAttribute("id", "ticket_extra_amt_" + extra); 
+        ja.setAttribute("id", "ticket_extra_option_" + extra);
+        je.setAttribute("id", "ticket_extra_amt_" + extra);
         document.getElementById("ticketextras").appendChild(na);
         document.getElementById("ticketextras").appendChild(ne);
 

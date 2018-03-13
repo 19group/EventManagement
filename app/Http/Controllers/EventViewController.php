@@ -13,7 +13,7 @@ use Mail;
 use Validator;
 
 class EventViewController extends Controller
-{ 
+{
     /**
      * Show the homepage for an event
      *
@@ -34,7 +34,8 @@ class EventViewController extends Controller
         $data = [
             'event'       => $event,
             'sideevent'   => $event->tickets()->where('is_hidden', 0)->where(['type'=>'SIDEEVENT'])->orderBy('sort_order', 'asc')->get(),
-            'tickets'     => $event->tickets()->where('is_hidden', 0)->where(['type'=>NULL])->orderBy('sort_order', 'asc')->get(),
+            'tickets'     => $event->tickets()->where('is_hidden', 0)->where(['type'=>NULL])->orwhere(['type'=>'normal'])->orwhere(['type'=>''])->orderBy('sort_order', 'asc')->get(),
+            'extras'     => $event->tickets()->where('is_hidden', 0)->where(['type'=>'extras'])->orderBy('sort_order', 'asc')->get(),
             'is_embedded' => 0,
         ];
         /*

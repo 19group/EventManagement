@@ -184,6 +184,81 @@
                                   </tr>
                               @endforeach
 
+
+
+                                                            @if($extras->count()>0)
+
+                                                            <tr class="ticket" property="offers" typeof="Offer">
+                                                                <td>
+                                                            <h3>Extras</h3>
+                                                           </td>
+                                                          </tr>
+
+                                                            @foreach($extras as $extra)
+                                                                <tr class="ticket" property="offers" typeof="Offer">
+                                                                    <td>
+                                                            <span class="ticket-title semibold" property="name">
+                                                                {{$extra->title}}
+                                                            </span>
+                                                                    <td style="width:180px; text-align: right;">
+                                                                        <div class="ticket-pricing" style="margin-right: 20px;">
+                                                                            @if($ticket->is_free)
+                                                                                FREE
+                                                                                <meta property="price" content="0">
+                                                                            @else
+                                                                                <?php
+                                                                                $is_free_event = false;
+                                                                                ?>
+                                                                                <span title='{{money($ticket->price, $event->currency)}} Ticket Price + {{money($ticket->total_booking_fee, $event->currency)}} Booking Fees'>{{money($ticket->total_price, $event->currency)}} </span>
+                                                                                <meta property="priceCurrency"
+                                                                                      content="{{ $event->currency->code }}">
+                                                                                <meta property="price"
+                                                                                      content="{{ number_format($ticket->price, 2, '.', '') }}">
+                                                                            @endif
+                                                                        </div>
+                                                                    </td>
+                                                                    <td style="width:85px;">
+                                                                        @if($ticket->is_paused)
+
+                                                                            <span class="text-danger">
+                                                                Currently Not On Sale
+                                                            </span>
+
+                                                                        @else
+
+                                                                            @if($ticket->sale_status === config('attendize.ticket_status_sold_out'))
+                                                                                <span class="text-danger" property="availability"
+                                                                                      content="http://schema.org/SoldOut">
+                                                                Sold Out
+                                                            </span>
+                                                                            @elseif($ticket->sale_status === config('attendize.ticket_status_before_sale_date'))
+                                                                                <span class="text-danger">
+                                                                Sales Have Not Started
+                                                            </span>
+                                                                            @elseif($ticket->sale_status === config('attendize.ticket_status_after_sale_date'))
+                                                                                <span class="text-danger">
+                                                                Sales Have Ended
+                                                            </span>
+                                                                            @else
+                                                                                {!! Form::hidden('tickets[]', $ticket->id) !!}
+                                                                                <meta property="availability" content="http://schema.org/InStock">
+                                                                                <select name="ticket_{{$ticket->id}}" class="form-control"
+                                                                                        style="text-align: center">
+                                                                                    @if ($tickets->count() > 1)
+                                                                                        <option value="0">0</option>
+                                                                                    @endif
+                                                                                    @for($i=$ticket->min_per_person; $i<=$ticket->max_per_person; $i++)
+                                                                                        <option value="{{$i}}">{{$i}}</option>
+                                                                                    @endfor
+                                                                                </select>
+                                                                            @endif
+
+                                                                        @endif
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                            @endif
+
                               <tr class="checkout">
                                   <td colspan="3">
                                       @if(!$is_free_event)
