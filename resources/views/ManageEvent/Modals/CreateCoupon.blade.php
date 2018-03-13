@@ -45,11 +45,15 @@ document.getElementById("ticketoffers").appendChild(p);
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="col-md-12">Associated Ticket</label> 
-        <?php $ticket_assocs = \App\Models\Ticket::where(['event_id'=>$event->id])->get(); $s=0; foreach($ticket_assocs as $assocs){$ticks[$s]=$assocs->title; ++$s;}?>
-    {!! Form::select('assoc_ticket', $ticks, 'assoc_ticket', ['class' => 'form-control gateway_selector']) !!}
-                            <!--<input id="discount" class="form-control" type="number" name="discount" placeholder="Enter % discount">-->
+                              <div class="form-group">
+                                  <select class="form-control" name="title">
+                                    @foreach($ticks as $item)
+                                      <option value="{{$item->title}}">{{$item->title}}</option>
+                                    @endforeach
+                                  </select>
+                            </div>
+                
                         </div>
-                    </div>
                 </div>
                 <div class="row">
                     <div class="col-md-12">
@@ -62,13 +66,13 @@ document.getElementById("ticketoffers").appendChild(p);
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="col-md-12">Coupon's Exact Amount</label>
-                            <input id="exact_amt" class="form-control" type="number" name="exact_amt" placeholder="Enter number of coupons to generate">
+                            <input id="exact_amt" class="form-control" type="number" onkeyup="validate()" name="exact_amt" placeholder="Enter number of coupons to generate">
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="col-md-12">Coupon's Percentage Discount</label>
-                            <input id="perc_discount" class="form-control" type="number" name="percentage" placeholder="Enter % discount">
+                            <input id="perc_discount" class="form-control" type="number" onkeyup="validate()" name="discount" placeholder="Enter % discount">
                         </div>
                     </div>
                 </div>
@@ -141,33 +145,38 @@ document.getElementById("ticketoffers").appendChild(p);
 
 <script type="text/javascript">
     
-    function generate_coupons(){
+    function validate(){
 
-        var coupons_limit = document.getElementById('max_coupons').value;
+        var exact_amountt = document.getElementById('exact_amt').value;
+        var percentage_discount = document.getElementById('perc_discount').value;
 
-        var token_no = [];
+        if (exact_amountt!='') {
 
-        if (coupons_limit!='') {
-
-            for (i = 0; i <coupons_limit; i++) { 
-                    
-                token_no[i] = (Math.random().toString(36).substring(2, 12));
-
-                    document.getElementById('target_div').innerHTML += "<br><input id='' class='form-control text-center text-uppercase' disabled type='text' name='token_no["+ i +"]' value='"+ token_no[i] +"'><br>" ;
-                    //document.getElementById('tokens').innerHTML += "<input id='discount' class='form-control btn btn-info' disabled type='number' name= " + token[i] + " placeholder="+token[i]+">" ;
-
-
-
-                    //(Math.random().toString(36).substring(2, 15)+"\n");
-
-
-                }
+           document.getElementById("perc_discount").disabled = true;
         }
-        else{
-                    document.getElementById('target_div').innerHTML += "<br><p> Insert a valid number first.</p><br>" ;
+        else if (percentage_discount!='') {
+              
+           document.getElementById("exact_amt").disabled = true;
+
+            if(percentage_discount < 0){
+
+                perc_discount.value = '0';
+            }
+            else if (percentage_discount > 100) {
+               
+                perc_discount.value = '100';
+
+            }
 
         }
+        else if (exact_amountt==''&&percentage_discount==''){
 
-        return true;
+           document.getElementById("exact_amt").disabled = false;
+           document.getElementById("perc_discount").disabled = false;
+
+        }
+
     }
+
+
 </script>

@@ -16,7 +16,8 @@ class CreateCouponsTable extends Migration
             $table->increments('id');
             $table->string('coupon_code');
             $table->string('state');
-            $table->string('discount')->nullable();
+            $table->integer('discount')->nullable();
+            $table->integer('exact_amount')->nullable();
             $table->string('user');
             $table->string('ticket');
             $table->string('event_id');

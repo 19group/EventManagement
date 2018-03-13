@@ -7,5 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 class Coupon extends Model
 {
     //
-    protected $fillable = ['coupon_code', 'state', 'discount', 'event_id'];
+    protected $fillable = ['coupon_code', 'state', 'discount', 'event_id', 'ticket', 'exact_amount'];
 }
