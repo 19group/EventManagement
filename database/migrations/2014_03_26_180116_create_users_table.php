@@ -453,6 +453,7 @@ class CreateUsersTable extends Migration
 
             $t->string('reference', 20);
             $t->integer('private_reference_number')->index();
+            $t->string('period')->nullable();
 
             $t->nullableTimestamps();
             $t->softDeletes();

@@ -128,6 +128,9 @@ use App\Models\OrderItem;
                     		</td>
                     		<td>
                     		 	<h5><b>Ticket type</b></h5><h6>{{$attendee->ticket->title}}</h6>
+                    		 	<?php if(isset($attendee->period)){ ?> 
+                    		 	<h6>{{$attendee->period}}</h6>
+                    		 	<?php } ?>
                     		</td>
 
                     	</tr>

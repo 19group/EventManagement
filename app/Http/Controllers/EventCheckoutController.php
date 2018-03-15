@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\DonationCompletedEvent;
+//use App\Events\DonationCompletedEvent;
 use App\Events\OrderCompletedEvent;
 use App\Models\Affiliate;
 use App\Models\Attendee;
 use App\Models\Event;
 use App\Models\EventStats;
 use App\Models\Order;
-use App\Models\Donation;
+//use App\Models\Donation;
 use App\Models\OrderItem;
 use App\Models\QuestionAnswer;
 use App\Models\ReservedTickets;
@@ -60,7 +60,7 @@ class EventCheckoutController extends Controller
          */
 
         $donation = 0; //DonaldFeb9
-        $sideeventnotes = []; //DonaldMar13
+    //    $sideeventnotes = []; //DonaldMar13 commented by DonaldMar14
         $order_expires_time = Carbon::now()->addMinutes(config('attendize.checkout_timeout_after'));
 
         $event = Event::findOrFail($event_id);
@@ -77,9 +77,6 @@ class EventCheckoutController extends Controller
             $donation = $request->get('donation');
         }//end
 
-        if($request->has($ticket_id.'selscheds')){  //DOnaldMar13
-            $sideeventnotes[] = '{('.$ticket_id.')('.implode('++',$request->get($ticket_id.'selscheds')).')}';  //DonaldMar13
-        }   //DonaldMar13
 
         $ticket_ids = $request->get('tickets');
 
@@ -112,6 +109,11 @@ class EventCheckoutController extends Controller
             if ($current_ticket_quantity < 1) {
                 continue;
             }
+
+            if($request->has($ticket_id.'selscheds')){  //DOnaldMar13
+                $sideeventnotes[] = '{('.$ticket_id.')('.implode('++',$request->get($ticket_id.'selscheds')).')}';  //DonaldMar13
+            }   //DonaldMar13
+
 
             $total_ticket_quantity = $total_ticket_quantity + $current_ticket_quantity;
 
@@ -220,8 +222,8 @@ class EventCheckoutController extends Controller
             'reserved_tickets_id'     => $reservedTickets->id,
             'order_total'             => $order_total,
             'donation'                => $donation, //DonaldFeb9
+        //    'sideeventnotes'          => $sideeventnotes, //DonaldMar13 commented by DonaldMar14
             'booking_fee'             => $booking_fee,
-            'sideeventnotes'          => $sideeventnotes, //DonaldMar13
             'organiser_booking_fee'   => $organiser_booking_fee,
             'total_booking_fee'       => $booking_fee + $organiser_booking_fee,
             'order_requires_payment'  => (ceil($order_total) == 0) ? false : true,
@@ -303,10 +305,6 @@ class EventCheckoutController extends Controller
                 ])
             ]);
         }
-        //added by Donald Jan 22
-        //$request['order_first_name']=session()->get('order_first_name');
-        //$request['order_last_name']=session()->get('order_last_name');
-        //$request['order_email']=session()->get('order_email');
         $event = Event::findOrFail($event_id);
         $order = new Order;
         $ticket_order = session()->get('ticket_order_' . $event_id);
@@ -528,8 +526,8 @@ class EventCheckoutController extends Controller
             $order->email = $request_data['order_email'];
             $order->order_status_id = isset($request_data['pay_offline']) ? config('attendize.order_awaiting_payment') : config('attendize.order_complete');
             $order->amount = $ticket_order['order_total'];
+        /**    $order->notes = empty($ticket_order['sideeventnotes']) ? null : implode('<==>',$ticket_order['sideeventnotes']);  **///commented by DonaldMar14
             $order->booking_fee = $ticket_order['booking_fee'];
-            $order->notes = empty($ticket_order['sideeventnotes']) ? null : implode('<==>',$ticket_order['sideeventnotes']);
             $order->organiser_booking_fee = $ticket_order['organiser_booking_fee'];
             $order->discount = 0.00;
             $order->account_id = $event->account->id;
@@ -610,6 +608,7 @@ class EventCheckoutController extends Controller
                     $attendee->order_id = $order->id;
                     $attendee->ticket_id = $attendee_details['ticket']['id'];
                     $attendee->account_id = $event->account->id;
+                    $attendee->period = isset($request_data["ticket_holder_schedule"][$i][$attendee_details['ticket']['id']]) ? $request_data["ticket_holder_schedule"][$i][$attendee_details['ticket']['id']] : null;
                     $attendee->reference_index = $attendee_increment;
                     $attendee->save();
 
