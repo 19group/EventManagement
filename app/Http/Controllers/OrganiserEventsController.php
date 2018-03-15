@@ -232,6 +232,55 @@ class OrganiserEventsController extends MyBaseController
         ];
         return view('ManageEvent.ReSideEvents', $data);
     }
+
+
+
+    /**
+     * Deleted a side event
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function postDeleteSideEvent(Request $request, $ticket_id)
+    {
+        $data['ticket_id'] = $ticket_id;
+        $ticket = Ticket::where('id','=', $ticket_id)->first();
+
+        /*
+         * Don't allow deletion of tickets which have been sold already.
+         */
+        if ($ticket->quantity_sold > 0) {
+            /*return response()->json([
+                'status'  => 'error',
+                'message' => 'Sorry, you can\'t delete this side event as some tickets have already been sold',
+                'title'      => $ticket->title,
+            ]);*/
+
+            session()->flash('message','Sorry, you can\'t delete this side event as some tickets have already been sold.');
+            return response()->redirectToRoute('showSideEvents', [
+                'event_id'      => $ticket->event_id,
+            ]);
+        }
+
+        $event_id = $ticket->event_id;
+        if ($ticket->delete()) {
+            session()->flash('message', $ticket->title.' Side Event Successfully Deleted.');
+            return response()->redirectToRoute('showSideEvents', [
+                'event_id'      => $event_id,
+            ]);
+        }
+
+        Log::error('Ticket Failed to delete', [
+            'ticket' => $ticket,
+        ]);
+
+        return response()->json([
+            'status'  => 'error',
+            'title'      => $ticket->title,
+            'message' => 'Whoops! Looks like something went wrong. Please try again.',
+        ]);
+    }
+
     //end of addition DonaldMar2 DonaldMar9
 
     /**

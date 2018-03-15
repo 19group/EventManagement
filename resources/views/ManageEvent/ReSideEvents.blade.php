@@ -99,7 +99,7 @@ Side Events for {{$event->title}}
                                         $toffers = explode('+++',$sideevent->ticket_offers);
                                         for($count=0;$count<count($toffers);++$count){
                                         $sched = explode('<==>',$toffers[0]);
-                                        $schedule = "From ".date('d-M-Y H:i', strtotime($sched[0]))." To ".date('d-M-Y H:i', strtotime($sched[1]));
+                                        $schedule = date('d-M-Y H:i', strtotime($sched[0]))." to ".date('d-M-Y H:i', strtotime($sched[1]));
                                         echo $schedule; echo '</br>.......</br>';
                                         $schedules[] = $schedule;
                                         }
@@ -126,7 +126,7 @@ Side Events for {{$event->title}}
                 <span style="cursor: pointer;" data-modal-id='ticket-{{ $sideevent->id }}'
                              data-href="{{ route('showEditSideEvent', ['event_id' => $event->id, 'ticket_id' => $sideevent->id]) }}"
                              class="panel-heading loadModal"><i class="ico-edit"></i>Edit </span>
-                                <a href="{{route('postDeleteTicket', ['ticket_id' => $sideevent->id])}}" onClick="return confirm('Oh you really sure want to delete this SIDE event?');">
+                                <a href="{{route('postDeleteSideEvent', ['ticket_id' => $sideevent->id])}}" onClick="return confirm('Oh you really sure want to delete this SIDE event?');">
                     <i class="ico-remove"></i> Delete
                 </a>
                             </td>

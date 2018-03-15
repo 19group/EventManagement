@@ -138,7 +138,7 @@
                                                 $toffers = explode('+++',$ticket['ticket']['ticket_offers']);
                                                 if(count($toffers)===1){
                                                     $sched = explode('<==>',$toffers[0]);
-                                                    $option = 'From '.date('d-M-Y H:i', strtotime($sched[0])).' To '.date('d-M-Y H:i', strtotime($sched[1]));
+                                                    $option = date('d-M-Y H:i', strtotime($sched[0])).' to '.date('d-M-Y H:i', strtotime($sched[1]));
                                                     echo '<div class = \'row\'>'; 
                                                     echo '<p>For Schedule: '.$option.'</p>';
                                                     echo Form::hidden("ticket_holder_schedule[{$i}][{$ticket['ticket']['id']}],$option");
@@ -147,7 +147,7 @@
                                                     echo '<div class=\'row\'><b>Choose a Schedule for this ticket</b></div>';
                                                     for($radiono=0;$radiono<count($toffers);++$radiono){
                                                         $sched = explode('<==>',$toffers[$radiono]);
-                                                        $option = 'From '.date('d-M-Y H:i', strtotime($sched[0])).' To '.date('d-M-Y H:i', strtotime($sched[1]));
+                                                        $option = date('d-M-Y H:i', strtotime($sched[0])).' to '.date('d-M-Y H:i', strtotime($sched[1]));
                                                         echo '<div class=\'row\'><ul>';
                                                         echo Form::radio("ticket_holder_schedule[{$i}][{$ticket['ticket']['id']}]", $option, false, ['class' => 'field']); echo $option;
                                                         echo '</ul></div>'; 

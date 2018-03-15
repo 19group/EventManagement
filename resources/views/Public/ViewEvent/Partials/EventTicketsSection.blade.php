@@ -312,14 +312,14 @@
                                           echo "<p><b> Available schedule for this side event is </b></p>";
                                                 $sched = explode('<==>',$toffers[0]);
                                                 echo "<div class=\"row\">";
-                                                echo "From ".date('d-M-Y H:i', strtotime($sched[0]))." To ".date('d-M-Y H:i', strtotime($sched[1]));
+                                                echo date('d-M-Y H:i', strtotime($sched[0]))." to ".date('d-M-Y H:i', strtotime($sched[1]));
                                                 echo "</div>";
                                         }else{
                                    echo "<p><b> Available schedules for this side event:- </b></p>";
                                             for($i=0;$i<count($toffers);++$i){
                                                 $sched = explode('<==>',$toffers[$i]);
                                                 echo '<div class="row"><ul>';
-                                                echo'<li>From '.date('d-M-Y H:i', strtotime($sched[0])).' To '.date('d-M-Y H:i', strtotime($sched[1])).'</li>';
+                                                echo'<li>'.date('d-M-Y H:i', strtotime($sched[0])).' to '.date('d-M-Y H:i', strtotime($sched[1])).'</li>';
                                                 echo '</ul></div>';
                                             } ?>
                                       <!--DonaldMar14    </?php  for($i=0;$i<count($toffers);++$i){

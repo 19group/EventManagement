@@ -242,10 +242,15 @@ class EventTicketsController extends MyBaseController
          * Don't allow deletion of tickets which have been sold already.
          */
         if ($ticket->quantity_sold > 0) {
-            return response()->json([
+            /*return response()->json([
                 'status'  => 'error',
                 'message' => 'Sorry, you can\'t delete this ticket as some have already been sold',
                 'id'      => $ticket->id,
+            ]);*/
+
+            session()->flash('message', 'Sorry, you can\'t delete this ticket as some have already been sold');
+            return response()->redirectToRoute('showEventTickets', [
+                'event_id'      => $ticket->event_id,
             ]);
         }
 

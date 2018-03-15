@@ -81,7 +81,16 @@
                         </div>
 
                         <div class="col-sm-4 col-xs-6">
-                            <b>Amount</b><br> {{$order->event->currency_symbol}}{{number_format($order->total_amount,2)}}
+                            <!--added by DonaldMar15-->
+                            <?php 
+                                $donatedamt=0;
+                                foreach($order->orderItems as $ordereditem){
+                                    if($ordereditem->title==='Donation'){
+                                        $donatedamt += $ordereditem->unit_price;
+                                    }
+                                }
+                            ?>
+                            <b>Amount</b><br> {{$order->event->currency_symbol}}{{number_format($order->total_amount + $donatedamt,2)}}
                         </div>
 
                         <div class="col-sm-4 col-xs-6">
