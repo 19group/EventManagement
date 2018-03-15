@@ -9,6 +9,7 @@ use App\Models\Attendee;
 use App\Models\Event;
 use App\Models\EventStats;
 use App\Models\Order;
+use App\Coupon;
 //use App\Models\Donation;
 use App\Models\OrderItem;
 use App\Models\QuestionAnswer;
@@ -110,9 +111,7 @@ class EventCheckoutController extends Controller
                 continue;
             }
 
-            if($request->has($ticket_id.'selscheds')){  //DOnaldMar13
-                $sideeventnotes[] = '{('.$ticket_id.')('.implode('++',$request->get($ticket_id.'selscheds')).')}';  //DonaldMar13
-            }   //DonaldMar13
+           
 
 
             $total_ticket_quantity = $total_ticket_quantity + $current_ticket_quantity;
@@ -145,7 +144,101 @@ class EventCheckoutController extends Controller
                 ]);
             }
 
-            $order_total = $order_total + ($current_ticket_quantity * $ticket->price);
+
+
+            /*
+            * Coupon code array validation (Frank)
+            *
+            */
+
+           $coupon_flag = false;
+
+           $coupon_code = $request->get('coupon_' . $ticket_id);
+
+            
+           if ($coupon_code!='') {
+
+                $coupon_single = Coupon::where('coupon_code','=', $coupon_code)->first();
+
+            
+                if ($coupon_single) {
+                
+
+                    if ($coupon_single->state=='Valid') {
+
+                        
+                        $coupon_flag = true;
+
+                        
+                        if ($coupon_single->ticket_id==$ticket_id && $coupon_single->discount!='') {
+
+
+                            $order_total = $order_total + ($current_ticket_quantity * $ticket->price)  - ($ticket->price*($coupon_single->discount/100));
+
+                            $discount_array[] = $coupon_single->discount;
+                            $discount_ticket_title[] = $coupon_single->ticket;
+                            $amount_array[] ='';                                    
+                            $amount_title[] ='';
+
+                            
+                        }
+
+                        if ($coupon_single->ticket_id==$ticket_id && $coupon_single->exact_amount!='') {
+
+                            $order_total = $order_total + $coupon_single->exact_amount;                                    
+                            
+                            $amount_array[] =$coupon_single->exact_amount;                                    
+                            $amount_title[] =$coupon_single->ticket;  
+                            $discount_array[] = '';
+                            $discount_ticket_title[] = '';                                  
+
+                        }
+
+                        else if ($coupon_single->ticket_id!=$ticket_id) {
+                       
+
+                            $order_total = $order_total + ($current_ticket_quantity * $ticket->price);
+                            $amount_array[] ='';                                    
+                            $amount_title[] ='';
+                            $discount_array[] = '';
+                            $discount_ticket_title[] = '';
+
+                        }
+
+                    }
+                     else{
+
+                    //$coupon_state = 'Used';
+
+                    }
+
+                }
+                else{
+                    //$coupon_state = 'Invalid';
+                }
+            }
+
+            else{
+
+                $order_total = $order_total + ($current_ticket_quantity * $ticket->price);
+                            $amount_array[] ='';                                    
+                            $amount_title[] ='';
+                            $discount_array[] = '';
+                            $discount_ticket_title[] = '';
+                
+                }
+            /*
+             *
+             # End of Coupon Validation...
+             *
+             */
+
+
+
+
+
+
+            //$order_total = $order_total + ($current_ticket_quantity * $ticket->price);
             $booking_fee = $booking_fee + ($current_ticket_quantity * $ticket->booking_fee);
             $organiser_booking_fee = $organiser_booking_fee + ($current_ticket_quantity * $ticket->organiser_booking_fee);
 
@@ -213,6 +306,11 @@ class EventCheckoutController extends Controller
             'first_name'              => $first_name,
             'last_name'               => $last_name,
             'email'                   => $email,
+            'coupon_flag'             => $coupon_flag,
+            'discount'                => $discount_array,
+            'discount_ticket_title'   => $discount_ticket_title,
+            'exact_amount'            => $amount_array,
+            'amount_ticket_title'     => $amount_title,
             'validation_messages'     => $validation_messages,
             'event_id'                => $event->id,
             'tickets'                 => $tickets,
@@ -274,8 +372,15 @@ class EventCheckoutController extends Controller
         $data = $order_session + [
                 'event'           => Event::findorFail($order_session['event_id']),
                 'secondsToExpire' => $secondsToExpire,
+                'coupon_flag'           => $order_session['coupon_flag'],
+                'discount'              => $order_session['discount'],
+                'discount_ticket_title' => $order_session['discount_ticket_title'],
+                'exact_amount'          => $order_session['exact_amount'],
+                'amount_ticket_title'   => $order_session['amount_ticket_title'],
                 'is_embedded'     => $this->is_embedded,
             ];
+
+            //dd($data);
 
         if ($this->is_embedded) {
             return view('Public.ViewEvent.Embedded.EventPageCheckout', $data);

@@ -26,6 +26,10 @@
                              </tr>
                          <?php } ?>
 
+                         @php
+                            $i=0
+                        @endphp
+
                         @foreach($tickets as $ticket)
                         <tr>
                             <td class="pl0">{{{$ticket['ticket']['title']}}} X <b>{{$ticket['qty']}}</b></td>
@@ -33,11 +37,37 @@
                                 @if((int)ceil($ticket['full_price']) === 0)
                                 FREE
                                 @else
-                                {{ money($ticket['full_price'], $event->currency) }}
+                                        
+
+                                    @if(  $discount[$i]!='' and $discount_ticket_title[$i]==$ticket['ticket']['title'] )
+                                        <strike>{{ money($ticket['full_price'], $event->currency) }}</strike> 
+                                        {{ money($ticket['full_price']-$ticket['full_price']*($discount[$i]/100), $event->currency) }}
+
+                                        @php
+                                            $i++
+                                        @endphp
+                                    
+                                    @elseif(  $exact_amount[$i]!='' and $amount_ticket_title[$i]==$ticket['ticket']['title'] )
+                                        <strike>{{ money($ticket['full_price'], $event->currency) }}</strike> 
+                                        {{ money($exact_amount[$i], $event->currency) }}
+
+                                         @php
+                                            $i++
+                                        @endphp
+
+                                    @elseif(  $exact_amount[$i]=='' and $discount[$i]=='' )
+                                        {{ money($ticket['full_price'], $event->currency) }}
+                                        @php
+                                            $i++
+                                        @endphp
+                                        
+                                    @endif
+
                                 @endif
                             </td>
                         </tr>
                         @endforeach
+                        
                     </table>
                 </div>
                 @if($order_total +$donation > 0)

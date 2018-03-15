@@ -176,7 +176,8 @@
                                                       @for($i=$ticket->min_per_person; $i<=$ticket->max_per_person; $i++)
                                                           <option value="{{$i}}">{{$i}}</option>
                                                       @endfor
-                                                  </select>
+                                                  </select><br>
+                                                   <input type="text" name="coupon_{{$ticket->id}}" class="form-control" placeholder="Coupon#">
                                               @endif
 
                                           @endif

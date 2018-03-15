@@ -46,9 +46,9 @@ document.getElementById("ticketoffers").appendChild(p);
                         <div class="form-group">
                             <label class="col-md-12">Associated Ticket</label> 
                               <div class="form-group">
-                                  <select class="form-control" name="title">
-                                    @foreach($ticks as $item)
-                                      <option value="{{$item->title}}">{{$item->title}}</option>
+                                  <select class="form-control" name="id">
+                                    @foreach($tickets as $item)
+                                      <option value="{{$item->id}}">{{$item->title}}</option>
                                     @endforeach
                                   </select>
                             </div>
