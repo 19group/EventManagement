@@ -1,7 +1,7 @@
 <?php $offer=0; $toffers=[];?>
 
 <div role="dialog"  class="modal fade" style="display: none;">
-   {!! Form::open(array('url' => route('postReCreateSideEvent', array('event_id' => $event->id)))) !!}
+   {!! Form::open(array('url' => route('postReCreateSideEvent', array('event_id' => $event->id)), 'class' => 'ajax')) !!}
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header text-center">
