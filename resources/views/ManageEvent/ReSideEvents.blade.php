@@ -60,19 +60,16 @@ Side Events for {{$event->title}}
                                SIDE Event Description
                             </th>
                             <th>
-                               Start Date
-                            </th>
-                            <th>
-                               End Date
-                            </th>
-                            <th>
                                Ticket Price
                             </th>
                             <th>
-                                Total Sold
+                                Tickets Sold
                             </th>
                             <th>
-                                Amount Collected
+                               Schedules
+                            </th>
+                            <th>
+                               Tickets purchased
                             </th>
                             <th>
                                 Manage
@@ -90,19 +87,40 @@ Side Events for {{$event->title}}
                                 {{$sideevent->description}}
                             </td>
                             <td>
-                                {{$sideevent->start_date}}
-                            </td>
-                            <td>
-                                {{$sideevent->end_date}}
-                            </td>
-                            <td>
-                                
-                            </td>
-                            <td>
-                                
-                            </td>
-                            <td>
                                 {{$sideevent->price}}
+                            </td>
+                            <td>
+                                {{$sideevent->quantity_sold}}
+                            </td>
+                            <td>
+                                <?php 
+                                    $schedules =[];
+                                    if(isset($sideevent->ticket_offers)){
+                                        $toffers = explode('+++',$sideevent->ticket_offers);
+                                        for($count=0;$count<count($toffers);++$count){
+                                        $sched = explode('<==>',$toffers[0]);
+                                        $schedule = "From ".date('d-M-Y H:i', strtotime($sched[0]))." To ".date('d-M-Y H:i', strtotime($sched[1]));
+                                        echo $schedule; echo '</br>.......</br>';
+                                        $schedules[] = $schedule;
+                                        }
+                                    }else{
+                                        echo 'No schedule set.';
+                                    }
+                                ?>
+                                
+                            </td>
+                            <td>
+                                <?php
+                                    if(!empty($schedules)){
+                                        foreach($schedules as $scheduler){
+                                            $tempobj = \App\Models\Attendee::where(['period'=>$scheduler, 'ticket_id'=>$sideevent->id])->get();
+                                            echo count($tempobj); echo '</br>......</br>';
+                                        }
+                                    }else{
+                                        echo '0';
+                                    }
+                                 ?>
+                                
                             </td>
                             <td>
                 <span style="cursor: pointer;" data-modal-id='ticket-{{ $sideevent->id }}'
