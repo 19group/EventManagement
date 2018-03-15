@@ -202,23 +202,23 @@
                                                             </span>
                                                                     <td style="width:180px; text-align: right;">
                                                                         <div class="ticket-pricing" style="margin-right: 20px;">
-                                                                            @if($ticket->is_free)
+                                                                            @if($extra->is_free)
                                                                                 FREE
                                                                                 <meta property="price" content="0">
                                                                             @else
                                                                                 <?php
                                                                                 $is_free_event = false;
                                                                                 ?>
-                                                                                <span title='{{money($ticket->price, $event->currency)}} Ticket Price + {{money($ticket->total_booking_fee, $event->currency)}} Booking Fees'>{{money($ticket->total_price, $event->currency)}} </span>
+                                                                                <span title='{{money($extra->price, $event->currency)}} Ticket Price + {{money($extra->total_booking_fee, $event->currency)}} Booking Fees'>{{money($extra->total_price, $event->currency)}} </span>
                                                                                 <meta property="priceCurrency"
                                                                                       content="{{ $event->currency->code }}">
                                                                                 <meta property="price"
-                                                                                      content="{{ number_format($ticket->price, 2, '.', '') }}">
+                                                                                      content="{{ number_format($extra->price, 2, '.', '') }}">
                                                                             @endif
                                                                         </div>
                                                                     </td>
                                                                     <td style="width:85px;">
-                                                                        @if($ticket->is_paused)
+                                                                        @if($extra->is_paused)
 
                                                                             <span class="text-danger">
                                                                 Currently Not On Sale
@@ -240,14 +240,14 @@
                                                                 Sales Have Ended
                                                             </span>
                                                                             @else
-                                                                                {!! Form::hidden('tickets[]', $ticket->id) !!}
+                                                                                {!! Form::hidden('tickets[]', $extra->id) !!}
                                                                                 <meta property="availability" content="http://schema.org/InStock">
-                                                                                <select name="ticket_{{$ticket->id}}" class="form-control"
+                                                                                <select name="ticket_{{$extra->id}}" class="form-control"
                                                                                         style="text-align: center">
                                                                                     @if ($tickets->count() > 1)
                                                                                         <option value="0">0</option>
                                                                                     @endif
-                                                                                    @for($i=$ticket->min_per_person; $i<=$ticket->max_per_person; $i++)
+                                                                                    @for($i=$extra->min_per_person; $i<=$extra->max_per_person; $i++)
                                                                                         <option value="{{$i}}">{{$i}}</option>
                                                                                     @endfor
                                                                                 </select>
@@ -320,7 +320,7 @@
                                                 $sched = explode('<==>',$toffers[$i]);
                                                 echo '<div class="row"><ul>';
                                                 echo'<li>From '.date('d-M-Y H:i', strtotime($sched[0])).' To '.date('d-M-Y H:i', strtotime($sched[1])).'</li>';
-                                                echo '</ul></div>'; 
+                                                echo '</ul></div>';
                                             } ?>
                                       <!--DonaldMar14    </?php  for($i=0;$i<count($toffers);++$i){
                                                 $sched = explode('<==>',$toffers[$i]);
