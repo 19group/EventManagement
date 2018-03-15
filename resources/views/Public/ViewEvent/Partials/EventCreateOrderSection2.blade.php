@@ -18,7 +18,7 @@
                     <table class="table mb0 table-condensed">
                         <?php $donhead='Donation Amount';if($donation>0){ ?>
                             <tr>
-                                <td class="pl0"><b>Donation Amount:</b></td>
+                                <td class="pl0">Donation Amount:</td>
                                 <td style="text-align: right;">
                                     {{  money($donation, $event->currency) }}
                                 </td>
@@ -94,7 +94,7 @@
                         <div class="ticket_holders_details" >
                             <h3>Ticket Holder Information</h3>
                             <?php
-                                $total_attendee_increment = 0;
+                                $total_attendee_increment = 0; //$preferedschedule=[];
                             ?>
                             @foreach($tickets as $ticket)
                                 @for($i=0; $i<=$ticket['qty']-1; $i++)
@@ -132,6 +132,30 @@
                                         </div>
 
                                     </div>
+
+                                        <?php  //added by DonaldMar14
+                                            if($ticket['ticket']['ticket_offers'] && $ticket['ticket']['type']==='SIDEEVENT'){
+                                                $toffers = explode('+++',$ticket['ticket']['ticket_offers']);
+                                                if(count($toffers)===1){
+                                                    $sched = explode('<==>',$toffers[0]);
+                                                    $option = 'From '.date('d-M-Y H:i', strtotime($sched[0])).' To '.date('d-M-Y H:i', strtotime($sched[1]));
+                                                    echo '<div class = \'row\'>'; 
+                                                    echo '<p>For Schedule: '.$option.'</p>';
+                                                    echo Form::hidden("ticket_holder_schedule[{$i}][{$ticket['ticket']['id']}],$option");
+                                                    echo '</div>';
+                                                }else{
+                                                    echo '<div class=\'row\'><b>Choose a Schedule for this ticket</b></div>';
+                                                    for($radiono=0;$radiono<count($toffers);++$radiono){
+                                                        $sched = explode('<==>',$toffers[$radiono]);
+                                                        $option = 'From '.date('d-M-Y H:i', strtotime($sched[0])).' To '.date('d-M-Y H:i', strtotime($sched[1]));
+                                                        echo '<div class=\'row\'><ul>';
+                                                        echo Form::radio("ticket_holder_schedule[{$i}][{$ticket['ticket']['id']}]", $option, false, ['class' => 'field']); echo $option;
+                                                        echo '</ul></div>'; 
+                                                    }
+                                                }
+                                            }  
+                                            //end of addition
+                                        ?>
 
 
                                 </div>

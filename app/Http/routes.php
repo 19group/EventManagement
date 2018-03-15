@@ -286,6 +286,14 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
             'as'   => 'postDeleteEvent',
             'uses' => 'OrganiserEventsController@postDeleteEvent',
         ]);
+        Route::get('{event_id}/sideevents/edit/{sideevent_id}', [
+            'as'   => 'showEditSideEvent',
+            'uses' => 'OrganiserEventsController@showEditSideEvent',
+        ]);
+        Route::post('{event_id}/sideevents/edit/{sideevent_id}', [
+            'as'   => 'postEditSideEvent',
+            'uses' => 'OrganiserEventsController@postEditSideEvent',
+        ]);
         //end of addition
 
         Route::get('{organiser_id}/customize', [

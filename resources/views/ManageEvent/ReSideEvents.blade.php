@@ -105,6 +105,9 @@ Side Events for {{$event->title}}
                                 {{$sideevent->price}}
                             </td>
                             <td>
+                <span style="cursor: pointer;" data-modal-id='ticket-{{ $sideevent->id }}'
+                             data-href="{{ route('showEditSideEvent', ['event_id' => $event->id, 'ticket_id' => $sideevent->id]) }}"
+                             class="panel-heading loadModal"><i class="ico-edit"></i>Edit </span>
                                 <a href="{{route('postDeleteTicket', ['ticket_id' => $sideevent->id])}}" onClick="return confirm('Oh you really sure want to delete this SIDE event?');">
                     <i class="ico-remove"></i> Delete
                 </a>
