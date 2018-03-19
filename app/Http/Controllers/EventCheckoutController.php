@@ -338,6 +338,237 @@ class EventCheckoutController extends Controller
         if ($request->ajax()) {
             return response()->json([
                 'status'      => 'success',
+            //    'redirectUrl' => route('showEventCheckout', [])
+                  'redirectUrl' => route('OrderSideEvents', [
+                        'event_id'    => $event_id,
+                    //    'is_embedded' => $this->is_embedded,
+                    ])// . '#order_form',
+            ]);
+        }
+
+        /*
+         * Maybe display something prettier than this?
+         */
+        exit('Please enable Javascript in your browser.');
+    }
+
+
+    /**
+     * Added by DonaldMar16 to show order side events page
+     *
+     * @param Request $request
+     * @param $event_id
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
+    public function showOrderSideEvents(Request $request, $event_id)
+    {
+        $order_session = session()->get('ticket_order_' . $event_id);
+
+        if (!$order_session || $order_session['expires'] < Carbon::now()) {
+            $route_name = $this->is_embedded ? 'showEmbeddedEventPage' : 'showEventPage';
+            return redirect()->route($route_name, ['event_id' => $event_id]);
+        }
+
+        $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
+        $sideeventsar   = Ticket::where(['type'=>'SIDEEVENT','event_id'=>$event_id])->get();
+        $event = Event::findOrFail($event_id);
+
+        $data = $order_session + [
+                'event'           => Event::findorFail($order_session['event_id']),
+                'sideeventsar'   => $sideeventsar,
+                'secondsToExpire' => $secondsToExpire,
+                'coupon_flag'           => $order_session['coupon_flag'],
+                'discount'              => $order_session['discount'],
+                'discount_ticket_title' => $order_session['discount_ticket_title'],
+                'exact_amount'          => $order_session['exact_amount'],
+                'amount_ticket_title'   => $order_session['amount_ticket_title'],
+                'is_embedded'     => $this->is_embedded,
+            ];
+
+            //dd($data);
+
+        if ($this->is_embedded) {
+            return view('Public.ViewEvent.Embedded.EventSideEvent', $data);
+        }
+
+        return view('Public.ViewEvent.EventSideEvent', $data);
+    }
+
+
+    /**
+     * Added by DonaldMar16 to show post order side events page
+     *
+     * @param Request $request
+     * @param $event_id
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
+    public function postOrderSideEvents(Request $request, $event_id)
+    {
+        
+        $event = Event::findOrFail($event_id);
+
+        if (!$request->has('tickets')) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'No side event selected',
+            ]);
+        }
+
+        $ticket_ids = $request->get('tickets');
+
+
+        /*
+         * Remove any tickets the user has reserved
+         */
+    //    ReservedTickets::where('session_id', '=', session()->getId())->delete();
+
+        /*
+         * Go though the selected tickets and check if they're available
+         * , tot up the price and reserve them to prevent over selling.
+         */
+
+        $availables              =    session()->get('ticket_order_' . $event_id);
+        $tickets                 =    $availables['tickets'];
+        $order_total             =    $availables['order_total'];
+        $total_ticket_quantity   =    $availables['total_ticket_quantity'];
+        $booking_fee             =    $availables['booking_fee'];
+        $organiser_booking_fee   =    $availables['organiser_booking_fee'];
+        $discount                =    $availables['discount'];
+        $discount_ticket_title   =    $availables['discount_ticket_title'];
+        $exact_amount            =    $availables['exact_amount'];
+        $amount_ticket_title     =    $availables['amount_ticket_title'];
+        $quantity_available_validation_rules = [];
+
+        foreach ($ticket_ids as $ticket_id) {
+            $current_ticket_quantity = (int)$request->get('ticket_' . $ticket_id);
+
+            if ($current_ticket_quantity < 1) {
+                continue;
+            }
+
+            $total_ticket_quantity = $total_ticket_quantity + $current_ticket_quantity;
+
+            $ticket = Ticket::find($ticket_id);
+
+            $ticket_quantity_remaining = $ticket->quantity_remaining;
+
+            $max_per_person = min($ticket_quantity_remaining, $ticket->max_per_person);
+
+            $quantity_available_validation_rules['ticket_' . $ticket_id] = [
+                'numeric',
+                'min:' . $ticket->min_per_person,
+                'max:' . $max_per_person
+            ];
+
+            $quantity_available_validation_messages = [
+                'ticket_' . $ticket_id . '.max' => 'The maximum number of tickets you can register is ' . $ticket_quantity_remaining,
+                'ticket_' . $ticket_id . '.min' => 'You must select at least ' . $ticket->min_per_person . ' tickets.',
+            ];
+
+            $validator = Validator::make(['ticket_' . $ticket_id => (int)$request->get('ticket_' . $ticket_id)],
+                $quantity_available_validation_rules, $quantity_available_validation_messages);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status'   => 'error',
+                    'messages' => $validator->messages()->toArray(),
+                ]);
+            }
+
+            $order_total = $order_total + ($current_ticket_quantity * $ticket->price);
+            $booking_fee = $booking_fee + ($current_ticket_quantity * $ticket->booking_fee);
+            $organiser_booking_fee = $organiser_booking_fee + ($current_ticket_quantity * $ticket->organiser_booking_fee);
+
+            $tickets[count($tickets)] = [
+                'ticket'                => $ticket,
+                'qty'                   => $current_ticket_quantity,
+                'price'                 => ($current_ticket_quantity * $ticket->price),
+                'booking_fee'           => ($current_ticket_quantity * $ticket->booking_fee),
+                'organiser_booking_fee' => ($current_ticket_quantity * $ticket->organiser_booking_fee),
+                'full_price'            => $ticket->price + $ticket->total_booking_fee,
+            ];
+
+            /*
+             * To escape undefined offset errors due to accessing arrays that associate with tickets but shorter, in
+             * EventCreateOrderSection.blade, we have to nullify all extra elements... null is set to empty string
+             * denoted by ''
+             */
+            $discount[count($discount)]  = '';
+            $discount_ticket_title[count($discount_ticket_title)] = '';
+            $exact_amount[count($exact_amount)]  = '';
+            $amount_ticket_title[count($amount_ticket_title)] = '';
+
+            /*
+             * Reserve the tickets for X amount of minutes
+             */
+            $reservedTickets = new ReservedTickets();
+            $reservedTickets->ticket_id = $ticket_id;
+            $reservedTickets->event_id = $event_id;
+            $reservedTickets->quantity_reserved = $current_ticket_quantity;
+            $reservedTickets->expires = $availables['expires'];
+            $reservedTickets->session_id = session()->getId();
+            $reservedTickets->save();
+
+        }
+
+        /*
+         * We have to update the tickets to be reserved
+         */
+//not        $reservedTickets = $availables['reserved_tickets_id'] + $reservedTickets->id;
+
+        if (empty($tickets)) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'No tickets selected.',
+            ]);
+        }
+
+        /*
+         * The 'ticket_order_{event_id}' session stores everything we need to complete the transaction. We have to update
+         * the variables we had set earlier but are now modified 
+         */
+
+        $availables['tickets'] = $tickets;
+        $availables['total_ticket_quantity'] = $total_ticket_quantity;
+//        $availables['reserved_tickets_id'] = $reservedTickets;
+        $availables['order_total'] = $order_total;
+        $availables['organiser_booking_fee'] = $organiser_booking_fee;
+        $availables['total_booking_fee'] = $booking_fee + $organiser_booking_fee;
+        $availables['booking_fee'] = $booking_fee;
+        $availables['discount'] = $discount;
+        $availables['discount_ticket_title'] = $discount_ticket_title;
+        $availables['exact_amount'] = $exact_amount;
+        $availables['amount_ticket_title'] = $amount_ticket_title;
+
+        session()->forget('ticket_order_' . $event->id);
+        session()->set('ticket_order_' . $event->id,
+            $availables
+        );
+
+        /*
+         * If we're this far assume everything is OK and redirect them
+         * to the the checkout page.
+         */
+        if ($request->ajax()) {
+            return response()->json([
+                'status'      => 'success',
+                'redirectUrl' => route('showEventCheckout', [
+                        'event_id'    => $event_id,
+                        'is_embedded' => $this->is_embedded,
+                    ]) . '#order_form',
+            ]);
+        }
+
+        $printer = session()->get('ticket_order_' . $event->id);
+    //    dd($printer);
+
+        /*
+         * If we're this far assume everything is OK and redirect them
+         * to the the checkout page.
+         */
+        if ($request->ajax()) {
+            return response()->json([
+                'status'      => 'success',
                 'redirectUrl' => route('showEventCheckout', [
                         'event_id'    => $event_id,
                         'is_embedded' => $this->is_embedded,
@@ -350,6 +581,7 @@ class EventCheckoutController extends Controller
          */
         exit('Please enable Javascript in your browser.');
     }
+    
 
     /**
      * Show the checkout page

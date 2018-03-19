@@ -144,6 +144,16 @@ Route::group(['prefix' => 'e'], function () {
         'uses' => 'EventCheckoutController@postValidateTickets',
     ]);
 
+    Route::get('{event_id}/order/sideevents/', [
+        'as'   => 'OrderSideEvents',
+        'uses' => 'EventCheckoutController@showOrderSideEvents',
+    ]);
+
+    Route::post('{event_id}/ordered/sideevents/', [
+        'as'   => 'postOrderSideEvents',
+        'uses' => 'EventCheckoutController@postOrderSideEvents',
+    ]);
+
     Route::get('{event_id}/checkout/create', [
         'as'   => 'showEventCheckout',
         'uses' => 'EventCheckoutController@showEventCheckout',

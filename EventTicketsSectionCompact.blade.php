@@ -89,15 +89,15 @@
                         <!--Tickets and Side Events Details -->
                         <div class="row">
 
-                         <div class="col-sm-12">
+                <!--         <div class="col-sm-12">
                              <h1 class='section_head'>
-                                 Choose Your Tickets
+                                 Tickets and Side Events
                              </h1>
                          </div>
-                
+                -->
 
                           <!-- Tickets -->
-                          <!----<div class="col-md-7">---->
+                          <div class="col-md-7">
 
 
                             <div class="tickets_table_wrap">
@@ -186,6 +186,83 @@
                                   </tr>
                               @endforeach
 
+
+                                              <!--
+                                                            @if($extras->count()>0)
+
+                                                            <tr class="ticket" property="offers" typeof="Offer">
+                                                                <td>
+                                                            <h3>Extras</h3>
+                                                           </td>
+                                                          </tr>
+
+                                                            @foreach($extras as $extra)
+                                                                <tr class="ticket" property="offers" typeof="Offer">
+                                                                    <td>
+                                                            <span class="ticket-title semibold" property="name">
+                                                                {{$extra->title}}
+                                                            </span>
+                                                                    <td style="width:180px; text-align: right;">
+                                                                        <div class="ticket-pricing" style="margin-right: 20px;">
+                                                                            @if($extra->is_free)
+                                                                                FREE
+                                                                                <meta property="price" content="0">
+                                                                            @else
+                                                                                </?php
+                                                                                $is_free_event = false;
+                                                                                ?>
+                                                                                <span title='{{money($extra->price, $event->currency)}} Ticket Price + {{money($extra->total_booking_fee, $event->currency)}} Booking Fees'>{{money($extra->total_price, $event->currency)}} </span>
+                                                                                <meta property="priceCurrency"
+                                                                                      content="{{ $event->currency->code }}">
+                                                                                <meta property="price"
+                                                                                      content="{{ number_format($extra->price, 2, '.', '') }}">
+                                                                            @endif
+                                                                        </div>
+                                                                    </td>
+                                                                    <td style="width:85px;">
+                                                                        @if($extra->is_paused)
+
+                                                                            <span class="text-danger">
+                                                                Currently Not On Sale
+                                                            </span>
+
+                                                                        @else
+
+                                                                            @if($ticket->sale_status === config('attendize.ticket_status_sold_out'))
+                                                                                <span class="text-danger" property="availability"
+                                                                                      content="http://schema.org/SoldOut">
+                                                                Sold Out
+                                                            </span>
+                                                                            @elseif($ticket->sale_status === config('attendize.ticket_status_before_sale_date'))
+                                                                                <span class="text-danger">
+                                                                Sales Have Not Started
+                                                            </span>
+                                                                            @elseif($ticket->sale_status === config('attendize.ticket_status_after_sale_date'))
+                                                                                <span class="text-danger">
+                                                                Sales Have Ended
+                                                            </span>
+                                                                            @else
+                                                                                {!! Form::hidden('tickets[]', $extra->id) !!}
+                                                                                <meta property="availability" content="http://schema.org/InStock">
+                                                                                <select name="ticket_{{$extra->id}}" class="form-control"
+                                                                                        style="text-align: center">
+                                                                                    @if ($tickets->count() > 1)
+                                                                                        <option value="0">0</option>
+                                                                                    @endif
+                                                                                    @for($i=$extra->min_per_person; $i<=$extra->max_per_person; $i++)
+                                                                                        <option value="{{$i}}">{{$i}}</option>
+                                                                                    @endfor
+                                                                                </select>
+                                                                            @endif
+
+                                                                        @endif
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                            @endif
+
+                                                -->
+
                               <tr class="checkout">
                                   <td colspan="3">
                                       @if(!$is_free_event)
@@ -205,7 +282,62 @@
                               </tr>
                                </table>
                             </div>
-                          <!---</div>  -->
+                          </div>
+
+              <!--            <!--Side event container --/>
+                          <div class="col-md-5 side-events">
+                             <h4> SIDE EVENTS</h4>
+                               </?php foreach ($sideevent as $minevent){?>
+                                   <hr>
+                                   <p><b>{/{$minevent->title}} </b></p>
+                                   <p>{/{$minevent->description}} </br></p>
+                                   <div class="row">
+                                         <div class="col-sm-6">
+                                          <b class="col-sm-6" left>Price:</b>
+                                           <span class="col-sm-6" title='{{money($ticket->price, $event->currency)}} Ticket Price + {{money($ticket->total_booking_fee, $event->currency)}} Booking Fees'>{/{money($minevent->price, $event->currency)}} </span>
+                                         </div>
+                                         <div class="col-sm-6">
+                                                 {!! Form::hidden('tickets[]', $minevent->id) !!}
+                                                <meta property="availability" content="http://schema.org/InStock">
+                                                <select name="ticket_{/{$minevent->id}}" class="form-control"
+                                                         style="text-align: center">
+                                                     @if ($minevent->count() > 1)
+                                                         <option value="0">0</option>
+                                                     @endif
+                                                     @for($i=$minevent->min_per_person; $i<=$minevent->max_per_person; $i++)
+                                                         <option value="{{$i}}">{{$i}}</option>
+                                                     @endfor
+                                                </select>
+                                         </div>
+                                   </div>
+                                   </?php if($minevent->ticket_offers!=NULL){
+                                            $toffers = explode('+++',$minevent->ticket_offers);
+                                        if(count($toffers)==1){
+                                          echo "<p><b> Available schedule for this side event is </b></p>";
+                                                $sched = explode('<==>',$toffers[0]);
+                                                echo "<div class=\"row\">";
+                                                echo date('d-M-Y H:i', strtotime($sched[0]))." to ".date('d-M-Y H:i', strtotime($sched[1]));
+                                                echo "</div>";
+                                        }else{
+                                   echo "<p><b> Available schedules for this side event:- </b></p>";
+                                            for($i=0;$i<count($toffers);++$i){
+                                                $sched = explode('<==>',$toffers[$i]);
+                                                echo '<div class="row"><ul>';
+                                                echo'<li>'.date('d-M-Y H:i', strtotime($sched[0])).' to '.date('d-M-Y H:i', strtotime($sched[1])).'</li>';
+                                                echo '</ul></div>';
+                                            } ?>
+                                      <!--DonaldMar14    </?php  for($i=0;$i<count($toffers);++$i){
+                                                $sched = explode('<==>',$toffers[$i]);
+                                                $checkbox = ' From '.date('d-M-Y H:i', strtotime($sched[0])).' To '.date('d-M-Y H:i', strtotime($sched[1])); ?>
+                                      <div class="row">
+                                      {//{ Form::checkbox($minevent->id."selscheds[]",$checkbox) }//} {//{ $checkbox}//}
+                                      </div> end of comment by DonaldMar14--/>
+                                           </?php   }?>
+                                  </?php }//end-if-minevent->ticket_offers ?>
+                               </?php }//end-foreach($sideevent as $minevent) ?>
+                          </div>
+                          <hr />
+              -->
                           {!!Form::submit('Register', ['class' => 'btn btn-lg btn-primary pull-right'])!!}
                         </div>
 
