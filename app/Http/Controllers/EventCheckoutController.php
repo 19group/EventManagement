@@ -111,9 +111,6 @@ class EventCheckoutController extends Controller
                 continue;
             }
 
-           
-
-
             $total_ticket_quantity = $total_ticket_quantity + $current_ticket_quantity;
 
             $ticket = Ticket::find($ticket_id);
@@ -143,8 +140,6 @@ class EventCheckoutController extends Controller
                     'messages' => $validator->messages()->toArray(),
                 ]);
             }
-
-
 
             /*
             * Coupon code array validation (Frank)
@@ -232,11 +227,6 @@ class EventCheckoutController extends Controller
              # End of Coupon Validation...
              *
              */
-
-
-
-
-
 
             //$order_total = $order_total + ($current_ticket_quantity * $ticket->price);
             $booking_fee = $booking_fee + ($current_ticket_quantity * $ticket->booking_fee);
@@ -360,7 +350,7 @@ class EventCheckoutController extends Controller
      * @param $event_id
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function showOrderSideEvents(Request $request, $event_id)
+    public function showOrderSideEvents($event_id)
     {
         $order_session = session()->get('ticket_order_' . $event_id);
 
@@ -373,8 +363,30 @@ class EventCheckoutController extends Controller
         $sideeventsar   = Ticket::where(['type'=>'SIDEEVENT','event_id'=>$event_id])->get();
         $event = Event::findOrFail($event_id);
 
+        if(!$sideeventsar->count()){            
+            $data = $order_session + [
+                    'event'           => $event,
+                    'secondsToExpire' => $secondsToExpire,
+                    'coupon_flag'           => $order_session['coupon_flag'],
+                    'discount'              => $order_session['discount'],
+                    'discount_ticket_title' => $order_session['discount_ticket_title'],
+                    'exact_amount'          => $order_session['exact_amount'],
+                    'amount_ticket_title'   => $order_session['amount_ticket_title'],
+                    'is_embedded'     => $this->is_embedded,
+                ];
+        /*
+         * If there're no side events, 
+         */
+        return redirect()->route('showEventCheckout', ['event_id' => $event_id]);
+
+        /*
+         * Maybe display something prettier than this?
+         */
+        exit('Please enable Javascript in your browser.');
+        }
+
         $data = $order_session + [
-                'event'           => Event::findorFail($order_session['event_id']),
+                'event'           => $event,
                 'sideeventsar'   => $sideeventsar,
                 'secondsToExpire' => $secondsToExpire,
                 'coupon_flag'           => $order_session['coupon_flag'],
@@ -407,14 +419,10 @@ class EventCheckoutController extends Controller
         
         $event = Event::findOrFail($event_id);
 
-        if (!$request->has('tickets')) {
-            return response()->json([
-                'status'  => 'error',
-                'message' => 'No side event selected',
-            ]);
+        $ticket_ids = [];
+        if ($request->has('tickets')) {
+            $ticket_ids = $request->get('tickets');
         }
-
-        $ticket_ids = $request->get('tickets');
 
 
         /*
@@ -439,77 +447,79 @@ class EventCheckoutController extends Controller
         $amount_ticket_title     =    $availables['amount_ticket_title'];
         $quantity_available_validation_rules = [];
 
-        foreach ($ticket_ids as $ticket_id) {
-            $current_ticket_quantity = (int)$request->get('ticket_' . $ticket_id);
+        if(!empty($ticket_ids)){
+            foreach ($ticket_ids as $ticket_id) {
+                $current_ticket_quantity = (int)$request->get('ticket_' . $ticket_id);
 
-            if ($current_ticket_quantity < 1) {
-                continue;
-            }
+                if ($current_ticket_quantity < 1) {
+                    continue;
+                }
 
-            $total_ticket_quantity = $total_ticket_quantity + $current_ticket_quantity;
+                $total_ticket_quantity = $total_ticket_quantity + $current_ticket_quantity;
 
-            $ticket = Ticket::find($ticket_id);
+                $ticket = Ticket::find($ticket_id);
 
-            $ticket_quantity_remaining = $ticket->quantity_remaining;
+                $ticket_quantity_remaining = $ticket->quantity_remaining;
 
-            $max_per_person = min($ticket_quantity_remaining, $ticket->max_per_person);
+                $max_per_person = min($ticket_quantity_remaining, $ticket->max_per_person);
 
-            $quantity_available_validation_rules['ticket_' . $ticket_id] = [
-                'numeric',
-                'min:' . $ticket->min_per_person,
-                'max:' . $max_per_person
-            ];
+                $quantity_available_validation_rules['ticket_' . $ticket_id] = [
+                    'numeric',
+                    'min:' . $ticket->min_per_person,
+                    'max:' . $max_per_person
+                ];
 
-            $quantity_available_validation_messages = [
-                'ticket_' . $ticket_id . '.max' => 'The maximum number of tickets you can register is ' . $ticket_quantity_remaining,
-                'ticket_' . $ticket_id . '.min' => 'You must select at least ' . $ticket->min_per_person . ' tickets.',
-            ];
+                $quantity_available_validation_messages = [
+                    'ticket_' . $ticket_id . '.max' => 'The maximum number of tickets you can register is ' . $ticket_quantity_remaining,
+                    'ticket_' . $ticket_id . '.min' => 'You must select at least ' . $ticket->min_per_person . ' tickets.',
+                ];
 
-            $validator = Validator::make(['ticket_' . $ticket_id => (int)$request->get('ticket_' . $ticket_id)],
-                $quantity_available_validation_rules, $quantity_available_validation_messages);
+                $validator = Validator::make(['ticket_' . $ticket_id => (int)$request->get('ticket_' . $ticket_id)],
+                    $quantity_available_validation_rules, $quantity_available_validation_messages);
 
-            if ($validator->fails()) {
-                return response()->json([
-                    'status'   => 'error',
-                    'messages' => $validator->messages()->toArray(),
-                ]);
-            }
+                if ($validator->fails()) {
+                    return response()->json([
+                        'status'   => 'error',
+                        'messages' => $validator->messages()->toArray(),
+                    ]);
+                }
 
-            $order_total = $order_total + ($current_ticket_quantity * $ticket->price);
-            $booking_fee = $booking_fee + ($current_ticket_quantity * $ticket->booking_fee);
-            $organiser_booking_fee = $organiser_booking_fee + ($current_ticket_quantity * $ticket->organiser_booking_fee);
+                $order_total = $order_total + ($current_ticket_quantity * $ticket->price);
+                $booking_fee = $booking_fee + ($current_ticket_quantity * $ticket->booking_fee);
+                $organiser_booking_fee = $organiser_booking_fee + ($current_ticket_quantity * $ticket->organiser_booking_fee);
 
-            $tickets[count($tickets)] = [
-                'ticket'                => $ticket,
-                'qty'                   => $current_ticket_quantity,
-                'price'                 => ($current_ticket_quantity * $ticket->price),
-                'booking_fee'           => ($current_ticket_quantity * $ticket->booking_fee),
-                'organiser_booking_fee' => ($current_ticket_quantity * $ticket->organiser_booking_fee),
-                'full_price'            => $ticket->price + $ticket->total_booking_fee,
-            ];
+                $tickets[count($tickets)] = [
+                    'ticket'                => $ticket,
+                    'qty'                   => $current_ticket_quantity,
+                    'price'                 => ($current_ticket_quantity * $ticket->price),
+                    'booking_fee'           => ($current_ticket_quantity * $ticket->booking_fee),
+                    'organiser_booking_fee' => ($current_ticket_quantity * $ticket->organiser_booking_fee),
+                    'full_price'            => $ticket->price + $ticket->total_booking_fee,
+                ];
 
-            /*
-             * To escape undefined offset errors due to accessing arrays that associate with tickets but shorter, in
-             * EventCreateOrderSection.blade, we have to nullify all extra elements... null is set to empty string
-             * denoted by ''
-             */
-            $discount[count($discount)]  = '';
-            $discount_ticket_title[count($discount_ticket_title)] = '';
-            $exact_amount[count($exact_amount)]  = '';
-            $amount_ticket_title[count($amount_ticket_title)] = '';
+                /*
+                 * To escape undefined offset errors due to accessing arrays that associate with tickets but shorter, in
+                 * EventCreateOrderSection.blade, we have to nullify all extra elements... null is set to empty string
+                 * denoted by ''
+                 */
+                $discount[count($discount)]  = '';
+                $discount_ticket_title[count($discount_ticket_title)] = '';
+                $exact_amount[count($exact_amount)]  = '';
+                $amount_ticket_title[count($amount_ticket_title)] = '';
 
-            /*
-             * Reserve the tickets for X amount of minutes
-             */
-            $reservedTickets = new ReservedTickets();
-            $reservedTickets->ticket_id = $ticket_id;
-            $reservedTickets->event_id = $event_id;
-            $reservedTickets->quantity_reserved = $current_ticket_quantity;
-            $reservedTickets->expires = $availables['expires'];
-            $reservedTickets->session_id = session()->getId();
-            $reservedTickets->save();
+                /*
+                 * Reserve the tickets for X amount of minutes
+                 */
+                $reservedTickets = new ReservedTickets();
+                $reservedTickets->ticket_id = $ticket_id;
+                $reservedTickets->event_id = $event_id;
+                $reservedTickets->quantity_reserved = $current_ticket_quantity;
+                $reservedTickets->expires = $availables['expires'];
+                $reservedTickets->session_id = session()->getId();
+                $reservedTickets->save();
 
-        }
+            } //end-foreach($ticket_ids)
+        } //end-if-!empty($ticket_ids)
 
         /*
          * We have to update the tickets to be reserved

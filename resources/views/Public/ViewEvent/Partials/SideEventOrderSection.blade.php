@@ -28,6 +28,16 @@
                              </h1>
                          </div>
 
+                         <hr/>
+
+                <div class="p20 pl0">
+                    <a style="height:35px; float: right;" href="{{route('showEventCheckout', array('event_id'=>$event->id))}}" class="btn btn-primary btn-xs">
+                        No, Just Take Me To The Next Page
+                    </a>
+                </div>
+
+                <hr/>
+
                           <!--Side event container -->
                     <!---      <div class="col-md-5 side-events">
                              <h4> SIDE EVENTS</h4>   -->
