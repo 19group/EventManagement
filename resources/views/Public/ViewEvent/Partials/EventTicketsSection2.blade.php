@@ -134,6 +134,7 @@
                                                     </div>
 
                                                     <form action="{{ route( 'updateBooking', ['event_id'=>$accomodation->event_id]) }}" method="post">
+
                                                         {{ csrf_field() }}
                                                     <div class="modal-body">
                                                       <div class="col-md-12">
@@ -161,18 +162,22 @@
                                                     </div>
 
                                                       <div class="col-md-12 container-fluid">
-                                                          <div class="form-group col-md-6">
-                                                            <label>
-                                                              Number of Days:
-                                                            </label>
-                                                            <input type="number" class="form-control" name="days" placeholder="0" required>
-                                                          </div>
+                                                         
                                                       <div class="form-group col-md-6" id='datetimepicker4'>
                                                         <label>
                                                           From Date:
                                                         </label>
-                                                          <input type="date" name="bookingDate" class="form-control" required>
+                                                          <input type="date" name="mydates[]" class="form-control" required>
                                                       </div>
+                                                      <div class="col-md-12">
+                                                           <button type="button" class="btn btn-primary" onClick="addInput('dategenerator');">Add another date</button>
+                                                        
+                                                      </div>
+
+                                                      <div class="form-group col-md-6" id='dategenerator'>
+                                                        
+                                                      </div>
+
                                                       <input type="text" name="price" hidden value=<?php echo $accomodation->price;  ?> >
                                                       <input type="text" name="event_id" hidden value=<?php echo $accomodation->event_id;  ?> >
                                                       <input type="text" name="status" hidden value=<?php echo $accomodation->status;  ?> >
@@ -186,6 +191,23 @@
                                                           <button class="btn btn-success" type="submit" value="submit">Save</button>
                                                     </div>
                                                     </form>
+                                                          <script>
+                                                            
+                                                                var counter = 2;
+                                                                    var limit = 8;
+                                                                    function addInput(divName){
+                                                                         if (counter == limit)  {
+                                                                              alert("You have reached the limit of adding " + counter + " inputs");
+                                                                         }
+                                                                         else {
+                                                                              var newdiv = document.createElement('div');
+                                                                              newdiv.innerHTML = "Date " + (counter) + " <br><input type='date' class='form-control' name='mydates[]'>";
+                                                                              document.getElementById(divName).appendChild(newdiv);
+                                                                              counter++;
+                                                                         }
+                                                                    }
+                                                            
+                                                          </script>
                                                   </div>
                                                 </div>
                                               </div>
@@ -217,13 +239,15 @@
 
                 </div>
             </div>
-            {!! Form::hidden('is_embedded', $is_embedded) !!}
-            {!! Form::close() !!}
+           <a href="{{ route('checkOut', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">CheckOut</a>
 
        
 </section>
 
-<script type="text/javascript">
-           $('.input-group.date').datepicker({format: "dd.mm.yyyy"}); 
-        </script>
+
 </div>
+<script type="text/javascript">
+
+        function generateDate(){
+          document.write('This is a test');
+        </script>

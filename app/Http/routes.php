@@ -497,6 +497,11 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
             'uses' => 'EventCheckoutController@updateBooking',
         ]);
 
+         Route::get('{event_id}/accomodationcheckout/', [
+            'as'   => 'checkOut',
+            'uses' => 'EventCheckoutController@finalCheckOut',
+        ]);
+
        
 
 

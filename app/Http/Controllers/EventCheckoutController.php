@@ -412,41 +412,40 @@ class EventCheckoutController extends Controller
     {
 
         $event_id = $request->get('event_id');
+
         $order_session = session()->get('ticket_order_' . $event_id);
-
-        //$value = $request->session()->pull('key', $order_session['order_total']);
-       
-
 
         if (!$order_session || $order_session['expires'] < Carbon::now()) {
             $route_name = $this->is_embedded ? 'showEmbeddedEventPage' : 'showEventPage';
-            return redirect()->route($route_name, ['event_id' => $order_session]);
+            return redirect()->route($route_name, ['event_id' => $event_id]);
         }
+
+        $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
+        $accomodations = Ticket::where('type','Extra')->get();
+
+        $order_session = session()->get('ticket_order_' . $event_id);
+
+        $noOfDays = count($request->get('mydates'));
+
 
         $name = $request->get('first_name'). $request->get('last_name');
 
-        $order_session['order_total'] = $request->get('old_total') + $request->get('days') * $request->get('price');
+        $order_session['order_total'] = $request->get('old_total') + $noOfDays * $request->get('price');
         //$newTotal += $request->get('old_total');
-
-       $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
-        $accomodations = Ticket::where('type','Extra')->get();
-
-       //Session::put('order_total', $newTotal);
-
-       //dd($newTotal);
 
         
 
-        Acccommodation::create([
+       /* Acccommodation::create([
                 'full_name' => $name,
                 'email' => $request->get('email'),
                 'hotel_status' => $request->get('status'),
                 'title' => $request->get('title'),
                 'amount' =>  $order_session['order_total'],
                 'days' =>  $request->get('days'),
-                'date' =>  $request->get('bookingDate'),
-              ]);
-
+                'date' =>  'today',
+              ]);*/
+              session()->put('mydates', $request->get('mydates'));
+            session()->put('order_total', $order_session['order_total']);
       
 
           $data = $order_session + [
@@ -457,7 +456,10 @@ class EventCheckoutController extends Controller
                 'first_name'              => $order_session['first_name'],
                 'order_total'              => $order_session['order_total'],
                 'last_name'              => $order_session['last_name'],
-                'email'              => $order_session['email'],
+                'mydates'              => $request->get('mydates'),
+                'bookedDays'              => $noOfDays,
+                'email'              => session()->get('order_total'),
+                'newTotal'              => $order_session['email'],
                 'accomodations'              => $accomodations,
                 'discount_ticket_title' => $order_session['discount_ticket_title'],
                 'exact_amount'          => $order_session['exact_amount'],
@@ -465,7 +467,9 @@ class EventCheckoutController extends Controller
                 'is_embedded'     => $this->is_embedded,
             ];
 
-            //dd($data);
+            
+
+            //dd($noOfDays);
 
         if ($this->is_embedded) {
             return view('Public.ViewEvent.Embedded.EventPageCheckout', $data);
@@ -474,6 +478,41 @@ class EventCheckoutController extends Controller
         return view('Public.ViewEvent.Accomodation', $data);
         
         //dd($order_session['order_total']);
+    }
+
+    public function finalCheckout( $event_id )
+    {
+
+        $order_session = session()->get('ticket_order_' . $event_id);
+
+        if (!$order_session || $order_session['expires'] < Carbon::now()) {
+            $route_name = $this->is_embedded ? 'showEmbeddedEventPage' : 'showEventPage';
+            return redirect()->route($route_name, ['event_id' => $event_id]);
+        }
+
+        $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
+        $accomodations = Ticket::where('type','Extra')->get();
+
+        //dd(session()->get('order_total'));
+        session()->put('order_total', $order_session['order_total']);
+
+        $data = $order_session + [
+                'event'           => Event::findorFail($order_session['event_id']),
+                'secondsToExpire' => $secondsToExpire,
+                'coupon_flag'           => $order_session['coupon_flag'],
+                'discount'              => $order_session['discount'],
+                'first_name'              => $order_session['first_name'],
+                'last_name'              => $order_session['last_name'],
+                'email'              => $order_session['email'],
+                'accomodations'              => $accomodations,
+                'discount_ticket_title' => $order_session['discount_ticket_title'],
+                'exact_amount'          => $order_session['exact_amount'],
+                'amount_ticket_title'   => $order_session['amount_ticket_title'],
+                'is_embedded'     => $this->is_embedded,
+            ];
+
+            return view('Public.ViewEvent.Embedded.EventPageCheckout', $data);
+
     }
 
 
