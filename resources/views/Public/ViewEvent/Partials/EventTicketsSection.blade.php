@@ -128,7 +128,7 @@
                                       <?php } ?>
                                       <!--end of addition-->
                                       <td class="col-md-3" text-align: right;">
-                                          <div class="ticket-pricing" style="margin-right: 20px;">
+                                          <div class="ticket-pricing" style="margin-right: 20px; text-align:right">
                                               @if($ticket->is_free)
                                                   FREE
                                                   <meta property="price" content="0">
