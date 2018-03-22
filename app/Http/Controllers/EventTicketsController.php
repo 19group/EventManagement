@@ -79,6 +79,7 @@ class EventTicketsController extends MyBaseController
      */
     public function showCreateTicket($event_id)
     {
+      
         return view('ManageEvent.Modals.CreateTicket', [
             'event' => Event::scope()->find($event_id),
         ]);
@@ -87,6 +88,8 @@ class EventTicketsController extends MyBaseController
     public function showCreateCoupon($event_id)
     { 
 
+
+
       $tickets = DB::table('tickets')->where('event_id','=', $event_id)->get(['id', 'title']);
 
       //dd($tickets);
@@ -94,6 +97,20 @@ class EventTicketsController extends MyBaseController
        return view('ManageEvent.Modals.CreateCoupon', [
             'event' => Event::scope()->find($event_id), 
             'tickets' => $tickets,
+        ]);
+    }
+
+
+
+
+    public function showBookingModal($event_id)
+    { 
+      //dd($Event::scope()->find($event_id));
+
+      
+
+      return view('Public.ViewEvent.Modals.CreateBooking', [
+            'event' => Event::scope()->find($event_id),
         ]);
     }
 

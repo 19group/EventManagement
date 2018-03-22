@@ -10,6 +10,8 @@ use App\Models\Event;
 use App\Models\EventStats;
 use App\Models\Order;
 use App\Coupon;
+use Session;
+use App\Acccommodation;
 //use App\Models\Donation;
 use App\Models\OrderItem;
 use App\Models\QuestionAnswer;
@@ -406,6 +408,74 @@ class EventCheckoutController extends Controller
         return view('Public.ViewEvent.EventSideEvent', $data);
     }
 
+    public function updateBooking(Request $request)
+    {
+
+        $event_id = $request->get('event_id');
+        $order_session = session()->get('ticket_order_' . $event_id);
+
+        //$value = $request->session()->pull('key', $order_session['order_total']);
+       
+
+
+        if (!$order_session || $order_session['expires'] < Carbon::now()) {
+            $route_name = $this->is_embedded ? 'showEmbeddedEventPage' : 'showEventPage';
+            return redirect()->route($route_name, ['event_id' => $order_session]);
+        }
+
+        $name = $request->get('first_name'). $request->get('last_name');
+
+        $order_session['order_total'] = $request->get('old_total') + $request->get('days') * $request->get('price');
+        //$newTotal += $request->get('old_total');
+
+       $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
+        $accomodations = Ticket::where('type','Extra')->get();
+
+       //Session::put('order_total', $newTotal);
+
+       //dd($newTotal);
+
+        
+
+        Acccommodation::create([
+                'full_name' => $name,
+                'email' => $request->get('email'),
+                'hotel_status' => $request->get('status'),
+                'title' => $request->get('title'),
+                'amount' =>  $order_session['order_total'],
+                'days' =>  $request->get('days'),
+                'date' =>  $request->get('bookingDate'),
+              ]);
+
+      
+
+          $data = $order_session + [
+                'event'           => Event::findorFail($order_session['event_id']),
+                'secondsToExpire' => $secondsToExpire,
+                'coupon_flag'           => $order_session['coupon_flag'],
+                'discount'              => $order_session['discount'],
+                'first_name'              => $order_session['first_name'],
+                'order_total'              => $order_session['order_total'],
+                'last_name'              => $order_session['last_name'],
+                'email'              => $order_session['email'],
+                'accomodations'              => $accomodations,
+                'discount_ticket_title' => $order_session['discount_ticket_title'],
+                'exact_amount'          => $order_session['exact_amount'],
+                'amount_ticket_title'   => $order_session['amount_ticket_title'],
+                'is_embedded'     => $this->is_embedded,
+            ];
+
+            //dd($data);
+
+        if ($this->is_embedded) {
+            return view('Public.ViewEvent.Embedded.EventPageCheckout', $data);
+        }
+
+        return view('Public.ViewEvent.Accomodation', $data);
+        
+        //dd($order_session['order_total']);
+    }
+
 
     /**
      * Added by DonaldMar16 to show post order side events page
@@ -610,12 +680,18 @@ class EventCheckoutController extends Controller
         }
 
         $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
+        $accomodations = Ticket::where('type','Extra')->get();
 
         $data = $order_session + [
                 'event'           => Event::findorFail($order_session['event_id']),
                 'secondsToExpire' => $secondsToExpire,
                 'coupon_flag'           => $order_session['coupon_flag'],
                 'discount'              => $order_session['discount'],
+                'newSubTotal'              => '',
+                'first_name'              => $order_session['first_name'],
+                'last_name'              => $order_session['last_name'],
+                'email'              => $order_session['email'],
+                'accomodations'              => $accomodations,
                 'discount_ticket_title' => $order_session['discount_ticket_title'],
                 'exact_amount'          => $order_session['exact_amount'],
                 'amount_ticket_title'   => $order_session['amount_ticket_title'],
@@ -628,7 +704,7 @@ class EventCheckoutController extends Controller
             return view('Public.ViewEvent.Embedded.EventPageCheckout', $data);
         }
 
-        return view('Public.ViewEvent.EventPageCheckout', $data);
+        return view('Public.ViewEvent.Accomodation', $data);
     }
 
     /**

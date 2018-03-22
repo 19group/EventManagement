@@ -131,6 +131,8 @@ Route::group(['prefix' => 'e'], function () {
         'uses' => 'EventViewController@postContactOrganiser',
     ]);
 
+    Route::resource('modal', 'ModalTestController');
+
     /*
      * Used for previewing designs in the backend. Doesn't log page views etc.
      */
@@ -204,6 +206,9 @@ Route::get('order/{order_reference}/tickets', [
     'as'   => 'showOrderTickets',
     'uses' => 'EventCheckoutController@showOrderTickets',
 ]);
+
+
+
 
 /*
  * Backend routes
@@ -474,6 +479,25 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
         ]);
 
 
+
+
+
+
+
+
+         /*
+        *
+        * -------------
+        * Accommodation
+        *--------------
+        *
+        */
+         Route::post('{event_id}/booking/', [
+            'as'   => 'updateBooking',
+            'uses' => 'EventCheckoutController@updateBooking',
+        ]);
+
+       
 
 
 

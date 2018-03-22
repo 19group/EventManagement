@@ -81,6 +81,8 @@ class EventAttendeesController extends MyBaseController
     public function showCoupons(Request $request, $event_id)
     {
 
+        //dd($event_id);
+
         $event = Event::scope()->find($event_id);
 
 
