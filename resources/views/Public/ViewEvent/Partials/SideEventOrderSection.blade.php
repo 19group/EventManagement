@@ -24,7 +24,7 @@
 
                          <div class="col-sm-12">
                              <h1 class='section_head'>
-                                Side Events for {{$event->title}}
+                                Add an experince at {{$event->title}}
                              </h1>
                          </div>
 
@@ -41,7 +41,7 @@
                           <!--Side event container -->
                     <!---      <div class="col-md-5 side-events">
                              <h4> SIDE EVENTS</h4>   -->
-                          <div class="tickets_table_wrap">
+                          <div class="tickets_table_wrap col-sm-12">
                           <table class="table">
                                <?php foreach ($tickets as $minevent){?>
                                   <tr class="ticket" property="offers" typeof="Offer">
