@@ -163,6 +163,7 @@ class EventTicketsController extends MyBaseController
         $ticket->min_per_person = $request->get('min_per_person');
         $ticket->max_per_person = $request->get('max_per_person');
         $ticket->description = $request->get('description');
+        $ticket->type = $request->get('type');
         $ticket->ticket_offers = empty($ticketoffers) ? null : implode('#@#',$ticketoffers);
         $ticket->ticket_extras = empty($ticketextras) ? null : implode('{+}',$ticketextras);
         $ticket->is_hidden = $request->get('is_hidden') ? 1 : 0;
@@ -330,6 +331,7 @@ class EventTicketsController extends MyBaseController
         $ticket->end_sale_date = $request->get('end_sale_date') ? Carbon::createFromFormat('d-m-Y H:i',
             $request->get('end_sale_date')) : null;
         $ticket->description = $request->get('description');
+        $ticket->type = $request->get('type');
         $ticket->ticket_offers = empty($ticketoffers) ? null : implode('#@#',$ticketoffers);
         $ticket->min_per_person = $request->get('min_per_person');
         $ticket->max_per_person = $request->get('max_per_person');
