@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Input;
  */
 
 class EventTicketsController extends MyBaseController
-{ 
+{
     /**
      * @param Request $request
      * @param $event_id
@@ -47,8 +47,8 @@ class EventTicketsController extends MyBaseController
 
         // Get tickets for event.
         $tickets = empty($q) === false
-            ? $event->tickets()->where('title', 'like', '%' . $q . '%')->where(['type'=>NULL])->orderBy($sort_by, 'asc')->paginate()
-            : $event->tickets()->where(['type'=>NULL])->orderBy($sort_by, 'asc')->paginate();
+            ? $event->tickets()->where('title', 'like', '%' . $q . '%')->where(['type'=>NULL])->orWhere(['type'=>'extras'])->orWhere(['type'=>'normal'])->orderBy($sort_by, 'asc')->paginate()
+            : $event->tickets()->where(['type'=>NULL])->orWhere(['type'=>'extras'])->orWhere(['type'=>'normal'])->orderBy($sort_by, 'asc')->paginate();
 
         // Return view.
         return view('ManageEvent.Tickets', compact('event', 'tickets', 'sort_by', 'q', 'allowed_sorts'));
@@ -79,14 +79,14 @@ class EventTicketsController extends MyBaseController
      */
     public function showCreateTicket($event_id)
     {
-      
+
         return view('ManageEvent.Modals.CreateTicket', [
             'event' => Event::scope()->find($event_id),
         ]);
     }
 
     public function showCreateCoupon($event_id)
-    { 
+    {
 
 
 
@@ -95,7 +95,7 @@ class EventTicketsController extends MyBaseController
       //dd($tickets);
 
        return view('ManageEvent.Modals.CreateCoupon', [
-            'event' => Event::scope()->find($event_id), 
+            'event' => Event::scope()->find($event_id),
             'tickets' => $tickets,
         ]);
     }
@@ -104,10 +104,10 @@ class EventTicketsController extends MyBaseController
 
 
     public function showBookingModal($event_id)
-    { 
+    {
       //dd($Event::scope()->find($event_id));
 
-      
+
 
       return view('Public.ViewEvent.Modals.CreateBooking', [
             'event' => Event::scope()->find($event_id),
@@ -123,13 +123,13 @@ class EventTicketsController extends MyBaseController
     public function postCreateTicket(Request $request, $event_id)
     {
         $ticket = Ticket::createNew();
-        $f=0; $miss=0; $toc=0; $ticketoffers=[]; 
+        $f=0; $miss=0; $toc=0; $ticketoffers=[];
         while($miss<3){
           if($request->get("ticket_offer_$f")){
             $ticketoffers[$toc]=$request->get("ticket_offer_$f");++$f;++$toc;$miss=0;
           }else{++$miss;++$f;}
         }
-        $g=0; $mix=0; $oxc=0; $ticketextras=[]; 
+        $g=0; $mix=0; $oxc=0; $ticketextras=[];
         while($mix<3){
           if($request->has("ticket_extra_$g")){
             $ticketextras[$oxc]=$request->get("ticket_extra_$g");
@@ -187,9 +187,9 @@ class EventTicketsController extends MyBaseController
     {
 
         $id = $request->get('id');
-       
+
       $title = DB::table('tickets')->select('title')->where('id', '=', $id)->value('title');
-       
+
             for ($i = 0; $i < $request->get('max_coupons'); $i++) {
               Coupon::create([
                 'coupon_code' => str_random(10),
