@@ -127,7 +127,7 @@
                                       </td>
                                       <?php } ?>
                                       <!--end of addition-->
-                                      <td class="col-md-2" text-align: right;">
+                                      <td class="col-md-3" text-align: right;">
                                           <div class="ticket-pricing" style="margin-right: 20px;">
                                               @if($ticket->is_free)
                                                   FREE
@@ -144,7 +144,7 @@
                                               @endif
                                           </div>
                                       </td>
-                                      <td class="col-md-4">
+                                      <td class="col-md-3">
                                           @if($ticket->is_paused)
 
                                               <span class="text-danger">
