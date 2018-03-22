@@ -94,20 +94,20 @@
                                  Choose Your Tickets
                              </h1>
                          </div>
-                
+
 
                           <!-- Tickets -->
                           <!----<div class="col-md-7">---->
 
 
-                            <div class="tickets_table_wrap">
+                            <div class="tickets_table_wrap row col-md-12 ">
                              <table class="table">
                               <?php
                               $is_free_event = true;
                               ?>
                               @foreach($tickets as $ticket)
-                                  <tr class="ticket" property="offers" typeof="Offer">
-                                      <td>
+                                  <tr  class="ticket " property="offers" typeof="Offer">
+                                      <td class="col-md-6">
                               <span class="ticket-title semibold" property="name">
                                   {{$ticket->title}}
                               </span>
@@ -127,7 +127,7 @@
                                       </td>
                                       <?php } ?>
                                       <!--end of addition-->
-                                      <td style="width:180px; text-align: right;">
+                                      <td class="col-md-2" text-align: right;">
                                           <div class="ticket-pricing" style="margin-right: 20px;">
                                               @if($ticket->is_free)
                                                   FREE
@@ -144,7 +144,7 @@
                                               @endif
                                           </div>
                                       </td>
-                                      <td style="width:85px;">
+                                      <td class="col-md-4">
                                           @if($ticket->is_paused)
 
                                               <span class="text-danger">
@@ -187,7 +187,7 @@
                               @endforeach
 
                               <tr class="checkout">
-                                  <td colspan="3">
+                                  <td>
                                       @if(!$is_free_event)
                                           <div class="hidden-xs pull-left">
                                               <img class=""
