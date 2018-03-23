@@ -1,20 +1,20 @@
 <?php $offer=0; $toffers=[];?>
 
 <div role="dialog"  class="modal fade" id="CreateBooking" style="display: none;">
-   {!! Form::open(array('url' => route('postCreateTicket', array('event_id' => $event->id)), 'class' => 'ajax')) !!}
+   {!! Form::open(array('url' => route('postCreateAccommodation', array('event_id' => $event->id)), 'class' => '')) !!}
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header text-center">
                 <button type="button" class="close" data-dismiss="modal">×</button>
                 <h3 class="modal-title">
-                    <i class="ico-ticket"></i>
-                    Create Ticket</h3>
+                    <i class="glyphicon glyphicon-star"></i>
+                    Create an Accommodation</h3>
             </div>
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group">
-                            {!! Form::label('title', 'Ticket Title', array('class'=>'control-label required')) !!}
+                            {!! Form::label('title', 'Title', array('class'=>'control-label required')) !!}
                             {!!  Form::text('title', Input::old('title'),
                                         array(
                                         'class'=>'form-control',
@@ -25,7 +25,7 @@
                         <div class="row">
                             <div class="col-sm-6">
                                 <div class="form-group">
-                                    {!! Form::label('price', 'Ticket Price', array('class'=>'control-label required')) !!}
+                                    {!! Form::label('price', 'Price', array('class'=>'control-label required')) !!}
                                     {!!  Form::text('price', Input::old('price'),
                                                 array(
                                                 'class'=>'form-control',
@@ -36,26 +36,13 @@
                                 </div>
                             </div>
 
-                            <div class="col-sm-6">
+                            <div class="col-md-6">
                                 <div class="form-group">
-                                    {!! Form::label('quantity_available', 'Quantity Available', array('class'=>' control-label')) !!}
-                                    {!!  Form::text('quantity_available', Input::old('quantity_available'),
-                                                array(
-                                                'class'=>'form-control',
-                                                'placeholder'=>'E.g: 100 (Leave blank for unlimited)'
-                                                )
-                                                )  !!}
+                                     {!! Form::label('status', 'Status', array('class'=>' control-label')) !!}
+                                     {!! Form::select('status', ['5'=>'5 Stars', '4'=>'4 Stars', '3'=>'3 Stars'],null, ['class' => 'form-control']) !!}
                                 </div>
                             </div>
 
-                        </div>
-
-                        <div class="form-group more-options">
-                            {!! Form::label('description', 'Ticket Description', array('class'=>'control-label')) !!}
-                            {!!  Form::text('description', Input::old('description'),
-                                        array(
-                                        'class'=>'form-control'
-                                        ))  !!}
                         </div>
 
 <!-- Added by Donald on Jan 31 -->
@@ -204,7 +191,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                      {!! Form::label('type', 'Ticket Type', array('class'=>' control-label')) !!}
-                                     {!! Form::select('type', ['normal'=>'Normal', 'extras'=>'Extras'],null, ['class' => 'form-control']) !!}
+                                     {!! Form::select('type', ['extra'=>'Extras'],null, ['class' => 'form-control']) !!}
                                 </div>
                             </div>
                         </div>

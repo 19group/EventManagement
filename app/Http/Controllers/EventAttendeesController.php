@@ -7,14 +7,15 @@ use App\Jobs\SendAttendeeInvite;
 use App\Jobs\SendAttendeeTicket;
 use App\Jobs\SendMessageToAttendees;
 use App\Models\Attendee;
+use App\Models\Ticket;
 use App\Coupon;
 use App\Models\Event;
 use App\Models\EventStats;
 use App\Models\Message;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\Ticket;
 use Auth;
+use App\Acccommodation;
 use Config;
 use DB;
 use Excel;
@@ -133,6 +134,24 @@ class EventAttendeesController extends MyBaseController
         //dd($data);
 
         return view('ManageEvent.Coupons', $data);
+    }
+
+    public function showAccommodation(Request $request, $event_id)
+    {
+        $event = Event::scope()->find($event_id);
+
+        $accommodation = Acccommodation::all();
+        $tickets = Ticket::where('type','extra')->get();
+
+        //dd($accommodatin);
+        $data = [
+            'accommodation'  => $accommodation,
+            'event'      => $event,
+            'tickets'      => $tickets,
+        ];
+
+        return view('ManageEvent.Accomodations', $data);
+
     }
 
     /**

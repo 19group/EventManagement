@@ -501,6 +501,18 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
             'as'   => 'checkOut',
             'uses' => 'EventCheckoutController@finalCheckOut',
         ]);
+         Route::get('{event_id}/accommodations/', [
+            'as'   => 'showAccommodations',
+            'uses' => 'EventAttendeesController@showAccommodation',
+        ]);
+         Route::get('{event_id}/accommodation/create', [
+            'as'   => 'showCreateAccomodation',
+            'uses' => 'EventTicketsController@showBookingModal',
+        ]);
+          Route::post('{event_id}/create/accommodation', [
+            'as'   => 'postCreateAccommodation',
+            'uses' => 'EventTicketsController@postCreateAccommodation',
+        ]);
 
        
 
