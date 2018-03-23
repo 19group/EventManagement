@@ -26,14 +26,20 @@
             <!--added by Donald-->
             <li class="{{ Request::is('*tickets*') ? 'active' : '' }}">
                 <a href="{{route('showEventCoupons', array('event_id' => $event->id))}}">
-                    <span class="figure"><i class="glyphicon glyphicon-tag"></i></i></span>
+                    <span class="figure"><i class="glyphicon glyphicon-tag"></i></span>
                     <span class="text">Coupons</span>
                 </a>
             </li>
             <li class="{{ Request::is('*tickets*') ? 'active' : '' }}">
                 <a href="{{route('showSideEvents', array('event_id' => $event->id))}}">
-                    <span class="figure"><i class="glyphicon glyphicon-tag"></i></i></span>
+                    <span class="figure"><i class="glyphicon glyphicon-tag"></i></span>
                     <span class="text">Side Events</span>
+                </a>
+            </li>
+            <li class="{{ Request::is('*tickets*') ? 'active' : '' }}">
+                <a href="{{route('showAccommodations', array('event_id' => $event->id))}}">
+                    <span class="figure"><i class="glyphicon glyphicon-star"></i></span>
+                    <span class="text">Accommodations</span>
                 </a>
             </li>
             <!--end of addition-->

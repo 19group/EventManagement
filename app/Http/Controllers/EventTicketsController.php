@@ -48,7 +48,9 @@ class EventTicketsController extends MyBaseController
         // Get tickets for event.
         $tickets = empty($q) === false
             ? $event->tickets()->where('title', 'like', '%' . $q . '%')->where(['type'=>NULL])->orWhere(['type'=>'extras'])->orWhere(['type'=>'normal'])->orderBy($sort_by, 'asc')->paginate()
-            : $event->tickets()->where(['type'=>NULL])->orWhere(['type'=>'extras'])->orWhere(['type'=>'normal'])->orderBy($sort_by, 'asc')->paginate();
+            : $event->tickets()->where(['type'=>NULL])->orWhere(['type'=>'normal'])->orderBy($sort_by, 'asc')->paginate();
+
+            //dd($tickets);
 
         // Return view.
         return view('ManageEvent.Tickets', compact('event', 'tickets', 'sort_by', 'q', 'allowed_sorts'));
@@ -84,6 +86,8 @@ class EventTicketsController extends MyBaseController
             'event' => Event::scope()->find($event_id),
         ]);
     }
+
+    
 
     public function showCreateCoupon($event_id)
     {
@@ -180,6 +184,75 @@ class EventTicketsController extends MyBaseController
                 'event_id' => $event_id,
             ]),
         ]);
+    }
+
+
+    public function postCreateAccommodation(Request $request, $event_id)
+    {
+
+        //dd($request->all());
+
+        $ticket = Ticket::createNew();
+        $f=0; $miss=0; $toc=0; $ticketoffers=[];
+        while($miss<3){
+          if($request->get("ticket_offer_$f")){
+            $ticketoffers[$toc]=$request->get("ticket_offer_$f");++$f;++$toc;$miss=0;
+          }else{++$miss;++$f;}
+        }
+        $g=0; $mix=0; $oxc=0; $ticketextras=[];
+        while($mix<3){
+          if($request->has("ticket_extra_$g")){
+            $ticketextras[$oxc]=$request->get("ticket_extra_$g");
+            if($request->has("ticket_extra_option_$g") && $request->get("$ticket_extra_amt_$g")){
+              $ticketextras[$oxc]=$ticketextras[$oxc].'@*#'.$request->get("ticket_extra_amt_$g").'@*#'.$request->get("$ticket_extra_option_$g");++$g;++$oxc;$mix=0;
+            }elseif($request->has("$ticket_extra_amt_$g")){
+              $ticketextras[$oxc]=$ticketextras[$oxc].'@*#'.$request->get("ticket_extra_amt_$g").'@*#';++$g;++$oxc;$mix=0;
+            }else{
+              return response()->json([
+                  'status'   => 'error',
+                  'messages' => 'it appears one ticket extra was not correctly filled. Make sure for each ticket extra, there is corresponding extra offer amount',
+              ]);
+            }
+          }else{++$mix;++$g;}
+        }
+        if (!$ticket->validate($request->all())) {
+            return response()->json([
+                'status'   => 'error',
+                'messages' => $ticket->errors(),
+            ]);
+        }
+
+        $ticket->event_id = $event_id;
+        $ticket->title = $request->get('title');
+        $ticket->status = $request->get('status');
+        $ticket->quantity_available = !$request->get('quantity_available') ? null : $request->get('quantity_available');
+        $ticket->start_sale_date = $request->get('start_sale_date') ? Carbon::createFromFormat('d-m-Y H:i',
+            $request->get('start_sale_date')) : null;
+        $ticket->end_sale_date = $request->get('end_sale_date') ? Carbon::createFromFormat('d-m-Y H:i',
+            $request->get('end_sale_date')) : null;
+        $ticket->price = $request->get('price');
+        $ticket->min_per_person = $request->get('min_per_person');
+        $ticket->max_per_person = $request->get('max_per_person');
+        $ticket->description = $request->get('description');
+        $ticket->type = $request->get('type');
+        $ticket->ticket_offers = empty($ticketoffers) ? null : implode('#@#',$ticketoffers);
+        $ticket->ticket_extras = empty($ticketextras) ? null : implode('{+}',$ticketextras);
+        $ticket->is_hidden = $request->get('is_hidden') ? 1 : 0;
+
+        $ticket->save();
+
+        session()->flash('message', 'Successfully Created Ticket');
+
+        /*return response()->json([
+            'status'      => 'success',
+            'id'          => $ticket->id,
+            'message'     => 'Refreshing...',
+            'redirectUrl' => route('showEventTickets', [
+                'event_id' => $event_id,
+            ]),
+        ]);*/
+
+        return redirect()->back();
     }
 
 
