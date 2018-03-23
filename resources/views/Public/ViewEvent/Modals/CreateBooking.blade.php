@@ -43,10 +43,18 @@
                                 </div>
                             </div>
 
+
                         </div>
 
 <!-- Added by Donald on Jan 31 -->
 
+                     <div class="form-group more-options">
+                         {!! Form::label('description', 'Ticket Description', array('class'=>'control-label')) !!}
+                         {!!  Form::text('description', Input::old('description'),
+                                     array(
+                                     'class'=>'form-control'
+                                     ))  !!}
+                     </div>
                         <div class="row more-options">
                             <div class="col-md-12">
                                 <div class="form-group">
