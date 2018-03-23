@@ -126,6 +126,37 @@
                                                 Book
                                               </button>
 
+                                              <!--added by DonaldMar23 //AlternativeAccommodation-->
+                                          <!-- for this to work, YOU MUST COMMENT THE DIV CLASS=MODAL FADE PART
+                                              {!! Form::hidden('accommodates[]', $accomodation->id) !!}
+                                              <div class="row">
+                                                  <div class="form-group col-md-6">
+                                                  <select id="{{$accomodation->id}}_accommotickets_10" name="{{$accomodation->id}}_accommotickets_0" class="form-control"
+                                                          style="text-align: center">
+                                                      @for($i=0; $i<=15; $i++)
+                                                          <option value="{{$i}}">{{$i}}</option>
+                                                      @endfor
+                                                  </select>
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                  <select id="{{$accomodation->id}}_accommodays_10" name="{{$accomodation->id}}_accommodays_0" class="form-control"
+                                                          style="text-align: center">
+                                                      @for($i=0; $i<=15; $i++)
+                                                          <option value="{{$i}}">{{$i}}</option>
+                                                      @endfor
+                                                  </select> 
+                                                </div>
+                                              </div>
+
+                                              <div id="extraaccommos_{{$accomodation->id}}" class="row">
+
+                                              </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                {!! Form::button('Specify Days', ['id'=>$accomodation->id, 'onClick'=>"myFunction(this.id)", 'class'=>"btn btn-success", 'name'=>$accomodation->id, 'value'=>$accomodation->id]) !!}
+                                </div>
+                            </div>  -->
+                                  <!--end of addition AlternativeAccommodation-->
                                               <div class="modal fade" id=<?php echo $accomodation->title; ?> >
                                                 <div class="modal-dialog">
                                                   <div class="modal-content">
@@ -239,6 +270,13 @@
 
                 </div>
             </div>
+
+      <!--added by DonaldMar23-->
+
+      {!!Form::submit('FormCheckout', ['class' => 'btn btn-lg btn-primary pull-right'])!!}
+
+      {!! Form::close() !!}
+      <!--end of addition by DonaldMar23-->
            <a href="{{ route('checkOut', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">CheckOut</a>
 
        
@@ -247,7 +285,60 @@
 
 </div>
 <script type="text/javascript">
+  function generateDate(){
+    document.write('This is a test');
+</script>
 
-        function generateDate(){
-          document.write('This is a test');
-        </script>
+
+
+<!--added by Donald-->
+<script>
+
+var selectcount=1;
+
+function myFunction(trigger) {
+        var ticksdiv = document.createElement('div');
+        var daysdiv = document.createElement('div');
+        var ticksselect = document.createElement('select');
+        var daysselect = document.createElement('select');
+        var optnumbers;
+        var optionsarr = [];
+
+        ticksdiv.setAttribute("class", "form-group col-md-6");
+        daysdiv.setAttribute("class", "form-group col-md-6");
+
+        ticksselect.setAttribute("name", trigger + "_accommotickets_" + selectcount);
+        ticksselect.setAttribute("id", "accommoticketsid_" + selectcount);
+        ticksselect.setAttribute("class", "form-control");
+        ticksselect.setAttribute("style", "text-align: center");
+
+        daysselect.setAttribute("name", trigger + "_accommodays_" + selectcount);
+        daysselect.setAttribute("id", "accommodaysid_" + selectcount);
+        daysselect.setAttribute("class", "form-control");
+        daysselect.setAttribute("style", "text-align: center");
+
+        ticksdiv.appendChild(ticksselect);
+        daysdiv.appendChild(daysselect);
+
+        for (optnumbers = 0; optnumbers < 16; optnumbers++) {
+          ticksselect.options[ticksselect.options.length] = new Option(optnumbers,optnumbers);
+        }
+        for (daysoptnumbers = 0; daysoptnumbers < 16; daysoptnumbers++) {
+          daysselect.options[daysselect.options.length] = new Option(daysoptnumbers,daysoptnumbers);
+        }
+
+        document.getElementById("extraaccommos_" + trigger).appendChild(ticksdiv);
+        document.getElementById("extraaccommos_" + trigger).appendChild(daysdiv);
+
+        selectcount++;
+}
+
+$(function() {
+    $('#accommobutton').on('click', function(e) {
+        alert('new value is ');
+    });
+
+});
+</script>
+
+<!--end of addition-->

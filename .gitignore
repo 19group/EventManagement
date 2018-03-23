@@ -21,5 +21,7 @@ _ide_helper.php
 /resources/views/Public/ViewEvent/Partials/EventCreateDonationSection.blade.php
 /resources/views/ManageEvent/Modals/DeleteEvent.blade.php
 /resources/views/ManageEvent/Modals/DeleteTicket.blade.php
+app/Http/Controllers/EventCheckoutControllerstash.php
+resources/views/Public/ViewEvent/Partials/EventTicketsSection2Stash.blade.php
 *.swp
 /public/user_content

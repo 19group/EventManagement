@@ -514,6 +514,12 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
             'uses' => 'EventTicketsController@postCreateAccommodation',
         ]);
 
+
+        //DonaldMar23
+        Route::post('{event_id}/readyforfarewell/', [
+            'as'   => 'accommoCheckout',
+            'uses' => 'EventCheckoutController@accommoCheckout',
+        ]);
        
 
 
