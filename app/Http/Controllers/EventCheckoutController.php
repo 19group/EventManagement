@@ -344,9 +344,13 @@ class EventCheckoutController extends Controller
         $noOfDays = count($request->get('mydates'));
 
 
+
+
         $name = $request->get('first_name'). $request->get('last_name');
 
-        $order_session['order_total'] = $request->get('old_total') + $noOfDays * $request->get('price');
+        $order_session['order_total'] = $order_session['order_total']  + $noOfDays * $request->get('price');
+
+        session()->put('order_total', $order_session['order_total']);
         //$newTotal += $request->get('old_total');
 
         
@@ -374,8 +378,8 @@ class EventCheckoutController extends Controller
                 'last_name'              => $order_session['last_name'],
                 'mydates'              => $request->get('mydates'),
                 'bookedDays'              => $noOfDays,
-                'email'              => session()->get('order_total'),
-                'newTotal'              => $order_session['email'],
+                'newTotal'              => session()->get('order_total'),
+                'email'              => $order_session['email'],
                 'accomodations'              => $accomodations,
                 'discount_ticket_title' => $order_session['discount_ticket_title'],
                 'exact_amount'          => $order_session['exact_amount'],
@@ -412,7 +416,7 @@ class EventCheckoutController extends Controller
         $accomodations = Ticket::where('type','Extra')->get();
 
         //dd(session()->get('order_total'));
-        session()->put('order_total', $order_session['order_total']);
+        
 
         $data = $order_session + [
                 'event'           => Event::findorFail($order_session['event_id']),
@@ -428,6 +432,8 @@ class EventCheckoutController extends Controller
                 'amount_ticket_title'   => $order_session['amount_ticket_title'],
                 'is_embedded'     => $this->is_embedded,
             ];
+
+            dd(session()->get('order_total'));
 
             return view('Public.ViewEvent.Embedded.EventPageCheckout', $data);
 
