@@ -30,11 +30,14 @@
 
                          <hr/>
 
+                         <!--
+
                 <div class="p20 pl0">
                     <a style="height:35px; float: right;" href="{{route('showEventCheckout', array('event_id'=>$event->id))}}" class="btn btn-primary btn-xs">
                         No, Just Take Me To The Next Page
                     </a>
                 </div>
+               -->
 
                 <hr/>
 
@@ -49,7 +52,7 @@
                               <span class="ticket-title semibold" property="name">
                                   {{$minevent->title}}
                               </span>
-                                          <p class="ticket-descripton mb0 " property="description">
+                                          <p class="ticket-descripton mb0 side-event-description " property="description">
                                               {{$minevent->description}}
                                           </p>
                                 <!--   <p><b>{{$minevent->title}} </b></p>
@@ -125,7 +128,9 @@
                     </table>
                     </div>
                           <hr />
-                          {!!Form::submit('Register', ['class' => 'btn btn-lg btn-primary pull-right'])!!}
+                          <div class="col-sm-12">
+                          {!!Form::submit('Next', ['class' => 'btn btn-lg btn-primary pull-right'])!!}
+                         </div>
                         </div>
 
                     </div> <!-- End Content -->

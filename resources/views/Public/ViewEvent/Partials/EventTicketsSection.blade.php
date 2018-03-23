@@ -206,7 +206,9 @@
                                </table>
                             </div>
                           <!---</div>  -->
+                          <div class="col-sm-12">
                           {!!Form::submit('Register', ['class' => 'btn btn-lg btn-primary pull-right'])!!}
+                         </div>
                         </div>
 
                     </div> <!-- End Content -->
