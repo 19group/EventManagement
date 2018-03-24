@@ -152,21 +152,21 @@ class EventCheckoutController extends Controller
 
            $coupon_code = $request->get('coupon_' . $ticket_id);
 
-            
+
            if ($coupon_code!='') {
 
                 $coupon_single = Coupon::where('coupon_code','=', $coupon_code)->first();
 
-            
+
                 if ($coupon_single) {
-                
+
 
                     if ($coupon_single->state=='Valid') {
 
-                        
+
                         $coupon_flag = true;
 
-                        
+
                         if ($coupon_single->ticket_id==$ticket_id && $coupon_single->discount!='') {
 
 
@@ -174,28 +174,28 @@ class EventCheckoutController extends Controller
 
                             $discount_array[] = $coupon_single->discount;
                             $discount_ticket_title[] = $coupon_single->ticket;
-                            $amount_array[] ='';                                    
+                            $amount_array[] ='';
                             $amount_title[] ='';
 
-                            
+
                         }
 
                         if ($coupon_single->ticket_id==$ticket_id && $coupon_single->exact_amount!='') {
 
-                            $order_total = $order_total + $coupon_single->exact_amount;                                    
-                            
-                            $amount_array[] =$coupon_single->exact_amount;                                    
-                            $amount_title[] =$coupon_single->ticket;  
+                            $order_total = $order_total + $coupon_single->exact_amount;
+
+                            $amount_array[] =$coupon_single->exact_amount;
+                            $amount_title[] =$coupon_single->ticket;
                             $discount_array[] = '';
-                            $discount_ticket_title[] = '';                                  
+                            $discount_ticket_title[] = '';
 
                         }
 
                         else if ($coupon_single->ticket_id!=$ticket_id) {
-                       
+
 
                             $order_total = $order_total + ($current_ticket_quantity * $ticket->price);
-                            $amount_array[] ='';                                    
+                            $amount_array[] ='';
                             $amount_title[] ='';
                             $discount_array[] = '';
                             $discount_ticket_title[] = '';
@@ -218,11 +218,11 @@ class EventCheckoutController extends Controller
             else{
 
                 $order_total = $order_total + ($current_ticket_quantity * $ticket->price);
-                            $amount_array[] ='';                                    
+                            $amount_array[] ='';
                             $amount_title[] ='';
                             $discount_array[] = '';
                             $discount_ticket_title[] = '';
-                
+
                 }
             /*
              *
@@ -365,7 +365,7 @@ class EventCheckoutController extends Controller
         $sideeventsar   = Ticket::where(['type'=>'SIDEEVENT','event_id'=>$event_id])->get();
         $event = Event::findOrFail($event_id);
 
-        if(!$sideeventsar->count()){            
+        if(!$sideeventsar->count()){
             $data = $order_session + [
                     'event'           => $event,
                     'secondsToExpire' => $secondsToExpire,
@@ -377,7 +377,7 @@ class EventCheckoutController extends Controller
                     'is_embedded'     => $this->is_embedded,
                 ];
         /*
-         * If there're no side events, 
+         * If there're no side events,
          */
         return redirect()->route('showEventCheckout', ['event_id' => $event_id]);
 
@@ -415,7 +415,7 @@ class EventCheckoutController extends Controller
         $order_session = session()->get('ticket_order_' . $event_id);
 
         //$value = $request->session()->pull('key', $order_session['order_total']);
-       
+
 
 
         if (!$order_session || $order_session['expires'] < Carbon::now()) {
@@ -435,7 +435,7 @@ class EventCheckoutController extends Controller
 
        //dd($newTotal);
 
-        
+
 
         Acccommodation::create([
                 'full_name' => $name,
@@ -447,7 +447,7 @@ class EventCheckoutController extends Controller
                 'date' =>  $request->get('bookingDate'),
               ]);
 
-      
+
 
           $data = $order_session + [
                 'event'           => Event::findorFail($order_session['event_id']),
@@ -472,9 +472,45 @@ class EventCheckoutController extends Controller
         }
 
         return view('Public.ViewEvent.Accomodation', $data);
-        
+
         //dd($order_session['order_total']);
     }
+
+
+
+         public function finalCheckout( $event_id )
+        {
+            $order_session = session()->get('ticket_order_' . $event_id);
+            if (!$order_session || $order_session['expires'] < Carbon::now()) {
+                $route_name = $this->is_embedded ? 'showEmbeddedEventPage' : 'showEventPage';
+                return redirect()->route($route_name, ['event_id' => $event_id]);
+            }
+            $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
+            $accomodations = Ticket::where('type','Extra')->get();
+            //dd(session()->get('order_total'));
+
+            $data = $order_session + [
+                    'event'           => Event::findorFail($order_session['event_id']),
+                    'secondsToExpire' => $secondsToExpire,
+                    'coupon_flag'           => $order_session['coupon_flag'],
+                    'discount'              => $order_session['discount'],
+                    'first_name'              => $order_session['first_name'],
+                    'last_name'              => $order_session['last_name'],
+                    'email'              => $order_session['email'],
+                    'accomodations'              => $accomodations,
+                    'discount_ticket_title' => $order_session['discount_ticket_title'],
+                    'exact_amount'          => $order_session['exact_amount'],
+                    'amount_ticket_title'   => $order_session['amount_ticket_title'],
+                    'is_embedded'     => $this->is_embedded,
+                ];
+                //dd(session()->get('order_total'));
+
+                        if ($this->is_embedded) {
+                            return view('Public.ViewEvent.Embedded.EventPageCheckout', $data);
+                        }
+                return view('Public.ViewEvent.EventPageCheckout', $data);
+        }
+
 
 
     /**
@@ -486,7 +522,7 @@ class EventCheckoutController extends Controller
      */
     public function postOrderSideEvents(Request $request, $event_id)
     {
-        
+
         $event = Event::findOrFail($event_id);
 
         $ticket_ids = [];
@@ -620,7 +656,7 @@ class EventCheckoutController extends Controller
 
         /*
          * The 'ticket_order_{event_id}' session stores everything we need to complete the transaction. We have to update
-         * the variables we had set earlier but are now modified 
+         * the variables we had set earlier but are now modified
          */
 
         $availables['tickets'] = $tickets;
@@ -676,7 +712,7 @@ class EventCheckoutController extends Controller
          */
         exit('Please enable Javascript in your browser.');
     }
-    
+
 
     /**
      * Show the checkout page
@@ -842,7 +878,7 @@ class EventCheckoutController extends Controller
                         session()->get('tracking_id'));
                     return $this->completeOrder($event_id);
         /*        } elseif ($response->isRedirect()) {
-            
+
                     /*
                      * As we're going off-site for payment we need to store some data in a session so it's available
                      * when we return
@@ -870,7 +906,7 @@ class EventCheckoutController extends Controller
                 Log::error($e);
                 $error = 'Sorry, there was an error processing your payment. Please try again.';
             }
-        
+
             if ($error) {
                 return response()->json([
                     'status'  => 'error',
@@ -1089,7 +1125,7 @@ class EventCheckoutController extends Controller
 
     //added by DonaldFeb13
     if($ticket_order['donation']>0){
-        
+
     $orderItem = new OrderItem();
     $orderItem->title = 'Donation';
     $orderItem->quantity = 1;
@@ -1207,4 +1243,3 @@ class EventCheckoutController extends Controller
     }
 
 }
-

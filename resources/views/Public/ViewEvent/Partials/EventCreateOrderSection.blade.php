@@ -1,4 +1,4 @@
-<section id='order_form' class="row bg-white" style="margin-top: 15%">
+<section id='order_form' class="row bg-white">
     <div class="container"><br><br>
         <h1 class="section_head">
             Order Details
@@ -37,18 +37,18 @@
                                 @if((int)ceil($ticket['full_price']) === 0)
                                 FREE
                                 @else
-                                        
+
 
                                     @if(  $discount[$i]!='' and $discount_ticket_title[$i]==$ticket['ticket']['title'] )
-                                        <strike>{{ money($ticket['full_price'], $event->currency) }}</strike> 
+                                        <strike>{{ money($ticket['full_price'], $event->currency) }}</strike>
                                         {{ money($ticket['full_price']-$ticket['full_price']*($discount[$i]/100), $event->currency) }}
 
                                         @php
                                             $i++
                                         @endphp
-                                    
+
                                     @elseif(  $exact_amount[$i]!='' and $amount_ticket_title[$i]==$ticket['ticket']['title'] )
-                                        <strike>{{ money($ticket['full_price'], $event->currency) }}</strike> 
+                                        <strike>{{ money($ticket['full_price'], $event->currency) }}</strike>
                                         {{ money($exact_amount[$i], $event->currency) }}
 
                                          @php
@@ -60,14 +60,14 @@
                                         @php
                                             $i++
                                         @endphp
-                                        
+
                                     @endif
 
                                 @endif
                             </td>
                         </tr>
                         @endforeach
-                        
+
                     </table>
                 </div>
                 @if($order_total +$donation > 0)
