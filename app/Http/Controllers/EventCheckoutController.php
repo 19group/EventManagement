@@ -749,13 +749,19 @@ class EventCheckoutController extends Controller
                 'is_embedded'     => $this->is_embedded,
             ];
 
-            //dd($data);
-
+        // Check if accommodation exists
+        if (count($accomodations)>0){
+          return view('Public.ViewEvent.Accomodation', $data);
+        }
+        else {
+         return view('Public.ViewEvent.EventPageCheckout', $data);
+        }
+/*
         if ($this->is_embedded) {
             return view('Public.ViewEvent.Embedded.EventPageCheckout', $data);
         }
+*/
 
-        return view('Public.ViewEvent.Accomodation', $data);
     }
 
     /**

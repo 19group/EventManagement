@@ -79,11 +79,6 @@
    </div>
 
 
-
-
-
-
-
    <div class="row">
     <div class="col-md-12">
 
@@ -120,8 +115,7 @@
              *{{ $accomodation->ticket_offers }}
             </div>
             @endif
-            <div id="" class="col-md-12">
-
+            <div id="" class="row col-md-12">
              <button onClick="updateTitle()" data-toggle="modal" data-target=<?php echo "#".$accomodation->title; ?> class="btn btn-primary">
               Book
              </button>
