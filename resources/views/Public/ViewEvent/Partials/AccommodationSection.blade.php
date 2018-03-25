@@ -89,7 +89,7 @@
 
        <div class="col-sm-12">
         <h3 class='section_head'>
-         Accomodation
+         Extra Accomodation
         </h3>
        </div>
 
@@ -148,8 +148,8 @@
        <div class="form-group">
        {!! Form::button('Specify Days', ['id'=>$accomodation->id, 'onClick'=>"myFunction(this.id)", 'class'=>"btn btn-success", 'name'=>$accomodation->id, 'value'=>$accomodation->id]) !!}
       </div>
-     </div>  -->
-     <!--end of addition AlternativeAccommodation-->
+     </div>
+     end of addition AlternativeAccommodation-->
      <div class="modal fade" id=<?php echo $accomodation->title; ?> >
       <div class="modal-dialog">
        <div class="modal-content">
