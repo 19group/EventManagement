@@ -79,7 +79,7 @@
    </div>
 
 
-   <div class="row">
+   <div class="col-md-8">
     <div class="col-md-12">
 
      <div class="content">
@@ -179,8 +179,6 @@
             <input type="text"  class="form-control" name="last_name" value="{{ $last_name }}" required>
            </div>
           </div>
-         -->
-          <!--
           <div class="col-md-12">
            <div class="form-group col-md-6">
             <label>
@@ -282,11 +280,13 @@
 
 </div> <!-- End Content -->
 
+
+
 </div>
 </div>
-
-<a href="{{ route('checkOut', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">CheckOut</a>
-
+<div class="col-md-4 pull-right">
+  <a href="{{ route('checkOut', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">CheckOut</a>
+</div>
 
 </section>
 
@@ -296,10 +296,7 @@
 function generateDate(){
  document.write('This is a test');
  </script>
-
-
-
- <!--added by Donald-->
+//added by donald
  <script>
 
  var selectcount=1;
@@ -349,4 +346,4 @@ function generateDate(){
  });
  </script>
 
- <!--end of addition-->
+ //end of addition
