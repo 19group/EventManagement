@@ -120,7 +120,6 @@
               Book
              </button>
 
-             <!--added by DonaldMar23 //AlternativeAccommodation-->
              <!-- for this to work, YOU MUST COMMENT THE DIV CLASS=MODAL FADE PART
              {!! Form::hidden('accommodates[]', $accomodation->id) !!}
              <div class="row">
@@ -259,12 +258,10 @@
    </div>
 
   </div>
-  <div class="col-md-12 text-light text-center bg-secondary"><br>
-   Status:&nbsp;
+  <div class="col-md-12 text-light text-center bg-secondary">
    @for($i=0; $i<$accomodation->status; $i++)
    <i class="glyphicon glyphicon-star" style="color: #FFD700"></i>
    @endfor
-   <br>
    <br>
   </div>
  </div>
@@ -295,9 +292,6 @@
 <script type="text/javascript">
 function generateDate(){
  document.write('This is a test');
- </script>
-//added by donald
- <script>
 
  var selectcount=1;
 
@@ -344,6 +338,5 @@ function generateDate(){
   });
 
  });
+}
  </script>
-
- //end of addition
