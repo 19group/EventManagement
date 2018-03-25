@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
  * Include our API routes file
@@ -156,6 +156,11 @@ Route::group(['prefix' => 'e'], function () {
         'uses' => 'EventCheckoutController@postOrderSideEvents',
     ]);
 
+   Route::post('{event_id}/ordered/accommodation/', [
+         'as'   => 'postOrderAccommodation',
+         'uses' => 'EventCheckoutController@postOrderAccommodation',
+   ]);
+
     Route::get('{event_id}/checkout/create', [
         'as'   => 'showEventCheckout',
         'uses' => 'EventCheckoutController@showEventCheckout',
@@ -280,23 +285,23 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
         Route::get('{event_id}/choosesideevents', [
             'as'   => 'chooseSideEvents',
             'uses' => 'OrganiserEventsController@chooseSideEvents',
-        ]); 
+        ]);
         Route::post('{event_id}/postChooseSideEvents', [
             'as'   => 'postChooseSideEvents',
             'uses' => 'OrganiserEventsController@postChooseSideEvents',
-        ]); 
+        ]);
         Route::get('{event_id}/sideevents', [
             'as'   => 'showSideEvents',
             'uses' => 'OrganiserEventsController@showSideEvents',
-        ]); 
+        ]);
         Route::get('{event_id}/sideevents/create', [
             'as'   => 'showReCreateSideEvent',
             'uses' => 'OrganiserEventsController@showReCreateSideEvent',
-        ]); 
+        ]);
         Route::post('{event_id}/newsideevent', [
             'as'   => 'postReCreateSideEvent',
             'uses' => 'OrganiserEventsController@postReCreateSideEvent',
-        ]); 
+        ]);
         Route::get('/events/{event_id}/delete', [
             'as'   => 'postDeleteEvent',
             'uses' => 'OrganiserEventsController@postDeleteEvent',
@@ -520,7 +525,7 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
             'as'   => 'accommoCheckout',
             'uses' => 'EventCheckoutController@accommoCheckout',
         ]);
-       
+
 
 
 

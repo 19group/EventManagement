@@ -79,6 +79,11 @@
    </div>
 
 
+
+
+
+
+
    <div class="row">
     <div class="col-md-12">
 
@@ -158,10 +163,9 @@
          <h2> {{ $accomodation->title}} </h2>
         </div>
 
-        <form action="{{ route( 'postOrderAccommodation', ['event_id'=>$accomodation->event_id]) }}" method="post">
+        <form action="{{ route( 'updateBooking', ['event_id'=>$accomodation->event_id]) }}" method="post">
 
          {{ csrf_field() }}
-         {!! Form::hidden('ticket_id', $accomodation->id) !!}
          <div class="modal-body">
           <div class="col-md-12">
            <div class="form-group col-md-6">
@@ -189,20 +193,18 @@
 
           <div class="col-md-12 container-fluid">
 
-           <div class="form-group col-md-12" id='datetimepicker4'>
-            <div class="col-sm-3">
+           <div class="form-group col-md-6" id='datetimepicker4'>
             <label>
-             Extra Day
+             From Date:
             </label>
-           </div>
-           <div class="col-sm-9">
             <input type="date" name="mydates[]" class="form-control" required>
            </div>
-           </div>
-           <div class="form-group col-md-12" id='dategenerator'>
-           </div>
            <div class="col-md-12">
-            <button type="button" class="btn btn-primary" onClick="addInput('dategenerator');">Add another day</button>
+            <button type="button" class="btn btn-primary" onClick="addInput('dategenerator');">Add another date</button>
+
+           </div>
+
+           <div class="form-group col-md-6" id='dategenerator'>
 
            </div>
 
@@ -229,7 +231,7 @@
          }
          else {
           var newdiv = document.createElement('div');
-          newdiv.innerHTML = "<div class='row'><div class='col-sm-3'><label> Day " + (counter) + " </label></div><div class='col-sm-9'><input type='date' class='form-control' name='mydates[]'></div></div><br/>";
+          newdiv.innerHTML = "Date " + (counter) + " <br><input type='date' class='form-control' name='mydates[]'>";
           document.getElementById(divName).appendChild(newdiv);
           counter++;
          }
