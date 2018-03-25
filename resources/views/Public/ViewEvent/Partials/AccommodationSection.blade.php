@@ -229,7 +229,7 @@
          }
          else {
           var newdiv = document.createElement('div');
-          newdiv.innerHTML = "<div class='row'><div class='col-sm-3'><label> Day " + (counter) + " </label></div><div class='col-sm-9'><input type='date' class='form-control' name='mydates[]'></div></div><br/>";
+          newdiv.innerHTML = "<div class='row'><div class='col-sm-3'><label> Day " + (counter) + " </label></div><div class='col-sm-9'><input type='date' class='form-control' name='mydates[]' ></div></div><br/>";
           document.getElementById(divName).appendChild(newdiv);
           counter++;
          }

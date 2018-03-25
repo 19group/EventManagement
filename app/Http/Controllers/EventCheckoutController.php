@@ -747,10 +747,19 @@ class EventCheckoutController extends Controller
         $hotel_status = $request->get('hotel_status');
         $title = $request->get('title');
         $amount =  $order_session['order_total'];
-        $days =  count($request->get('mydates'));
-        $dates =  $request->get('mydates');
         $price = $request->get('price');
         $ticket_id = $request->get('ticket_id');
+        $dates =  $request->get('mydates');
+
+
+        //Checks to make sure only values that are filed are counted as days
+        $days = 0;
+        foreach ($dates as $date) {
+
+         if(!empty($date)){
+         ++$days;
+         }
+        }
 
         //Retrieve the old Total
         $old_total = $request->get('old_total');
