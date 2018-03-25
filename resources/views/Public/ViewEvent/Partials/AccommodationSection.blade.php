@@ -199,10 +199,10 @@
             <input type="date" name="mydates[]" class="form-control" required>
            </div>
            </div>
-           <div class="form-group col-md-12" id='dategenerator'>
+           <div class="form-group col-md-12" id="dategenerator{{ $accomodation->id}}">
            </div>
            <div class="col-md-12">
-            <button type="button" class="btn btn-primary" onClick="addInput('dategenerator');">Add another day</button>
+            <button type="button" class="btn btn-primary" onClick="addInput('dategenerator{{$accomodation->id}}');">Add another day</button>
 
            </div>
 
@@ -222,16 +222,23 @@
         <script>
 
         var counter = 2;
-        var limit = 8;
+        var limit = 14;
+
         function addInput(divName){
-         if (counter == limit)  {
-          alert("You have reached the limit of adding " + counter + " inputs");
+         //Checkif there is a variable with the value
+         if(typeof(window[divName+counter])==="undefined"){
+           window[divName+counter] = counter;
+         }
+         var currentcounter = window[divName+counter];
+
+         if (currentcounter == limit)  {
+          alert("You have reached the limit of adding extra days");
          }
          else {
           var newdiv = document.createElement('div');
-          newdiv.innerHTML = "<div class='row'><div class='col-sm-3'><label> Day " + (counter) + " </label></div><div class='col-sm-9'><input type='date' class='form-control' name='mydates[]' ></div></div><br/>";
+          newdiv.innerHTML = "<div class='row'><div class='col-sm-3'><label> Day " + (currentcounter) + " </label></div><div class='col-sm-9'><input type='date' class='form-control' name='mydates[]' ></div></div><br/>";
           document.getElementById(divName).appendChild(newdiv);
-          counter++;
+          window[divName+counter]++;
          }
         }
 
