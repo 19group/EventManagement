@@ -107,3 +107,9 @@ html,body{height:100%}body{font-family:'Open Sans',sans-serif}table{margin:0}lab
 {
  margin-top:10px;
 }
+.field-label{
+ padding-top:6px;
+}
+.day-row{
+ margin-top:10px;
+}

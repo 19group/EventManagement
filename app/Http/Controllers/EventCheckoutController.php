@@ -869,7 +869,7 @@ class EventCheckoutController extends Controller
                     'dates'                => $accommodation_dates,
                 ];
 
-                dd($tickets);
+                //dd($tickets);
                 /*
                  * To escape undefined offset errors due to accessing arrays that associate with tickets but shorter, in
                  * EventCreateOrderSection.blade, we have to nullify all extra elements... null is set to empty string

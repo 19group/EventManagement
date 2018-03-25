@@ -163,6 +163,7 @@
          {{ csrf_field() }}
          {!! Form::hidden('ticket_id', $accomodation->id) !!}
          <div class="modal-body">
+          <!--
           <div class="col-md-12">
            <div class="form-group col-md-6">
             <label>
@@ -178,6 +179,8 @@
             <input type="text"  class="form-control" name="last_name" value="{{ $last_name }}" required>
            </div>
           </div>
+         -->
+          <!--
           <div class="col-md-12">
            <div class="form-group col-md-6">
             <label>
@@ -186,25 +189,30 @@
             <input type="text"  class="form-control" name="email" value="{{ $email }}" required>
            </div>
           </div>
-
+         -->
           <div class="col-md-12 container-fluid">
 
            <div class="form-group col-md-12" id='datetimepicker4'>
-            <div class="col-sm-3">
-            <label>
-             Extra Day
-            </label>
-           </div>
-           <div class="col-sm-9">
-            <input type="date" name="mydates[]" class="form-control" required>
-           </div>
-           </div>
+            <div class="col-sm-12">
+              <div class="col-sm-3 field-label">
+              <label>
+               Extra Day
+              </label>
+             </div>
+             <div class="col-sm-9">
+              <input type="date" name="mydates[]" class="form-control" required>
+             </div>
+            </div>
+
            <div class="form-group col-md-12" id="dategenerator{{ $accomodation->id}}">
            </div>
+
            <div class="col-md-12">
             <button type="button" class="btn btn-primary" onClick="addInput('dategenerator{{$accomodation->id}}');">Add another day</button>
 
            </div>
+          </div>
+
 
            <input type="text" name="price" hidden value=<?php echo $accomodation->price;  ?> >
            <input type="text" name="event_id" hidden value=<?php echo $accomodation->event_id;  ?> >
@@ -236,7 +244,9 @@
          }
          else {
           var newdiv = document.createElement('div');
-          newdiv.innerHTML = "<div class='row'><div class='col-sm-3'><label> Day " + (currentcounter) + " </label></div><div class='col-sm-9'><input type='date' class='form-control' name='mydates[]' ></div></div><br/>";
+          newdiv.classList.add("row");
+          newdiv.classList.add("day-row");
+          newdiv.innerHTML = "<div class='col-sm-3 field-label'><label> Day " + (currentcounter) + " </label></div><div class='col-sm-9'><input type='date' class='form-control' name='mydates[]' ></div>";
           document.getElementById(divName).appendChild(newdiv);
           window[divName+counter]++;
          }
