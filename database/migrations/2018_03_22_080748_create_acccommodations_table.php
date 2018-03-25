@@ -21,7 +21,7 @@ class CreateAcccommodationsTable extends Migration
             $table->string('email');
             $table->string('amount');
             $table->string('days')->nullable();
-            $table->string('date');
+            $table->string('dates');
         });
     }
 

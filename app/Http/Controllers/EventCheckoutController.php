@@ -749,15 +749,15 @@ class EventCheckoutController extends Controller
         $amount =  $order_session['order_total'];
         $price = $request->get('price');
         $ticket_id = $request->get('ticket_id');
-        $dates =  $request->get('mydates');
+        $accommodation_dates =  $request->get('mydates');
 
 
         //Checks to make sure only values that are filed are counted as days
-        $days = 0;
-        foreach ($dates as $date) {
+        $accommodation_days = 0;
+        foreach ($accommodation_dates as $accommodation_date) {
 
-         if(!empty($date)){
-         ++$days;
+         if(!empty($accommodation_date)){
+         ++$accommodation_days;
          }
         }
 
@@ -765,7 +765,7 @@ class EventCheckoutController extends Controller
         $old_total = $request->get('old_total');
 
         //Make calculations of the new total
-        $new_total = $old_total + ($days*$price);
+        $new_total = $old_total + ($accommodation_days*$price);
 
         //dd("Old total was ". $old_total . " and the New Total is ". $new_total);
 
@@ -803,7 +803,7 @@ class EventCheckoutController extends Controller
            // foreach ($ticket_ids as $ticket_id) {
                //Gets the Ticket Quantity
                 //$current_ticket_quantity = (int)$request->get('ticket_' . $ticket_id);
-                $current_ticket_quantity = $days;
+                $current_ticket_quantity = $accommodation_days;
 
                 /*
                 if ($current_ticket_quantity < 1) {
@@ -866,9 +866,10 @@ class EventCheckoutController extends Controller
                     'booking_fee'           => ($current_ticket_quantity * $ticket->booking_fee),
                     'organiser_booking_fee' => ($current_ticket_quantity * $ticket->organiser_booking_fee),
                     'full_price'            => $ticket->price + $ticket->total_booking_fee,
+                    'dates'                => $accommodation_dates,
                 ];
 
-               // dd($tickets);
+                dd($tickets);
                 /*
                  * To escape undefined offset errors due to accessing arrays that associate with tickets but shorter, in
                  * EventCreateOrderSection.blade, we have to nullify all extra elements... null is set to empty string
