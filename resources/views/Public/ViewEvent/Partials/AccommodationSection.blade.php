@@ -283,8 +283,8 @@
 </div>
 <div class="col-md-4 pull-right">
 
-  <!--commentedfortesting<a href="{{ route('checkOut', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">CheckOut</a>end-->
-  <a href="/e/{{$event_id}}/pesament/create?is_embedded=0#order_form" class="btn btn-lg btn-primary pull-right">CheckOut</a>
+  <a href="{{ route('checkOut', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">CheckOut</a>
+  <!--for testing without pesapal: uncomment this--<a href="/e/{{$event_id}}/pesament/create?is_embedded=0#order_form" class="btn btn-lg btn-primary pull-right">CheckOut</a>-->
 
 </div>
 
