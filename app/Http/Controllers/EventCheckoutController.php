@@ -927,6 +927,7 @@ class EventCheckoutController extends Controller
         session()->set('ticket_order_' . $event->id,
             $availables
         );
+       // dd($tickets);
 
         /*
          * If we're this far assume everything is OK and redirect them
@@ -937,7 +938,7 @@ class EventCheckoutController extends Controller
              'accommodation_added' => 1,
          ]);
 
-        $printer = session()->get('ticket_order_' . $event->id);
+        //$printer = session()->get('ticket_order_' . $event->id);
     //    dd($printer);
 
         /*

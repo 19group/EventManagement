@@ -283,6 +283,7 @@
 </div>
 <div class="col-md-4 pull-right">
   <a href="{{ route('checkOut', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">CheckOut</a>
+
 </div>
 
 </section>
