@@ -753,11 +753,11 @@ class EventCheckoutController extends Controller
 
 
         //Checks to make sure only values that are filed are counted as days
-        $accommodation_days = 0;
+        $accommodation_days = 0; $trueAccommodation_dates = [];
         foreach ($accommodation_dates as $accommodation_date) {
 
          if(!empty($accommodation_date)){
-         ++$accommodation_days;
+         ++$accommodation_days; $trueAccommodation_dates[] = $accommodation_date;
          }
         }
 
@@ -866,7 +866,7 @@ class EventCheckoutController extends Controller
                     'booking_fee'           => ($current_ticket_quantity * $ticket->booking_fee),
                     'organiser_booking_fee' => ($current_ticket_quantity * $ticket->organiser_booking_fee),
                     'full_price'            => $ticket->price + $ticket->total_booking_fee,
-                    'dates'                => $accommodation_dates,
+                    'dates'                => $trueAccommodation_dates,
                 ];
 
                 //dd($tickets);
@@ -1050,7 +1050,8 @@ class EventCheckoutController extends Controller
          * Add the request data to a session in case payment is required off-site
          */
         //session()->push('ticket_order_' . $event_id . '.request_data', $request->except(['card-number', 'card-cvc']));
-        session()->push('ticket_order_' . $event_id . '.request_data', $request->except(['tracking_id', 'merchant_reference']));
+        session()->push('ticket_order_' . $event_id . '.request_data', $request/*->except(['tracking_id', 'merchant_reference'])*/);
+        return $this->completeOrder($event_id);
         //this section was re-commented by Donald on Sat 20, 2018 at 3:34 pm
         /*
          * Begin payment attempt before creating the attendees etc.
@@ -1336,7 +1337,13 @@ class EventCheckoutController extends Controller
                     $attendee->order_id = $order->id;
                     $attendee->ticket_id = $attendee_details['ticket']['id'];
                     $attendee->account_id = $event->account->id;
-                    $attendee->period = isset($request_data["ticket_holder_schedule"][$i][$attendee_details['ticket']['id']]) ? $request_data["ticket_holder_schedule"][$i][$attendee_details['ticket']['id']] : null;
+                    if(isset($request_data["ticket_holder_schedule"][$i][$attendee_details['ticket']['id']])){
+                        $attendee->period = $request_data["ticket_holder_schedule"][$i][$attendee_details['ticket']['id']];
+                    }elseif(isset($request_data["ticket_holder_bookdays"][$i][$attendee_details['ticket']['id']])){
+                        $attendee->period = $request_data["ticket_holder_bookdays"][$i][$attendee_details['ticket']['id']];
+                    }else{
+                        $attendee->period = null;
+                    }
                     $attendee->reference_index = $attendee_increment;
                     $attendee->save();
 

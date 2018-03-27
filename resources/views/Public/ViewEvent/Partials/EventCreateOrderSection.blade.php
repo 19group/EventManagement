@@ -397,7 +397,7 @@
                                     $email = $email;
                                     $phonenumber = '';//ONE of email or phonenumber is required
 
-                                    $currency = env('PESAPAL_CURRENCY_CODE');
+                                    $currency = env('PESAPAL_CURRENCY_CODE'); 
 
                                     $callback_url = env('SERVER_ROOT').'/e/'.$event_id.'/pesament/create?is_embedded=0#order_form'; //redirect url, the page that will handle the response from pesapal.
 
