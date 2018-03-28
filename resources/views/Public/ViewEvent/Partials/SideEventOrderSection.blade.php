@@ -153,7 +153,7 @@ Add an experince at {{$event->title}}
                                            <?php   }?>
                                   <?php }//end-if-minevent->ticket_offers ?>
                                 </td>
-                                <td style="width:180px; text-align: right;">
+                                <td style="width:100px; text-align: right;">
                                     <div class="ticket-pricing" style="margin-right: 20px;">
                                             <span title='{{money($minevent->price, $event->currency)}} Ticket Price + {{money($minevent->total_booking_fee, $event->currency)}} Booking Fees'>{{money($minevent->price, $event->currency)}} </span>
                                             <meta property="priceCurrency"
@@ -212,7 +212,7 @@ Add an experince at {{$event->title}}
 
         @endif
 </div>
-                  
+
                     </div> <!-- End Content -->
 
                 </div>

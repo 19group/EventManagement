@@ -113,3 +113,7 @@ html,body{height:100%}body{font-family:'Open Sans',sans-serif}table{margin:0}lab
 .day-row{
  margin-top:10px;
 }
+.ticket-pricing {
+    margin-left: 20px;
+    margin-right: 0px !important;
+}
