@@ -3,81 +3,8 @@
  <section id="tickets" class="container" >
 
   <div class="col-md-4 pull-right"><br><br>
-   <div class="panel">
-    <div class="panel-heading">
-     <h3 class="panel-title">
-      <i class="ico-cart mr5"></i>
-      Order Summary
-     </h3>
-    </div>
-
-    <div class="panel-body pt0">
-     <table class="table mb0 table-condensed">
-
-      <?php $donhead='Donation Amount';if($donation>0){ ?>
-       <tr>
-        <td class="pl0"><b>Donation Amount:</b></td>
-        <td style="text-align: right;">
-         {{  money($donation, $event->currency) }}
-        </td>
-       </tr>
-       <?php } ?>
-
-       @php
-       $i=0
-       @endphp
-
-       @foreach($tickets as $ticket)
-       <tr>
-        <td class="pl0">{{{$ticket['ticket']['title']}}} X <b>{{$ticket['qty']}}</b></td>
-        <td style="text-align: right;">
-         @if((int)ceil($ticket['full_price']) === 0)
-         FREE
-         @else
-
-
-         @if(  $discount[$i]!='' and $discount_ticket_title[$i]==$ticket['ticket']['title'] )
-         <strike>{{ money($ticket['full_price'], $event->currency) }}</strike>
-         {{ money($ticket['full_price']-$ticket['full_price']*($discount[$i]/100), $event->currency) }}
-
-         @php
-         $i++
-         @endphp
-
-         @elseif(  $exact_amount[$i]!='' and $amount_ticket_title[$i]==$ticket['ticket']['title'] )
-         <strike>{{ money($ticket['full_price'], $event->currency) }}</strike>
-         {{ money($exact_amount[$i], $event->currency) }}
-
-         @php
-         $i++
-         @endphp
-
-         @elseif(  $exact_amount[$i]=='' and $discount[$i]=='' )
-         {{ money($ticket['full_price'], $event->currency) }}
-         @php
-         $i++
-         @endphp
-
-         @endif
-
-         @endif
-        </td>
-       </tr>
-       @endforeach
-
-      </table>
-     </div>
-     @if($order_total +$donation > 0)
-     <div class="panel-footer">
-      <h5>
-       Subtotal: <span style="float: right;"><b>{{ money($order_total + $total_booking_fee  + $donation, $event->currency) }}</b></span>
-      </h5>
-     </div>
-     @endif
-
-    </div>
+   @include('Public.ViewEvent.Partials.OrderSummary')
    </div>
-
 
    <div class="col-md-8">
     <div class="col-md-12">
@@ -95,8 +22,8 @@
 
 
        <div class="">
-        <?php foreach ($accomodations as $accomodation){?>
 
+         @foreach($accomodations as $accomodation)
          <div class="col-md-12 ">
           <div class="col-md-12">
            <div id="image" class="col-md-5 ">
@@ -116,77 +43,21 @@
             </div>
             @endif
             <div id="" class="row col-md-12">
-             <button onClick="updateTitle()" data-toggle="modal" data-target=<?php echo "#".$accomodation->title; ?> class="btn btn-primary">
+             <button onClick="updateTitle()" data-toggle="modal" data-target="#{{$accomodation->status}}" class="btn btn-primary">
               Book
              </button>
-
-             <!-- for this to work, YOU MUST COMMENT THE DIV CLASS=MODAL FADE PART
-             {!! Form::hidden('accommodates[]', $accomodation->id) !!}
-             <div class="row">
-             <div class="form-group col-md-6">
-             <select id="{{$accomodation->id}}_accommotickets_10" name="{{$accomodation->id}}_accommotickets_0" class="form-control"
-             style="text-align: center">
-             @for($i=0; $i<=15; $i++)
-             <option value="{{$i}}">{{$i}}</option>
-             @endfor
-            </select>
-           </div>
-           <div class="form-group col-md-6">
-           <select id="{{$accomodation->id}}_accommodays_10" name="{{$accomodation->id}}_accommodays_0" class="form-control"
-           style="text-align: center">
-           @for($i=0; $i<=15; $i++)
-           <option value="{{$i}}">{{$i}}</option>
-           @endfor
-          </select>
-         </div>
-        </div>
-
-        <div id="extraaccommos_{{$accomodation->id}}" class="row">
-
-       </div>
-       <div class="col-md-12">
-       <div class="form-group">
-       {!! Form::button('Specify Days', ['id'=>$accomodation->id, 'onClick'=>"myFunction(this.id)", 'class'=>"btn btn-success", 'name'=>$accomodation->id, 'value'=>$accomodation->id]) !!}
-      </div>
-     </div>
-     end of addition AlternativeAccommodation-->
-     <div class="modal fade" id=<?php echo $accomodation->title; ?> >
-      <div class="modal-dialog">
-       <div class="modal-content">
-        <div class="modal-head text-light text-center" style="background-color: #5fa9da">
-         <h2> {{ $accomodation->title}} </h2>
-        </div>
+             <div class="modal fade" id="{{$accomodation->status}}" >
+              <div class="modal-dialog">
+               <div class="modal-content">
+                <div class="modal-head text-light text-center" style="background-color: #5fa9da">
+                 <h2> {{ $accomodation->title}} </h2>
+                </div>
 
         <form action="{{ route( 'postOrderAccommodation', ['event_id'=>$accomodation->event_id]) }}" method="post">
 
          {{ csrf_field() }}
          {!! Form::hidden('ticket_id', $accomodation->id) !!}
          <div class="modal-body">
-          <!--
-          <div class="col-md-12">
-           <div class="form-group col-md-6">
-            <label>
-             First Name:
-            </label>
-            <input type="text"  class="form-control" name="first_name" value="{{ $first_name }}" required>
-           </div>
-
-           <div class="form-group col-md-6">
-            <label>
-             Last Name:
-            </label>
-            <input type="text"  class="form-control" name="last_name" value="{{ $last_name }}" required>
-           </div>
-          </div>
-          <div class="col-md-12">
-           <div class="form-group col-md-6">
-            <label>
-             Email:
-            </label>
-            <input type="text"  class="form-control" name="email" value="{{ $email }}" required>
-           </div>
-          </div>
-         -->
           <div class="col-md-12 container-fluid">
 
            <div class="form-group col-md-12" id='datetimepicker4'>
@@ -211,11 +82,11 @@
           </div>
 
 
-           <input type="text" name="price" hidden value=<?php echo $accomodation->price;  ?> >
-           <input type="text" name="event_id" hidden value=<?php echo $accomodation->event_id;  ?> >
-           <input type="text" name="status" hidden value=<?php echo $accomodation->status;  ?> >
-           <input type="text" name="title" hidden value=<?php echo $accomodation->title;  ?> >
-           <input type="text" name="old_total" hidden value=<?php echo $order_total;  ?> >
+           <input type="text" name="price" hidden value="{{$accomodation->price}}" >
+           <input type="text" name="event_id" hidden value"{{$accomodation->event_id}}" >
+           <input type="text" name="status" hidden value="{{$accomodation->status}}" >
+           <input type="text" name="title" hidden value="{{$accomodation->title}}" >
+           <input type="text" name="old_total" hidden value="{{$order_total}}" >
           </div>
 
          </div>
@@ -269,7 +140,7 @@
 
  </div>
 
- <?php } ?>
+@endforeach
 
 </div>
 <hr />
