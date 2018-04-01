@@ -1443,6 +1443,21 @@ class EventCheckoutController extends Controller
 
     }
 
+
+    /**
+     * Show the create Side Event Booking modal
+     *
+     * @param $event_id
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function showBookSideEvent($event_id, $ticket_id)
+    {
+        return view('Public.ViewEvent.Modals.CreateTicket', [
+            'ticket' => Ticket::find($ticket_id),
+        ]);
+    }
+
+
     /**
      * Show the order details page
      *

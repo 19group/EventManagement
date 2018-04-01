@@ -8,128 +8,175 @@ Add an experince at {{$event->title}}
 </h1>
 </div>
 
-  <div class="col-md-4 pull-right"><br>
+  <div class="col-md-4 pull-right">
 
    @include('Public.ViewEvent.Partials.OrderSummary')
 
      <?php $tickets = $sideeventsar;?>
         @if(count($tickets) > 0)
 
-            {!! Form::open(['url' => route('postOrderSideEvents', ['event_id' => $event->id]), 'class' => 'ajax']) !!}
+           <!-- {!! Form::open(['url' => route('postOrderSideEvents', ['event_id' => $event->id]), 'class' => 'ajax']) !!}-->
           <div class="col-md-4 pull-right">
           {!!Form::submit('Next', ['class' => 'btn btn-lg btn-primary pull-right'])!!}
           </div>
         @endif
    </div>
 
-
-
-
-
-
    <div class="col-md-8">
-    <div class="col-md-12">
 
-     <div class="content">
-
-
-      <div class="row">
-
-    @if($event->start_date->isPast())
-        <div class="alert alert-boring">
-            This event has {{($event->end_date->isFuture() ? 'already started' : 'ended')}}.
-        </div>
-    @else
+        @if($event->start_date->isPast())
+            <div class="alert alert-boring">
+                This event has {{($event->end_date->isFuture() ? 'already started' : 'ended')}}.
+            </div>
+        @else
 
         <?php $tickets = $sideeventsar;?>
-        @if(count($tickets) > 0)
+              @if(count($tickets) > 0)
+                   <div class="">
 
-                          <div class="tickets_table_wrap">
-                          <table class="table">
-                               <?php foreach ($tickets as $minevent){?>
-                                  <tr class="ticket" property="offers" typeof="Offer">
-                                      <td>
-                              <span class="ticket-title semibold" property="name">
-                                  {{$minevent->title}}
-                              </span>
-                                          <p class="ticket-descripton mb0 side-event-description " property="description">
-                                              {{$minevent->description}}
-                                          </p>
-                                <!--   <p><b>{{$minevent->title}} </b></p>
-                                   <p>{{$minevent->description}} </br></p>  -->
-                                   <?php if($minevent->ticket_offers!=NULL){
-                                            $toffers = explode('+++',$minevent->ticket_offers);
-                                        if(count($toffers)==1){
-                                          echo "<p><b> Available schedule for this side event is </b></p>";
-                                                $sched = explode('<==>',$toffers[0]);
-                                                echo "<div class=\"row\">";
-                                                echo date('d-M-Y H:i', strtotime($sched[0]))." to ".date('d-M-Y H:i', strtotime($sched[1]));
-                                                echo "</div>";
-                                        }else{
-                                   echo "<p><b> Available schedules for this side event:- </b></p>";
-                                            for($i=0;$i<count($toffers);++$i){
-                                                $sched = explode('<==>',$toffers[$i]);
-                                                echo '<div class="row"><ul>';
-                                                echo'<li>'.date('d-M-Y H:i', strtotime($sched[0])).' to '.date('d-M-Y H:i', strtotime($sched[1])).'</li>';
-                                                echo '</ul></div>';
-                                            } ?>
-                                      <!--DonaldMar14    </?php  for($i=0;$i<count($toffers);++$i){
-                                                $sched = explode('<==>',$toffers[$i]);
-                                                $checkbox = ' From '.date('d-M-Y H:i', strtotime($sched[0])).' To '.date('d-M-Y H:i', strtotime($sched[1])); ?>
-                                      <div class="row">
-                                      {//{ Form::checkbox($minevent->id."selscheds[]",$checkbox) }//} {//{ $checkbox}//}
-                                      </div> end of comment by DonaldMar14-->
-                                           <?php   }?>
-                                  <?php }//end-if-minevent->ticket_offers ?>
-                                </td>
-                                <td style="width:100px; text-align: right;">
-                                    <div class="ticket-pricing" style="margin-right: 20px;">
-                                            <span title='{{money($minevent->price, $event->currency)}} Ticket Price + {{money($minevent->total_booking_fee, $event->currency)}} Booking Fees'>{{money($minevent->price, $event->currency)}} </span>
-                                            <meta property="priceCurrency"
-                                                  content="{{ $event->currency->code }}">
-                                            <meta property="price"
-                                                  content="{{ number_format($minevent->price, 2, '.', '') }}">
-                                    </div>
-                                </td>
-                                <td style="width:85px;">
-                                         {!! Form::hidden('tickets[]', $minevent->id) !!}
-                                        <meta property="availability" content="http://schema.org/InStock">
-                                        <select name="ticket_{{$minevent->id}}" class="form-control"
-                                                 style="text-align: center">
-                                             @if ($minevent->count() > 1)
-                                                 <option value="0">0</option>
-                                             @endif
-                                             @for($i=$minevent->min_per_person; $i<=$minevent->max_per_person; $i++)
-                                                 <option value="{{$i}}">{{$i}}</option>
-                                             @endfor
-                                        </select>
-                                </td>
-                      <!--             <div class="row">
-                                         <div class="col-sm-6">
-                                          <b class="col-sm-6" left>Price:</b>
-                                           <span class="col-sm-6" title='{{money($minevent->price, $event->currency)}} Ticket Price + {{money($minevent->total_booking_fee, $event->currency)}} Booking Fees'>{{money($minevent->price, $event->currency)}} </span>
-                                         </div>
-                                         <div class="col-sm-6">
-                                                 {!! Form::hidden('tickets[]', $minevent->id) !!}
-                                                <meta property="availability" content="http://schema.org/InStock">
-                                                <select name="ticket_{{$minevent->id}}" class="form-control"
-                                                         style="text-align: center">
-                                                     @if ($minevent->count() > 1)
-                                                         <option value="0">0</option>
-                                                     @endif
-                                                     @for($i=$minevent->min_per_person; $i<=$minevent->max_per_person; $i++)
-                                                         <option value="{{$i}}">{{$i}}</option>
-                                                     @endfor
-                                                </select>
-                                         </div>
-                                   </div>    -->
-                                 </tr>
-                               <?php }//end-foreach($sideevent as $minevent) ?>
-                      <!---    </div>   -->
-                    </table>
+                          @foreach ($tickets as $minevent)
+                          <div class="row side-event-container">
+                           <div class="col-sm-12">
+                            <div class="col-xs-8 no-left-padding">
+                            <span class="ticket-title semibold" property="name">
+                             {{$minevent->title}}
+                            </span>
+                           </div>
+                           <div class="col-xs-4">
+                             <span class="side-event-days">3 days and 2 nights</span>
+                           </div>
+                            <br />
+                           </div>
+                           <div class="col-xs-12">
+                            <div class="col-xs-4 side-event-image">
+                             <img src="{{asset('assets/images/default/trip.jpg')}}" />
+                            </div>
+                            <div class="col-xs-8">
+                             <p class="ticket-descripton mb0 side-event-description " property="description">
+                              {{$minevent->description}}
+                             </p>
+                            </div>
+                           </div>
+                           <div class="col-xs-12">
+                            <div class="col-xs-8 no-left-padding">
+                             <button class="btn btn-primary" style="width:150px"> More Details</button>
+                            </div>
+                            <div class="col-xs-2">
+                             <span>{{money($minevent->price, $event->currency)}} </span>
+                            </div>
+                            <div class="col-xs-2">
+                             <button data-toggle="modal" data-target="#{{$minevent->id}}" class="btn btn-primary">
+                             <i class="ico-ticket"></i> Book
+                             </button>
+                            </div>
+                           </div>
+                          </div>
+
+                          <!-- Beginning of Modal -->
+                          <div class="modal fade" id="{{$minevent->id}}" >
+                           <div class="modal-dialog">
+                            <div class="modal-content">
+                             <div class="modal-head text-light text-center" style="background-color: #5fa9da">
+                              <h2> {{ $minevent->title}} </h2>
+                             </div>
+                             <!--Form::open(['url' => route('postBookSideEvent', ['event_id' => $event->id]), 'class' => 'ajax']) !!}-->
+                             <form action="{{ route( 'postBookSideEvent', ['event_id'=>$event->id]) }}" method="post">
+
+                              {{ csrf_field() }}
+                              {!! Form::hidden('ticket_id', $minevent->id) !!}
+                              <div class="modal-body">
+                               <div class="col-md-12 container-fluid">
+
+                                <div class="form-group col-md-12" id='datetimepicker4'>
+                                 <div class="col-sm-12">
+                                  <div class="col-sm-12 field-label">
+                                   <span>
+                                    {{$minevent->description}}
+                                   </span>
+                                  </div>
+                                  <div class="col-sm-9">
+                                   <!--<input type="date" name="mydates[]" class="form-control" required>-->
+                                  </div>
+                                 </div>
+                                 <div class="col-sm-12">
+                                  <div class="col-sm-12 field-label">
+                                   <span>
+
+                                    <?php if($minevent->ticket_offers!=NULL){
+                                             $ticket_offers = explode('+++',$minevent->ticket_offers);
+
+                                             echo "<p><b> Please select the schedule you prefer </b></p>";
+                                             for($i=0;$i<count($ticket_offers);++$i){
+                                                 $sched = explode('<==>',$ticket_offers[$i]);
+                                                 $count = $i+1;
+                                                 echo '<div class="row">';
+                                                 echo '<p>';
+                                                 echo'<input type="radio" name="mydates" value="'.$ticket_offers[$i].'" >'.date('d-M-Y H:i', strtotime($sched[0])).' to '.date('d-M-Y H:i', strtotime($sched[1])).'';
+                                                 echo '</p>';
+                                                 echo '</div>';
+                                             } ?>
+                                   <?php } ?>
+
+                                   </span>
+                                  </div>
+                                  <div class="col-sm-9">
+                                   <!--<input type="date" name="mydates[]" class="form-control" required>-->
+                                  </div>
+                                 </div>
+
+                                 <div class="form-group col-md-12" id="dategenerator{{ $minevent->id}}">
+                                 </div>
+                                </div>
+
+                                <input type="text" name="price" hidden value="{{$minevent->price}}" >
+                                <input type="text" name="event_id" hidden value"{{$minevent->id}}" >
+                                <input type="text" name="status" hidden value="{{$minevent->status}}" >
+                                <input type="text" name="title" hidden value="{{$minevent->title}}" >
+                                <input type="text" name="old_total" hidden value="{{$order_total}}" >
+                               </div>
+
+                              </div>
+                              <div class="modal-footer">
+                               <button class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                               <button class="btn btn-success" type="submit" value="submit">Save</button>
+                              </div>
+                             </form>
+                             <script>
+
+                             var counter = 2;
+                             var limit = 14;
+
+                             function addInput(divName){
+                              //Checkif there is a variable with the value
+                              if(typeof(window[divName+counter])==="undefined"){
+                               window[divName+counter] = counter;
+                              }
+                              var currentcounter = window[divName+counter];
+
+                              if (currentcounter == limit)  {
+                               alert("You have reached the limit of adding extra days");
+                              }
+                              else {
+                               var newdiv = document.createElement('div');
+                               newdiv.classList.add("row");
+                               newdiv.classList.add("day-row");
+                               newdiv.innerHTML = "<div class='col-sm-3 field-label'><label> Day " + (currentcounter) + " </label></div><div class='col-sm-9'><input type='date' class='form-control' name='mydates[]' ></div>";
+                               document.getElementById(divName).appendChild(newdiv);
+                               window[divName+counter]++;
+                              }
+                             }
+
+                             </script>
+                            </div>
+                           </div>
+                          </div>
+                          <!-- End of Modal -->
+
+
+                          @endforeach
+
                     </div>
-                                  <hr />
-<hr />
+
             {!! Form::hidden('is_embedded', $is_embedded) !!}
             {!! Form::close() !!}
 
@@ -140,11 +187,6 @@ Add an experince at {{$event->title}}
             </div>
 
         @endif
-</div>
-
-                    </div> <!-- End Content -->
-
-                </div>
             </div>
     @endif
 

@@ -117,3 +117,19 @@ html,body{height:100%}body{font-family:'Open Sans',sans-serif}table{margin:0}lab
     margin-left: 20px;
     margin-right: 0px !important;
 }
+.side-event-image
+{
+ padding-left:0px !important;
+ margin-top: 10px;
+}
+.side-event-container
+{
+ border: 1px solid #ddd;
+ border-radius: 2px;
+ margin-bottom: 10px;
+ padding-bottom: 5px;
+ padding-top: 5px;
+}
+.no-left-padding{
+ padding-left:0px !important;
+}

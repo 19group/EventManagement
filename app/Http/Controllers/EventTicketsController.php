@@ -87,7 +87,7 @@ class EventTicketsController extends MyBaseController
         ]);
     }
 
-    
+
 
     public function showCreateCoupon($event_id)
     {

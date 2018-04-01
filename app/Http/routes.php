@@ -156,6 +156,15 @@ Route::group(['prefix' => 'e'], function () {
         'uses' => 'EventCheckoutController@postOrderSideEvents',
     ]);
 
+    Route::get('{event_id}/order/sideevents/book', [
+        'as'   => 'showBookSideEvent',
+        'uses' => 'EventCheckoutController@showBookSideEvent',
+    ]);
+    Route::post('{event_id}/order/sideevents/book', [
+        'as'   => 'postBookSideEvent',
+        'uses' => 'EventCheckoutController@postBookSideEvent',
+    ]);
+
    Route::post('{event_id}/ordered/accommodation/', [
          'as'   => 'postOrderAccommodation',
          'uses' => 'EventCheckoutController@postOrderAccommodation',

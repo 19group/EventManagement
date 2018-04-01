@@ -46,6 +46,8 @@
              <button onClick="updateTitle()" data-toggle="modal" data-target="#{{$accomodation->status}}" class="btn btn-primary">
               Book
              </button>
+
+             <!-- Beginning of Modal -->
              <div class="modal fade" id="{{$accomodation->status}}" >
               <div class="modal-dialog">
                <div class="modal-content">
@@ -53,77 +55,78 @@
                  <h2> {{ $accomodation->title}} </h2>
                 </div>
 
-        <form action="{{ route( 'postOrderAccommodation', ['event_id'=>$accomodation->event_id]) }}" method="post">
+                <form action="{{ route( 'postOrderAccommodation', ['event_id'=>$accomodation->event_id]) }}" method="post">
 
-         {{ csrf_field() }}
-         {!! Form::hidden('ticket_id', $accomodation->id) !!}
-         <div class="modal-body">
-          <div class="col-md-12 container-fluid">
+                 {{ csrf_field() }}
+                 {!! Form::hidden('ticket_id', $accomodation->id) !!}
+                 <div class="modal-body">
+                  <div class="col-md-12 container-fluid">
 
-           <div class="form-group col-md-12" id='datetimepicker4'>
-            <div class="col-sm-12">
-              <div class="col-sm-3 field-label">
-              <label>
-               Extra Day
-              </label>
+                   <div class="form-group col-md-12" id='datetimepicker4'>
+                    <div class="col-sm-12">
+                     <div class="col-sm-3 field-label">
+                      <label>
+                       Extra Day
+                      </label>
+                     </div>
+                     <div class="col-sm-9">
+                      <input type="date" name="mydates[]" class="form-control" required>
+                     </div>
+                    </div>
+
+                    <div class="form-group col-md-12" id="dategenerator{{ $accomodation->id}}">
+                    </div>
+
+                    <div class="col-md-12">
+                     <button type="button" class="btn btn-primary" onClick="addInput('dategenerator{{$accomodation->id}}');">Add another day</button>
+
+                    </div>
+                   </div>
+
+
+                   <input type="text" name="price" hidden value="{{$accomodation->price}}" >
+                   <input type="text" name="event_id" hidden value"{{$accomodation->event_id}}" >
+                   <input type="text" name="status" hidden value="{{$accomodation->status}}" >
+                   <input type="text" name="title" hidden value="{{$accomodation->title}}" >
+                   <input type="text" name="old_total" hidden value="{{$order_total}}" >
+                  </div>
+
+                 </div>
+                 <div class="modal-footer">
+                  <button class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                  <button class="btn btn-success" type="submit" value="submit">Save</button>
+                 </div>
+                </form>
+                <script>
+
+                var counter = 2;
+                var limit = 14;
+
+                function addInput(divName){
+                 //Checkif there is a variable with the value
+                 if(typeof(window[divName+counter])==="undefined"){
+                  window[divName+counter] = counter;
+                 }
+                 var currentcounter = window[divName+counter];
+
+                 if (currentcounter == limit)  {
+                  alert("You have reached the limit of adding extra days");
+                 }
+                 else {
+                  var newdiv = document.createElement('div');
+                  newdiv.classList.add("row");
+                  newdiv.classList.add("day-row");
+                  newdiv.innerHTML = "<div class='col-sm-3 field-label'><label> Day " + (currentcounter) + " </label></div><div class='col-sm-9'><input type='date' class='form-control' name='mydates[]' ></div>";
+                  document.getElementById(divName).appendChild(newdiv);
+                  window[divName+counter]++;
+                 }
+                }
+
+                </script>
+               </div>
+              </div>
              </div>
-             <div class="col-sm-9">
-              <input type="date" name="mydates[]" class="form-control" required>
-             </div>
-            </div>
-
-           <div class="form-group col-md-12" id="dategenerator{{ $accomodation->id}}">
-           </div>
-
-           <div class="col-md-12">
-            <button type="button" class="btn btn-primary" onClick="addInput('dategenerator{{$accomodation->id}}');">Add another day</button>
-
-           </div>
-          </div>
-
-
-           <input type="text" name="price" hidden value="{{$accomodation->price}}" >
-           <input type="text" name="event_id" hidden value"{{$accomodation->event_id}}" >
-           <input type="text" name="status" hidden value="{{$accomodation->status}}" >
-           <input type="text" name="title" hidden value="{{$accomodation->title}}" >
-           <input type="text" name="old_total" hidden value="{{$order_total}}" >
-          </div>
-
-         </div>
-         <div class="modal-footer">
-          <button class="btn btn-danger" data-dismiss="modal">Cancel</button>
-          <button class="btn btn-success" type="submit" value="submit">Save</button>
-         </div>
-        </form>
-        <script>
-
-        var counter = 2;
-        var limit = 14;
-
-        function addInput(divName){
-         //Checkif there is a variable with the value
-         if(typeof(window[divName+counter])==="undefined"){
-           window[divName+counter] = counter;
-         }
-         var currentcounter = window[divName+counter];
-
-         if (currentcounter == limit)  {
-          alert("You have reached the limit of adding extra days");
-         }
-         else {
-          var newdiv = document.createElement('div');
-          newdiv.classList.add("row");
-          newdiv.classList.add("day-row");
-          newdiv.innerHTML = "<div class='col-sm-3 field-label'><label> Day " + (currentcounter) + " </label></div><div class='col-sm-9'><input type='date' class='form-control' name='mydates[]' ></div>";
-          document.getElementById(divName).appendChild(newdiv);
-          window[divName+counter]++;
-         }
-        }
-
-        </script>
-       </div>
-      </div>
-     </div>
+             <!-- End of Modal -->
 
     </div>
    </div>
