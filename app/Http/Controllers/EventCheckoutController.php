@@ -511,8 +511,6 @@ class EventCheckoutController extends Controller
                 return view('Public.ViewEvent.EventPageCheckout', $data);
         }
 
-
-
     /**
      * Added by DonaldMar16 to show post order side events page
      *
@@ -525,15 +523,38 @@ class EventCheckoutController extends Controller
 
         $event = Event::findOrFail($event_id);
 
+        $order_session['order_total'] = $request->get('old_total') + $request->get('days') * $request->get('price');
 
-        $ticket_ids = [];
-        if ($request->has('tickets')) {
-            $ticket_ids = $request->get('tickets');
-        }
-        //dd($ticket_ids);
+        //Get the values from the fields
+        $fullname = $request->get('first_name'). $request->get('last_name');
+        $email = $request->get('email');
+        $hotel_status = $request->get('hotel_status');
+        $title = $request->get('title');
+        $amount =  $order_session['order_total'];
+        $price = $request->get('price');
+        $ticket_id = $request->get('ticket_id');
+        $accommodation_dates =  $request->get('mydates');
+
+        //Retrieve information from the form
+          $ticket_id = $request->get('ticket_id');
+          $ticket_quantity = $request->get('ticket_'.$ticket_id);
+          $ticket_price = $request->get('price');
+          $ticket_dates = $request->get('mydates');
 
 
-        /*
+        //Retrieve the old Total
+        $old_total = $request->get('old_total');
+
+        //Make calculations of the new total
+        $new_total = $old_total + ($ticket_quantity*$price);
+
+        //dd("Old total was ". $old_total . " and the New Total is ". $new_total);
+
+        //TODO Clean up this section
+        //$secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
+        //$ticket = Ticket::where('type','Extra')->get();
+        // $ticket = Ticket::find($ticket_id);
+       /*
          * Remove any tickets the user has reserved
          */
     //    ReservedTickets::where('session_id', '=', session()->getId())->delete();
@@ -555,50 +576,53 @@ class EventCheckoutController extends Controller
         $amount_ticket_title     =    $availables['amount_ticket_title'];
         $quantity_available_validation_rules = [];
 
-        /*
-         *Clear all records about sideevents if they already exist (back and forth situation) DonaldMar24
-         */
-        $pos=0;
-        foreach($tickets as $testticket){
-            if($testticket['ticket']['type'] === 'SIDEEVENT'){
-             //dd("I am here");
-                $order_total  = $order_total - $testticket['price'];
-                $total_ticket_quantity  = $total_ticket_quantity - $testticket['qty'];
-                $booking_fee = $booking_fee - $testticket['booking_fee'];
-                $organiser_booking_fee =  $organiser_booking_fee - $testticket['organiser_booking_fee'];
-                unset($tickets[$pos]);
-            }
-            ++$pos;
-        }
+        //dd("Order total from session is " .$order_total . "Order total from form is " . $old_total);
+        //dd($tickets);
 
-        //What does this check do?
-        if(!empty($ticket_ids)){
+        //Checks if there are any tickets selected
+        //TODO make sure the check works
+       // if(!empty($ticket_ids)){
+           // foreach ($ticket_ids as $ticket_id) {
+               //Gets the Ticket Quantity
+                //$current_ticket_quantity = (int)$request->get('ticket_' . $ticket_id);
+                $current_ticket_quantity = $ticket_quantity;
 
-            foreach ($ticket_ids as $ticket_id) {
-                $current_ticket_quantity = (int)$request->get('ticket_' . $ticket_id);
-
+                /*
                 if ($current_ticket_quantity < 1) {
                     continue;
                 }
+                */
 
+               // dd($availables);
+                //Updates the ticket quantity
                 $total_ticket_quantity = $total_ticket_quantity + $current_ticket_quantity;
 
+                //Retrieves ticket information from the database
+                //dd($ticket_id);
                 $ticket = Ticket::find($ticket_id);
 
+                //
                 $ticket_quantity_remaining = $ticket->quantity_remaining;
 
+                //
                 $max_per_person = min($ticket_quantity_remaining, $ticket->max_per_person);
 
+                //
                 $quantity_available_validation_rules['ticket_' . $ticket_id] = [
                     'numeric',
                     'min:' . $ticket->min_per_person,
                     'max:' . $max_per_person
                 ];
+               // dd($order_total);
 
+                //
+                /*
                 $quantity_available_validation_messages = [
                     'ticket_' . $ticket_id . '.max' => 'The maximum number of tickets you can register is ' . $ticket_quantity_remaining,
                     'ticket_' . $ticket_id . '.min' => 'You must select at least ' . $ticket->min_per_person . ' tickets.',
                 ];
+                */
+                /*
 
                 $validator = Validator::make(['ticket_' . $ticket_id => (int)$request->get('ticket_' . $ticket_id)],
                     $quantity_available_validation_rules, $quantity_available_validation_messages);
@@ -609,11 +633,14 @@ class EventCheckoutController extends Controller
                         'messages' => $validator->messages()->toArray(),
                     ]);
                 }
+                */
 
                 $order_total = $order_total + ($current_ticket_quantity * $ticket->price);
+                //dd($order_total);
                 $booking_fee = $booking_fee + ($current_ticket_quantity * $ticket->booking_fee);
                 $organiser_booking_fee = $organiser_booking_fee + ($current_ticket_quantity * $ticket->organiser_booking_fee);
 
+                //Appends Ticket information to the Ticket Variable that will be stored in the session
                 $tickets[count($tickets)] = [
                     'ticket'                => $ticket,
                     'qty'                   => $current_ticket_quantity,
@@ -621,8 +648,10 @@ class EventCheckoutController extends Controller
                     'booking_fee'           => ($current_ticket_quantity * $ticket->booking_fee),
                     'organiser_booking_fee' => ($current_ticket_quantity * $ticket->organiser_booking_fee),
                     'full_price'            => $ticket->price + $ticket->total_booking_fee,
+                    'dates'                => $ticket_dates,
                 ];
 
+                //dd($tickets);
                 /*
                  * To escape undefined offset errors due to accessing arrays that associate with tickets but shorter, in
                  * EventCreateOrderSection.blade, we have to nullify all extra elements... null is set to empty string
@@ -644,13 +673,13 @@ class EventCheckoutController extends Controller
                 $reservedTickets->session_id = session()->getId();
                 $reservedTickets->save();
 
-            } //end-foreach($ticket_ids)
-        } //end-if-!empty($ticket_ids)
+            //} //end-foreach($ticket_ids)
+        //} //end-if-!empty($ticket_ids)
 
         /*
          * We have to update the tickets to be reserved
          */
-//not        $reservedTickets = $availables['reserved_tickets_id'] + $reservedTickets->id;
+ //not        $reservedTickets = $availables['reserved_tickets_id'] + $reservedTickets->id;
 
         if (empty($tickets)) {
             return response()->json([
@@ -666,7 +695,7 @@ class EventCheckoutController extends Controller
 
         $availables['tickets'] = $tickets;
         $availables['total_ticket_quantity'] = $total_ticket_quantity;
-//        $availables['reserved_tickets_id'] = $reservedTickets;
+ //        $availables['reserved_tickets_id'] = $reservedTickets;
         $availables['order_total'] = $order_total;
         $availables['organiser_booking_fee'] = $organiser_booking_fee;
         $availables['total_booking_fee'] = $booking_fee + $organiser_booking_fee;
@@ -680,22 +709,17 @@ class EventCheckoutController extends Controller
         session()->set('ticket_order_' . $event->id,
             $availables
         );
+       // dd($tickets);
 
         /*
          * If we're this far assume everything is OK and redirect them
          * to the the checkout page.
          */
-        if ($request->ajax()) {
-            return response()->json([
-                'status'      => 'success',
-                'redirectUrl' => route('showEventCheckout', [
-                        'event_id'    => $event_id,
-                        'is_embedded' => $this->is_embedded,
-                    ]) . '#order_form',
-            ]);
-        }
+         return response()->redirectToRoute('OrderSideEvents', [
+             'event_id'          => $event_id
+         ]);
 
-        $printer = session()->get('ticket_order_' . $event->id);
+        //$printer = session()->get('ticket_order_' . $event->id);
     //    dd($printer);
 
         /*
@@ -705,7 +729,7 @@ class EventCheckoutController extends Controller
         if ($request->ajax()) {
             return response()->json([
                 'status'      => 'success',
-                'redirectUrl' => route('showEventCheckout', [
+                'redirectUrl' => route('OrderSideEvents', [
                         'event_id'    => $event_id,
                         'is_embedded' => $this->is_embedded,
                     ]) . '#order_form',
@@ -717,6 +741,7 @@ class EventCheckoutController extends Controller
          */
         exit('Please enable Javascript in your browser.');
     }
+
 
 
     /**

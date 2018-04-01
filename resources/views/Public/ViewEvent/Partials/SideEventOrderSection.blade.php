@@ -17,7 +17,8 @@ Add an experince at {{$event->title}}
 
            <!-- {!! Form::open(['url' => route('postOrderSideEvents', ['event_id' => $event->id]), 'class' => 'ajax']) !!}-->
           <div class="col-md-4 pull-right">
-          {!!Form::submit('Next', ['class' => 'btn btn-lg btn-primary pull-right'])!!}
+          <!--{!!Form::submit('Next', ['class' => 'btn btn-lg btn-primary pull-right'])!!}-->
+          <a href="{{ route('showEventCheckout', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">Next</a>
           </div>
         @endif
    </div>
@@ -59,7 +60,7 @@ Add an experince at {{$event->title}}
                            </div>
                            <div class="col-xs-12">
                             <div class="col-xs-8 no-left-padding">
-                             <button class="btn btn-primary" style="width:150px"> More Details</button>
+                             <button  data-toggle="modal" data-target="#{{$minevent->id}}" class="btn btn-primary" style="width:150px"> More Details</button>
                             </div>
                             <div class="col-xs-2">
                              <span>{{money($minevent->price, $event->currency)}} </span>
@@ -80,7 +81,7 @@ Add an experince at {{$event->title}}
                               <h2> {{ $minevent->title}} </h2>
                              </div>
                              <!--Form::open(['url' => route('postBookSideEvent', ['event_id' => $event->id]), 'class' => 'ajax']) !!}-->
-                             <form action="{{ route( 'postBookSideEvent', ['event_id'=>$event->id]) }}" method="post">
+                             <form action="{{ route( 'postOrderSideEvents', ['event_id'=>$event->id]) }}" method="post">
 
                               {{ csrf_field() }}
                               {!! Form::hidden('ticket_id', $minevent->id) !!}
@@ -99,7 +100,7 @@ Add an experince at {{$event->title}}
                                   </div>
                                  </div>
                                  <div class="col-sm-12">
-                                  <div class="col-sm-12 field-label">
+                                  <div class="col-sm-8 field-label">
                                    <span>
 
                                     <?php if($minevent->ticket_offers!=NULL){
@@ -111,13 +112,32 @@ Add an experince at {{$event->title}}
                                                  $count = $i+1;
                                                  echo '<div class="row">';
                                                  echo '<p>';
-                                                 echo'<input type="radio" name="mydates" value="'.$ticket_offers[$i].'" >'.date('d-M-Y H:i', strtotime($sched[0])).' to '.date('d-M-Y H:i', strtotime($sched[1])).'';
+                                                 echo'<input type="radio" name="mydates" value="'.$ticket_offers[$i].'" required>'.date('d-M-Y H:i', strtotime($sched[0])).' to '.date('d-M-Y H:i', strtotime($sched[1])).'';
                                                  echo '</p>';
                                                  echo '</div>';
                                              } ?>
                                    <?php } ?>
 
                                    </span>
+                                  </div>
+                                  <div class="col-sm-4 field-label">
+                                   <div>
+                                    <span><b>{{money($minevent->price, $event->currency)}}</b></span>
+                                    <br/>
+                                    <p>No of Tickets</p>
+
+                                    <select name="ticket_{{$minevent->id}}" class="form-control"
+                                            style="text-align: center">
+                                        @if ($tickets->count() > 1)
+                                            <option value="0">0</option>
+                                        @endif
+                                        @for($i=$minevent->min_per_person; $i<=$minevent->max_per_person; $i++)
+                                            <option value="{{$i}}">{{$i}}</option>
+                                        @endfor
+                                    </select><br>
+
+
+                                   </div>
                                   </div>
                                   <div class="col-sm-9">
                                    <!--<input type="date" name="mydates[]" class="form-control" required>-->
