@@ -17,24 +17,23 @@
        @foreach($accomodations as $accomodation)
 
        <div class="row accommodation-container">
-
-          <div class="col-xs-12 no-padding-left">
-
+        <div class="col-xs-12 no-left-padding">
+        <div id="title" class="col-xs-6 ">
+         <h5><b>{{ $accomodation->title }}</b></h5>
+        </div>
+        <div class="col-xs-6 text-light text-right">
+         @for($i=0; $i<$accomodation->status; $i++)
+         <i class="glyphicon glyphicon-star" style="color: #FFD700"></i>
+         @endfor
+         <br>
+        </div>
+        </div>
+          <div class="col-xs-12 no-left-padding ">
            <div id="image" class="col-xs-5 no-padding-left">
             <img width="100%" height="auto" src="https://cmkt-image-prd.global.ssl.fastly.net/0.1.0/ps/2418804/580/385/m1/fpnw/wm0/hotel-icon-.jpg?1489704131&s=bd2b9f851b8c1c4d8eaa11486cc67398">
            </div>
-
            <div id="content" class="col-xs-7">
-            <div class="col-xs-12 text-light text-left">
-             @for($i=0; $i<$accomodation->status; $i++)
-             <i class="glyphicon glyphicon-star" style="color: #FFD700"></i>
-             @endfor
-             <br>
-            </div>
 
-            <div id="title" class="col-xs-12">
-             <h5><b>{{ $accomodation->title }}</b></h5>
-            </div>
             @if($accomodation->ticket_offers!='')
             <div id="offers" class="col-xs-12"><br>
              *{{ $accomodation->ticket_offers }}
@@ -42,7 +41,8 @@
             @endif
 
             </div>
-            <div class="col-xs-12">
+           </div>
+           <div class="col-xs-12 no-left-padding ">
              <div class="col-xs-8" style="padding-top:10px">
               <span>Price:&nbsp;</span> <b>{{ money($accomodation->price, $event->currency) }}</b> <span> per day</span>
              </div>
@@ -50,7 +50,6 @@
              <button style="width:150px" onClick="updateTitle()" data-toggle="modal" data-target="#{{$accomodation->status}}" class="btn btn-primary">
               Book
              </button>
-            </div>
             </div>
            </div>
          </div>
