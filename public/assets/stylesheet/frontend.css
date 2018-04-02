@@ -133,3 +133,7 @@ html,body{height:100%}body{font-family:'Open Sans',sans-serif}table{margin:0}lab
 .no-left-padding{
  padding-left:0px !important;
 }
+
+#event_page_wrap #intro{
+ padding-top:0px !important;
+}

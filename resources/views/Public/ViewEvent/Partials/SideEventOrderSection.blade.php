@@ -16,10 +16,8 @@ Add an experince at {{$event->title}}
         @if(count($tickets) > 0)
 
            <!-- {!! Form::open(['url' => route('postOrderSideEvents', ['event_id' => $event->id]), 'class' => 'ajax']) !!}-->
-          <div class="col-md-4 pull-right">
-          <!--{!!Form::submit('Next', ['class' => 'btn btn-lg btn-primary pull-right'])!!}-->
+           <!--{!!Form::submit('Next', ['class' => 'btn btn-lg btn-primary pull-right'])!!}-->
           <a href="{{ route('showEventCheckout', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">Next</a>
-          </div>
         @endif
    </div>
 
@@ -33,7 +31,6 @@ Add an experince at {{$event->title}}
 
         <?php $tickets = $sideeventsar;?>
               @if(count($tickets) > 0)
-                   <div class="">
 
                           @foreach ($tickets as $minevent)
                           <div class="row side-event-container">
@@ -194,8 +191,6 @@ Add an experince at {{$event->title}}
 
 
                           @endforeach
-
-                    </div>
 
             {!! Form::hidden('is_embedded', $is_embedded) !!}
             {!! Form::close() !!}
