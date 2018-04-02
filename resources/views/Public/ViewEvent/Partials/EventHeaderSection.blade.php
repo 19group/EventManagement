@@ -9,16 +9,13 @@
 @endif
 
 <section id="intro" class="container-fluid">
-    <div class="row">
-        <div class="col-md-4 pull-left position-fixed">
-            <br><br>
+    <div class="row ">
+     <div class="col-sm-12">
+          <div onclick="window.location='{{$event->event_url}}#organiser'" class="event_organizer">
+                    <h2>{{$event->title}}</h2>
+            </div>
 
-            <div onclick="window.location='{{$event->event_url}}#organiser'" class="event_organizer">
-                    <b>{{$event->organiser->name}}</b> Presents
-                </div>
-
-            <h1 property="name">{{$event->title}}</h1>
-            <div class="event_venue">
+            <div class="event_venue col-sm-12">
                 <span property="startDate" content="{{ $event->start_date->toIso8601String() }}">
                     {{ $event->start_date->format('D d M H:i A') }}
                 </span>
@@ -29,15 +26,13 @@
                      @else
                         {{ $event->end_date->format('D d M H:i A') }}
                      @endif
-                </span><br>
+                </span></div><div class="col-sm-12">
                 @
                 <span property="location" typeof="Place">
                     <b property="name">{{$event->venue_name}}</b>
                     <meta property="address" content="{{ urldecode($event->venue_name) }}">
                 </span>
             </div>
-
-
-        </div>
+       </div>
     </div>
 </section>

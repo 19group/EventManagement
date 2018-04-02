@@ -60,9 +60,6 @@
                                                </div>
                                   </div>
 
-                                   <div class="row">
-
-                                   </div>
                                      <div class="row">
                                                    <p class="col-sm-12 ticket-title semibold" property="name">
                                                     {{'Donate for this event'}}
@@ -74,8 +71,7 @@
                                                    </div>
                                                    <div class="col-md-4">
                                                     <div class="input-group form-group">
-                                                     <span class="input-group-addon"></span>
-                                                     <input class="form-control" type="input" name="donation" placeholder="Donation in USD">
+                                                     <input class="form-control" type="input" name="donation" placeholder="Donation in {{$event->currency['title']}}">
                                                     </input>
                                                     </div>
                                                    </div>
@@ -107,7 +103,7 @@
                               ?>
                               @foreach($tickets as $ticket)
                                   <tr  class="ticket " property="offers" typeof="Offer">
-                                      <td class="col-md-6">
+                                      <td class="col-xs-7 col-md-6">
                               <span class="ticket-title semibold" property="name">
                                   {{$ticket->title}}
                               </span>
@@ -127,7 +123,7 @@
                                       </td>
                                       <?php } ?>
                                       <!--end of addition-->
-                                      <td class="col-md-2" text-align: right;">
+                                      <td class="col-xs-2">
                                           <div class="ticket-pricing" style="margin-right: 20px; text-align:right">
                                               @if($ticket->is_free)
                                                   FREE
@@ -144,7 +140,7 @@
                                               @endif
                                           </div>
                                       </td>
-                                      <td class="col-md-4">
+                                      <td class="col-xs-3 col-md-4">
                                           @if($ticket->is_paused)
 
                                               <span class="text-danger">

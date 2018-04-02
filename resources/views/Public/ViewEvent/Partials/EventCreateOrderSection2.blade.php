@@ -57,7 +57,7 @@
 
                 {!! Form::hidden('event_id', $event->id) !!}
 
-                <h3>Your Information</h3>
+                <h3>Your Information </h3>
 
                 <div class="row" style="display: none;">
                     <div class="col-xs-6">
@@ -139,7 +139,7 @@
                                                 if(count($toffers)===1){
                                                     $sched = explode('<==>',$toffers[0]);
                                                     $option = date('d-M-Y H:i', strtotime($sched[0])).' to '.date('d-M-Y H:i', strtotime($sched[1]));
-                                                    echo '<div class = \'row\'>'; 
+                                                    echo '<div class = \'row\'>';
                                                     echo '<p>For Schedule: '.$option.'</p>';
                                                     echo Form::hidden("ticket_holder_schedule[{$i}][{$ticket['ticket']['id']}],$option");
                                                     echo '</div>';
@@ -150,7 +150,7 @@
                                                         $option = date('d-M-Y H:i', strtotime($sched[0])).' to '.date('d-M-Y H:i', strtotime($sched[1]));
                                                         echo '<div class=\'row\'><ul>';
                                                         echo Form::radio("ticket_holder_schedule[{$i}][{$ticket['ticket']['id']}]", $option, false, ['class' => 'field']); echo $option;
-                                                        echo '</ul></div>'; 
+                                                        echo '</ul></div>';
                                                     }
                                                 }
                                             }//DonaldMar27
@@ -158,7 +158,7 @@
                                                 echo '<div class=\'row\'><div class=\'col-md-12\'><div class=\'form-group\'>';
                                                 echo Form::label(' ','Booked Days:'); echo '</div></div></div>';
                                                 $days = $ticket['dates']; //$dates = [];
-                                                echo '<div class=\'row\'>'; 
+                                                echo '<div class=\'row\'>';
                                                     for($daycounter=0; $daycounter<count($days); ++$daycounter){
                                                          echo '&nbsp;&nbsp;<i class=\'glyphicon glyphicon-calendar\'>'.$days[$daycounter].'</i>';
                                                         if($daycounter % 6 == 0){ //limit days to 6 in a row
@@ -169,7 +169,7 @@
                                                 $dateString = implode(',',$days);
                                                 echo Form::hidden("ticket_holder_bookdays[{$i}][{$ticket['ticket']['id']}]",$dateString);
                                                 //echo '<br>'.$dateString;
-                                            }  
+                                            }
                                             //end of addition
                                         ?>
 
