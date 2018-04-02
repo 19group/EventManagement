@@ -30,7 +30,7 @@
         </div>
           <div class="col-xs-12 no-left-padding ">
            <div id="image" class="col-xs-5 no-padding-left">
-            <img width="100%" height="auto" src="https://cmkt-image-prd.global.ssl.fastly.net/0.1.0/ps/2418804/580/385/m1/fpnw/wm0/hotel-icon-.jpg?1489704131&s=bd2b9f851b8c1c4d8eaa11486cc67398">
+            <img src="{{asset('assets/images/default/hotel.jpg')}}" />
            </div>
            <div id="content" class="col-xs-7">
 
