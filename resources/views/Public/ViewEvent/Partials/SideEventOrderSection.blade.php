@@ -12,13 +12,6 @@ Add an experince at {{$event->title}}
 
    @include('Public.ViewEvent.Partials.OrderSummary')
 
-     <?php $tickets = $sideeventsar;?>
-        @if(count($tickets) > 0)
-
-           <!-- {!! Form::open(['url' => route('postOrderSideEvents', ['event_id' => $event->id]), 'class' => 'ajax']) !!}-->
-           <!--{!!Form::submit('Next', ['class' => 'btn btn-lg btn-primary pull-right'])!!}-->
-          <a href="{{ route('showEventCheckout', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">Next</a>
-        @endif
    </div>
 
    <div class="col-md-8">
@@ -205,6 +198,9 @@ Add an experince at {{$event->title}}
             </div>
     @endif
 
+    <div class="col-md-4 pull-right">
+          <a href="{{ route('showEventCheckout', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">Next</a>
+    </div>
 </section>
 
 

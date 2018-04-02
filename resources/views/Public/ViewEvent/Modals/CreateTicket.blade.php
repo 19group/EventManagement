@@ -199,7 +199,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                      {!! Form::label('type', 'Ticket Type', array('class'=>' control-label')) !!}
-                                     {!! Form::select('type', ['extra'=>'Extras'],null, ['class' => 'form-control']) !!}
+                                     {!! Form::select('type', ['extra'=>'Extra'],null, ['class' => 'form-control']) !!}
                                 </div>
                             </div>
                         </div>

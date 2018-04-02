@@ -181,7 +181,7 @@ document.getElementById("ticketoffers").appendChild(p);
                     <div class="col-md-12">
                         <div class="form-group">
                              {!! Form::label('type', 'Ticket Type', array('class'=>' control-label')) !!}
-                             {!! Form::select('type', ['normal'=>'Normal', 'extras'=>'Extras'],null, ['class' => 'form-control']) !!}
+                             {!! Form::select('type', ['normal'=>'Normal', 'extra'=>'Extra'],null, ['class' => 'form-control']) !!}
 
                         </div>
                     </div>
