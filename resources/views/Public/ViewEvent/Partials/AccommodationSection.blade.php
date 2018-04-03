@@ -30,7 +30,7 @@
         </div>
           <div class="col-xs-12 no-left-padding ">
            <div id="image" class="col-xs-5 no-padding-left">
-            <img width="100%" height="auto" src="https://cmkt-image-prd.global.ssl.fastly.net/0.1.0/ps/2418804/580/385/m1/fpnw/wm0/hotel-icon-.jpg?1489704131&s=bd2b9f851b8c1c4d8eaa11486cc67398">
+            <img src="{{asset('assets/images/default/hotel.jpg')}}" />
            </div>
            <div id="content" class="col-xs-7">
 
@@ -76,7 +76,24 @@
                       </label>
                      </div>
                      <div class="col-sm-9">
-                      <input type="date" name="mydates[]" class="form-control" required>
+                      <input type="text" name="mydates[]" class="form-control" min="2018-08-15" max="2018-09-15" list="thesedates">
+
+                      <datalist id="thesedates">
+                          <option label="7 Days Before" value="2018-08-22">2018-08-22</option>
+                          <option label="6 Days Before" value="2018-08-23">2018-08-23</option>
+                          <option label="5 Days Before" value="2018-08-24">2018-08-24</option>
+                          <option label="4 Days Before" value="2018-08-25">2018-08-25</option>
+                          <option label="3 Days Before" value="2018-08-26">2018-08-26</option>
+                          <option label="2 Days Before" value="2018-08-27">2018-08-27</option>
+                          <option label="1 Day Before" value="2018-08-28">2018-08-28</option>
+                          <option label="1 Day After" value="2018-09-1">2018-09-1</option>
+                          <option label="2 Days After" value="2018-09-2">2018-09-2</option>
+                          <option label="3 Days After" value="2018-09-3">2018-09-3</option>
+                          <option label="4 Days After" value="2018-09-4">2018-09-4</option>
+                          <option label="5 Days After" value="2018-09-5">2018-09-5</option>
+                          <option label="6 Days After" value="2018-09-6">2018-09-6</option>
+                          <option label="7 Days After" value="2018-09-7">2018-09-7</option>
+                      </datalist>
                      </div>
                     </div>
 
@@ -119,7 +136,7 @@
                   var newdiv = document.createElement('div');
                   newdiv.classList.add("row");
                   newdiv.classList.add("day-row");
-                  newdiv.innerHTML = "<div class='col-sm-3 field-label'><label> Day " + (currentcounter) + " </label></div><div class='col-sm-9'><input type='date' class='form-control' name='mydates[]' ></div>";
+                  newdiv.innerHTML = "<div class='col-sm-3 field-label'><label> Day " + (currentcounter) + " </label></div><div class='col-sm-9'><input type='text' class='form-control' min='2018-08-15' max='2018-09-15' name='mydates[]' list='thesedates' ></div>";
                   document.getElementById(divName).appendChild(newdiv);
                   window[divName+counter]++;
                  }
