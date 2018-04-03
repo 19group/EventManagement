@@ -709,7 +709,7 @@ class EventCheckoutController extends Controller
         session()->set('ticket_order_' . $event->id,
             $availables
         );
-       // dd($tickets);
+        //dd($tickets);
 
         /*
          * If we're this far assume everything is OK and redirect them
