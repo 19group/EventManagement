@@ -437,18 +437,24 @@ class EventCheckoutController extends Controller
         $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
 
         //Retrive all the links from the tickets
-        $ticket_links[] = 0;
+        $ticket_links= [];
+
         $i = 0;
         foreach($order_session['tickets'] as $ticket)
         {
+         if($ticket['ticket']->ticket_links != ""){
          $ticket_links[$i] = (int)$ticket['ticket']->ticket_links;
          ++$i;
+         }
         }
 
-        //dd($ticket_links);
-
+        //If no links is initialized, then retrieve all tickets with extras
+        if(count($ticket_links) == 0){
+        $accomodations = Ticket::where('type','Extra')->get();
+        }
+       else {
         $accomodations = Ticket::whereIn('id',$ticket_links)->get();
-        //$accomodations = Ticket::where('type','Extra')->get();
+       }
 
         $data = $order_session + [
                 'event'           => Event::findorFail($order_session['event_id']),

@@ -4,7 +4,7 @@
 
   <div class="col-xs-12">
   <h1 class='section_head'>
-  Add Extra Accomodation
+  Add Extra Accommodation
   </h1>
   </div>
 
@@ -38,12 +38,22 @@
             <img src="{{asset('assets/images/default/hotel.jpg')}}" />
            </div>
            <div id="content" class="col-xs-7">
+            <p>{{$accomodation->description}}</p>
 
             @if($accomodation->ticket_offers!='')
-            <div id="offers" class="col-xs-12"><br>
-             *{{ $accomodation->ticket_offers }}
+            <?php
+            $offers = explode("#@#",$accomodation->ticket_offers)
+            ?>
+            <ul>
+            <div id="offers" class="col-xs-12">
+             @foreach($offers as $offer)
+             <li>{{ $offer }}</li>
+
+             @endforeach
             </div>
+            </ul>
             @endif
+
 
             </div>
            </div>
@@ -52,8 +62,8 @@
               <span>Price:&nbsp;</span> <b>{{ money($accomodation->price, $event->currency) }}</b> <span> per day</span>
              </div>
             <div id="" class="row col-xs-4 " style="text-right">
-             <button style="width:150px" onClick="updateTitle()" data-toggle="modal" data-target="#{{$accomodation->status}}" class="btn btn-primary">
-              Book
+             <button style="" onClick="updateTitle()" data-toggle="modal" data-target="#{{$accomodation->status}}" class="btn btn-primary">
+              Add Additional Nights
              </button>
             </div>
            </div>

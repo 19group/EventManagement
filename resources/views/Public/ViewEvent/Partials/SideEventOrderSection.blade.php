@@ -4,7 +4,7 @@
 
 <div class="col-sm-12">
 <h1 class='section_head'>
-Add an experince at {{$event->title}}
+Add an Experience at {{$event->title}}
 </h1>
 </div>
 
@@ -38,7 +38,7 @@ Add an experince at {{$event->title}}
                             </span>
                            </div>
                            <div class="col-xs-4">
-                             <span class="side-event-days">3 days and 2 nights</span>
+                             <!--<span class="side-event-days">3 days and 2 nights</span>-->
                            </div>
                             <br />
                            </div>
