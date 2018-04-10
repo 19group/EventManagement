@@ -435,7 +435,20 @@ class EventCheckoutController extends Controller
         }
 
         $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
-        $accomodations = Ticket::where('type','Extra')->get();
+
+        //Retrive all the links from the tickets
+        $ticket_links[] = 0;
+        $i = 0;
+        foreach($order_session['tickets'] as $ticket)
+        {
+         $ticket_links[$i] = (int)$ticket['ticket']->ticket_links;
+         ++$i;
+        }
+
+        //dd($ticket_links);
+
+        $accomodations = Ticket::whereIn('id',$ticket_links)->get();
+        //$accomodations = Ticket::where('type','Extra')->get();
 
         $data = $order_session + [
                 'event'           => Event::findorFail($order_session['event_id']),
@@ -472,7 +485,6 @@ class EventCheckoutController extends Controller
 
         //$value = $request->session()->pull('key', $order_session['order_total']);
         //dd(count($request->get('mydates')));
-
 
         if (!$order_session || $order_session['expires'] < Carbon::now()) {
             $route_name = $this->is_embedded ? 'showEmbeddedEventPage' : 'showEventPage';

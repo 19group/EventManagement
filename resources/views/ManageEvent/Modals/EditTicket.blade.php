@@ -186,6 +186,14 @@ document.getElementById("ticketoffers").appendChild(p);
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                             {!! Form::label('ticket_links', 'Ticket Links', array('class'=>' control-label')) !!}
+                             {!! Form::select('ticket_links', $linkable_tickets,null, ['class' => 'form-control']) !!}
+                        </div>
+                    </div>
+                </div>
                 <div class="row more-options">
                     <div class="col-md-12">
                         <div class="form-group">
