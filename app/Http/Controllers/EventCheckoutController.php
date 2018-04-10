@@ -417,6 +417,53 @@ class EventCheckoutController extends Controller
         return view('Public.ViewEvent.EventSideEvent', $data);
     }
 
+
+    /**
+     * Added by DonaldMar16 to show order side events page
+     *
+     * @param Request $request
+     * @param $event_id
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
+    public function showOrderAccommodation($event_id)
+    {
+        $order_session = session()->get('ticket_order_' . $event_id);
+
+        if (!$order_session || $order_session['expires'] < Carbon::now()) {
+            $route_name = $this->is_embedded ? 'showEmbeddedEventPage' : 'showEventPage';
+            return redirect()->route($route_name, ['event_id' => $event_id]);
+        }
+
+        $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
+        $accomodations = Ticket::where('type','Extra')->get();
+
+        $data = $order_session + [
+                'event'           => Event::findorFail($order_session['event_id']),
+                'secondsToExpire' => $secondsToExpire,
+                'coupon_flag'           => $order_session['coupon_flag'],
+                'discount'              => $order_session['discount'],
+                'newSubTotal'              => '',
+                'first_name'              => $order_session['first_name'],
+                'last_name'              => $order_session['last_name'],
+                'email'              => $order_session['email'],
+                'accomodations'              => $accomodations,
+                'discount_ticket_title' => $order_session['discount_ticket_title'],
+                'exact_amount'          => $order_session['exact_amount'],
+                'amount_ticket_title'   => $order_session['amount_ticket_title'],
+                'is_embedded'     => $this->is_embedded,
+            ];
+
+        // Check if accommodation exists
+        if (count($accomodations)>0){
+          return view('Public.ViewEvent.Accomodation', $data);
+        }
+        else { //If not proceed to checkout
+         return redirect()->route('showEventCheckout', ['event_id' => $event_id]);
+        }
+
+    }
+
+
     public function updateBooking(Request $request)
     {
 
@@ -443,8 +490,6 @@ class EventCheckoutController extends Controller
        //Session::put('order_total', $newTotal);
 
        //dd($newTotal);
-
-
 
         Acccommodation::create([
                 'full_name' => $name,
@@ -484,41 +529,6 @@ class EventCheckoutController extends Controller
 
         //dd($order_session['order_total']);
     }
-
-
-
-         public function finalCheckout( $event_id )
-        {
-            $order_session = session()->get('ticket_order_' . $event_id);
-            if (!$order_session || $order_session['expires'] < Carbon::now()) {
-                $route_name = $this->is_embedded ? 'showEmbeddedEventPage' : 'showEventPage';
-                return redirect()->route($route_name, ['event_id' => $event_id]);
-            }
-            $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
-            $accomodations = Ticket::where('type','Extra')->get();
-            //dd(session()->get('order_total'));
-
-            $data = $order_session + [
-                    'event'           => Event::findorFail($order_session['event_id']),
-                    'secondsToExpire' => $secondsToExpire,
-                    'coupon_flag'           => $order_session['coupon_flag'],
-                    'discount'              => $order_session['discount'],
-                    'first_name'              => $order_session['first_name'],
-                    'last_name'              => $order_session['last_name'],
-                    'email'              => $order_session['email'],
-                    'accomodations'              => $accomodations,
-                    'discount_ticket_title' => $order_session['discount_ticket_title'],
-                    'exact_amount'          => $order_session['exact_amount'],
-                    'amount_ticket_title'   => $order_session['amount_ticket_title'],
-                    'is_embedded'     => $this->is_embedded,
-                ];
-                //dd(session()->get('order_total'));
-
-                        if ($this->is_embedded) {
-                            return view('Public.ViewEvent.Embedded.EventPageCheckout', $data);
-                        }
-                return view('Public.ViewEvent.EventPageCheckout', $data);
-        }
 
     /**
      * Added by DonaldMar16 to show post order side events page
@@ -718,7 +728,7 @@ class EventCheckoutController extends Controller
         session()->set('ticket_order_' . $event->id,
             $availables
         );
-        //dd($tickets);
+       // dd($tickets);
 
         /*
          * If we're this far assume everything is OK and redirect them
@@ -764,14 +774,6 @@ class EventCheckoutController extends Controller
     {
 
         $event = Event::findOrFail($event_id);
-
-        //Checks from the form array tickets[] retrieving ids,
-        /*
-        $ticket_ids = [];
-        if ($request->has('tickets')) {
-            $ticket_ids = $request->get('tickets');
-        }
-        */
 
         $order_session['order_total'] = $request->get('old_total') + $request->get('days') * $request->get('price');
 
@@ -967,9 +969,8 @@ class EventCheckoutController extends Controller
          * If we're this far assume everything is OK and redirect them
          * to the the checkout page.
          */
-         return response()->redirectToRoute('showEventCheckout', [
-             'event_id'          => $event_id,
-             'accommodation_added' => 1,
+         return response()->redirectToRoute('OrderAccommodation', [
+             'event_id'          => $event_id
          ]);
 
         //$printer = session()->get('ticket_order_' . $event->id);
@@ -982,7 +983,7 @@ class EventCheckoutController extends Controller
         if ($request->ajax()) {
             return response()->json([
                 'status'      => 'success',
-                'redirectUrl' => route('showEventCheckout', [
+                'redirectUrl' => route('OrderAccommodation', [
                         'event_id'    => $event_id,
                         'is_embedded' => $this->is_embedded,
                     ]) . '#order_form',
@@ -994,7 +995,6 @@ class EventCheckoutController extends Controller
          */
         exit('Please enable Javascript in your browser.');
     }
-
 
     /**
      * Show the checkout page
@@ -1013,7 +1013,6 @@ class EventCheckoutController extends Controller
         }
 
         $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
-        $accomodations = Ticket::where('type','Extra')->get();
 
         $data = $order_session + [
                 'event'           => Event::findorFail($order_session['event_id']),
@@ -1024,20 +1023,13 @@ class EventCheckoutController extends Controller
                 'first_name'              => $order_session['first_name'],
                 'last_name'              => $order_session['last_name'],
                 'email'              => $order_session['email'],
-                'accomodations'              => $accomodations,
                 'discount_ticket_title' => $order_session['discount_ticket_title'],
                 'exact_amount'          => $order_session['exact_amount'],
                 'amount_ticket_title'   => $order_session['amount_ticket_title'],
                 'is_embedded'     => $this->is_embedded,
             ];
 
-        // Check if accommodation exists
-        if (count($accomodations)>0){
-          return view('Public.ViewEvent.Accomodation', $data);
-        }
-        else {
          return view('Public.ViewEvent.EventPageCheckout', $data);
-        }
 /*
         if ($this->is_embedded) {
             return view('Public.ViewEvent.Embedded.EventPageCheckout', $data);

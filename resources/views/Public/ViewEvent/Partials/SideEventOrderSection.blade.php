@@ -12,6 +12,10 @@ Add an experince at {{$event->title}}
 
    @include('Public.ViewEvent.Partials.OrderSummary')
 
+   <div class="">
+         <a href="{{ route('OrderAccommodation', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">Next</a>
+   </div>
+
    </div>
 
    <div class="col-md-8">
@@ -198,9 +202,7 @@ Add an experince at {{$event->title}}
             </div>
     @endif
 
-    <div class="col-md-4 pull-right">
-          <a href="{{ route('showEventCheckout', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">Next</a>
-    </div>
+
 </section>
 
 
