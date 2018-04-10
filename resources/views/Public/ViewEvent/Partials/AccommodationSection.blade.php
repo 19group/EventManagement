@@ -10,6 +10,11 @@
 
     <div class="col-md-4 pull-right">
      @include('Public.ViewEvent.Partials.OrderSummary')
+
+     <div class="">
+       <a href="{{ route('showEventCheckout', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">Checkout</a>
+       <!--for testing without pesapal: uncomment this--<a href="/e/{{$event_id}}/pesament/create?is_embedded=0#order_form" class="btn btn-lg btn-primary pull-right">CheckOut</a>-->
+    </div>
      </div>
 
      <div class="col-md-8">
@@ -150,11 +155,6 @@
 
 @endforeach
 
-</div>
-
-<div class="col-md-4 pull-right">
-  <a href="{{ route('checkOut', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">CheckOut</a>
-  <!--for testing without pesapal: uncomment this--<a href="/e/{{$event_id}}/pesament/create?is_embedded=0#order_form" class="btn btn-lg btn-primary pull-right">CheckOut</a>-->
 </div>
 
 </section>

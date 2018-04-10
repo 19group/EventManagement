@@ -165,6 +165,12 @@ Route::group(['prefix' => 'e'], function () {
         'uses' => 'EventCheckoutController@postBookSideEvent',
     ]);
 
+
+    Route::get('{event_id}/order/accommodation/', [
+        'as'   => 'OrderAccommodation',
+        'uses' => 'EventCheckoutController@showOrderAccommodation',
+    ]);
+
    Route::post('{event_id}/ordered/accommodation/', [
          'as'   => 'postOrderAccommodation',
          'uses' => 'EventCheckoutController@postOrderAccommodation',
@@ -511,10 +517,7 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
             'uses' => 'EventCheckoutController@updateBooking',
         ]);
 
-         Route::get('{event_id}/accomodationcheckout/', [
-            'as'   => 'checkOut',
-            'uses' => 'EventCheckoutController@finalCheckOut',
-        ]);
+
          Route::get('{event_id}/accommodations/', [
             'as'   => 'showAccommodations',
             'uses' => 'EventAttendeesController@showAccommodation',

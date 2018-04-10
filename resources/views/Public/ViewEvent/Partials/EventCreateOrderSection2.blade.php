@@ -31,7 +31,7 @@
                                 @if((int)ceil($ticket['full_price']) === 0)
                                 FREE
                                 @else
-                                {{ money($ticket['full_price'], $event->currency) }}
+                                {{ money($ticket['full_price'] * $ticket['qty'], $event->currency) }}
                                 @endif
                             </td>
                         </tr>
@@ -134,14 +134,14 @@
                                     </div>
 
                                         <?php  //added by DonaldMar14
-                                            if($ticket['ticket']['ticket_offers'] && $ticket['ticket']['type']==='SIDEEVENT'){
+                                            /*if($ticket['ticket']['ticket_offers'] && $ticket['ticket']['type']==='SIDEEVENT'){
                                                 $toffers = explode('+++',$ticket['ticket']['ticket_offers']);
                                                 if(count($toffers)===1){
                                                     $sched = explode('<==>',$toffers[0]);
                                                     $option = date('d-M-Y H:i', strtotime($sched[0])).' to '.date('d-M-Y H:i', strtotime($sched[1]));
                                                     echo '<div class = \'row\'>';
                                                     echo '<p>For Schedule: '.$option.'</p>';
-                                                    echo Form::hidden("ticket_holder_schedule[{$i}][{$ticket['ticket']['id']}],$option");
+                                                    echo Form::hidden("ticket_holder_schedule[{$i}][{$ticket['ticket']['id']}]",$option);
                                                     echo '</div>';
                                                 }else{
                                                     echo '<div class=\'row\'><b>Choose a Schedule for this ticket</b></div>';
@@ -153,8 +153,18 @@
                                                         echo '</ul></div>';
                                                     }
                                                 }
-                                            }//DonaldMar27
-                                            elseif(isset($ticket['dates'])){ //dd($ticket);
+                                            }*///DonaldMar27
+                                            //DonaldApril03
+                                            if(isset($ticket['dates']) && $ticket['ticket']['type']==='SIDEEVENT'){
+                                                $sched = explode('<==>',$ticket['dates']);
+                                                $option = date('d-M-Y H:i', strtotime($sched[0])).' to '.date('d-M-Y H:i', strtotime($sched[1]));
+                                                //echo '<div class = \'row\'>';
+                                                //echo '<p>For Schedule: '.$option.'</p>';
+                                                echo '<div class=\'row\'><div class=\'col-md-12\'><div class=\'form-group\'>';
+                                                echo Form::label(' ','For Schedule: '.$option); echo '</div></div></div>';
+                                                echo Form::hidden("ticket_holder_schedule[{$i}][{$ticket['ticket']['id']}]",$option);
+                                                //echo '</div>';
+                                            }elseif(isset($ticket['dates'])){ //dd($ticket);
                                                 echo '<div class=\'row\'><div class=\'col-md-12\'><div class=\'form-group\'>';
                                                 echo Form::label(' ','Booked Days:'); echo '</div></div></div>';
                                                 $days = $ticket['dates']; //$dates = [];

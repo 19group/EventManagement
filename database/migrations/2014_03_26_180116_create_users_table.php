@@ -290,6 +290,7 @@ class CreateUsersTable extends Migration
             $t->text('description');
             $t->text('ticket_offers')->nullable();
             $t->text('ticket_extras')->nullable();
+            $t->string('ticket_links', 120)->nullable();
             $t->decimal('price', 13, 2);
 
 

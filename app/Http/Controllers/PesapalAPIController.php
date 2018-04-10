@@ -59,7 +59,11 @@ class PesapalAPIController extends Controller
 											$status = $response['status'];
 
         } else {
+            //uncomment this (next two lines) for testing without pesapal            
+            /*$tracking_id = 'DHNC5849NDJ19'; $status = 'COMPLETED';
+            goto skip;*/
             throw new PesapalException("incorrect parameters in request");
+            skip:
         }
 
         session()->push('ticket_order_' . $event_id . '.transaction_id',

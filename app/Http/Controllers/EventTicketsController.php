@@ -68,6 +68,7 @@ class EventTicketsController extends MyBaseController
         $data = [
             'event'  => Event::scope()->find($event_id),
             'ticket' => Ticket::scope()->find($ticket_id),
+            'linkable_tickets' =>Ticket::where('type','Extra')->get()->pluck('title', 'id'),
         ];
 
         return view('ManageEvent.Modals.EditTicket', $data);
@@ -405,6 +406,7 @@ class EventTicketsController extends MyBaseController
             $request->get('end_sale_date')) : null;
         $ticket->description = $request->get('description');
         $ticket->type = $request->get('type');
+        $ticket->ticket_links = $request->get('ticket_links');
         $ticket->ticket_offers = empty($ticketoffers) ? null : implode('#@#',$ticketoffers);
         $ticket->min_per_person = $request->get('min_per_person');
         $ticket->max_per_person = $request->get('max_per_person');
