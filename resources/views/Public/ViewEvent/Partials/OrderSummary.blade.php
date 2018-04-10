@@ -31,7 +31,7 @@
         @else
 
         @if(  $discount[$i]!='' and $discount_ticket_title[$i]==$ticket['ticket']['title'] )
-        <strike>{{ money($ticket['full_price'], $event->currency) }}</strike>
+        <strike>{{ money($ticket['full_price']-$ticket['full_price']*($discount[$i]/100), $event->currency) }}</strike>
         {{ money($ticket['full_price']-$ticket['full_price']*($discount[$i]/100), $event->currency) }}
 
         @php
@@ -39,7 +39,7 @@
         @endphp
 
         @elseif(  $exact_amount[$i]!='' and $amount_ticket_title[$i]==$ticket['ticket']['title'] )
-        <strike>{{ money($ticket['full_price'], $event->currency) }}</strike>
+        <strike>{{ money($exact_amount[$i], $event->currency) }}</strike>
         {{ money($exact_amount[$i], $event->currency) }}
 
         @php
@@ -47,7 +47,7 @@
         @endphp
 
         @elseif(  $exact_amount[$i]=='' and $discount[$i]=='' )
-        {{ money($ticket['full_price'], $event->currency) }}
+        {{ money($ticket['full_price'] * $ticket['qty'], $event->currency) }}
         @php
         $i++
         @endphp
