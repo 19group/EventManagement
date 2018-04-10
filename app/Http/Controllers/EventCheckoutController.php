@@ -75,12 +75,6 @@ class EventCheckoutController extends Controller
             ]);
         }
 
-        //DonaldFeb26
-        if($request->has('donation')){
-            $donation = $request->get('donation');
-        }//end
-
-
         $ticket_ids = $request->get('tickets');
 
                 $first_name = $request->get('first_name');
@@ -105,6 +99,7 @@ class EventCheckoutController extends Controller
         $booking_fee = 0;
         $organiser_booking_fee = 0;
         $quantity_available_validation_rules = [];
+        $donation_ticket_price = 0;
 
         foreach ($ticket_ids as $ticket_id) {
             $current_ticket_quantity = (int)$request->get('ticket_' . $ticket_id);
@@ -116,6 +111,11 @@ class EventCheckoutController extends Controller
             $total_ticket_quantity = $total_ticket_quantity + $current_ticket_quantity;
 
             $ticket = Ticket::find($ticket_id);
+
+           //Get the price of the most expensive ticket, to be used for donation
+            if($ticket->price > $donation_ticket_price){
+             $donation_ticket_price = $ticket->price;
+            }
 
             $ticket_quantity_remaining = $ticket->quantity_remaining;
 
@@ -281,6 +281,15 @@ class EventCheckoutController extends Controller
 
             }
 
+        }
+
+        //Check if the checkbox is clicked and determine the corresponding donation amount
+        if ($request->has('donation')) {
+         //Calculate the Default Donation being 5% of highest ticket price
+           $donation = $request->get('donation');
+        }
+        elseif($request->has('defaultdonation')){
+            $donation = $donation_ticket_price * 0.05;
         }
 
         if (empty($tickets)) {

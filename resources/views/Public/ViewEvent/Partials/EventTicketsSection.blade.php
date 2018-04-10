@@ -64,17 +64,24 @@
                                                    <p class="col-sm-12 ticket-title semibold" property="name">
                                                     {{'Donate for this event'}}
                                                    </p>
-                                                   <div class="col-md-8">
+                                                   <div class="col-sm-12 col-md-6">
                                                     <p class="ticket-descripton mb0 " property="description">
                                                      {{'Your contribution will be added as part of your ticket prices.'}}
                                                     </p>
                                                    </div>
-                                                   <div class="col-md-4">
-                                                    <div class="input-group form-group">
-                                                     <input class="form-control" type="input" name="donation" placeholder="Donation in {{$event->currency['title']}}">
-                                                    </input>
-                                                    </div>
+                                                   <div class="col-sm-12 col-md-6 donation-price-container">
+                                                   <div class="col-xs-4">
+                                                     {!!Form::checkbox('defaultdonation','1',true,['id'=>'chkdonation', 'onchange'=>'handleChange(this)'])!!} 5% of ticket price
+
                                                    </div>
+                                                   <div class="col-xs-8">
+                                                     <div class="input-group form-group">
+                                                      <label> Or enter custom amount below</label>
+                                                      <input class="form-control" id="txtdonation" onchange="txtchanged()" type="number" name="donation" placeholder=" Amount in {{$event->currency['title']}}">
+                                                     </input>
+                                                     </div>
+                                                   </div>
+                                                  </div>
                                       </div>
 
                                </div>
@@ -226,3 +233,21 @@
 
 </section>
 </div>
+<script>
+
+function txtchanged(){
+ if(document.getElementById('txtdonation').value == ""){
+  document.getElementById('chkdonation').checked = true;
+ }else{
+  document.getElementById('chkdonation').checked = false;
+ }
+}
+//Removes the value from the txt 
+function handleChange(checkbox){
+ if(checkbox.checked){
+  document.getElementById('txtdonation').value = "";
+ }
+}
+
+
+</script>
