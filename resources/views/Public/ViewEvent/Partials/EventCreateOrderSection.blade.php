@@ -291,7 +291,7 @@
             <!-- PesaPal -->
                @if(@$payment_gateway->id==5)
                    <div class="row">
-                         <!--   <label class="col-md-12 text-center"><h3>PesaPal</h3></label>-->
+                            <label class="col-md-12 text-center"><h3>PesaPal</h3></label>
 
                                 @include('Public.ViewEvent.Partials.OAuth')
 
@@ -345,7 +345,7 @@
 
                                 ?>
 
-                            <iframe src="<?php echo $iframe_src;?>" width="100%" height="500px"  scrolling="no" frameBorder="0">
+                            <iframe src="<?php echo $iframe_src;?>" width="100%" height="650px"  scrolling="no" frameBorder="0">
                                 <p>Browser unable to load iFrame</p>
                             </iframe>
 
