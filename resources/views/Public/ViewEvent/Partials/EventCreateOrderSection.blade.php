@@ -7,7 +7,7 @@
    <div class="container">
         <div class="col-md-4 col-md-push-8">
             @include('Public.ViewEvent.Partials.OrderSummary')
-            
+
             <div class="help-block">
                 Please note you only have <span id='countdown'></span> to complete this transaction before your tickets are re-released.
             </div>
@@ -291,7 +291,7 @@
             <!-- PesaPal -->
                @if(@$payment_gateway->id==5)
                    <div class="row">
-                            <label class="col-md-12 text-center"><h3>PesaPal</h3></label>
+                         <!--   <label class="col-md-12 text-center"><h3>PesaPal</h3></label>-->
 
                                 @include('Public.ViewEvent.Partials.OAuth')
 
