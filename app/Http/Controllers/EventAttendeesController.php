@@ -87,7 +87,7 @@ class EventAttendeesController extends MyBaseController
         $event = Event::scope()->find($event_id);
 
 
-        /* Commented by Frank 
+        /* Commented by Frank
 
         $allowed_sorts = ['discount', 'email', 'user'];
 
@@ -140,12 +140,12 @@ class EventAttendeesController extends MyBaseController
     {
         $event = Event::scope()->find($event_id);
 
-        $accommodation = Acccommodation::all();
+       // $accommodation = Acccommodation::all();
         $tickets = Ticket::where('type','extra')->get();
 
         //dd($accommodatin);
         $data = [
-            'accommodation'  => $accommodation,
+            //'accommodation'  => $accommodation,
             'event'      => $event,
             'tickets'      => $tickets,
         ];

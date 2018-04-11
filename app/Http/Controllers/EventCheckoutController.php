@@ -782,7 +782,6 @@ class EventCheckoutController extends Controller
 
 
     /**
-     * Added by DonaldMar16 to show post order side events page
      *
      * @param Request $request
      * @param $event_id
@@ -1560,6 +1559,73 @@ class EventCheckoutController extends Controller
             return PDF::html('Public.ViewEvent.Partials.PDFTicket', $data, 'Tickets');
         }
         return view('Public.ViewEvent.Partials.PDFTicket', $data);
+    }
+
+    /**
+     * Deleted tickets from the Accommodation page
+     *
+     * @param Request $request
+     * @param $delete_ticket
+     * @return \Illuminate\View\View
+     **/
+
+    public function removeOrderTicket(Request $request, $event_id,$page, $delete_ticket){
+
+     $availables              =    session()->get('ticket_order_' . $event_id);
+
+     $tickets                 =    $availables['tickets'];
+     $order_total             =    $availables['order_total'];
+     $total_ticket_quantity   =    $availables['total_ticket_quantity'];
+     $booking_fee             =    $availables['booking_fee'];
+     $organiser_booking_fee   =    $availables['organiser_booking_fee'];
+     $discount                =    $availables['discount'];
+     $discount_ticket_title   =    $availables['discount_ticket_title'];
+     $exact_amount            =    $availables['exact_amount'];
+     $amount_ticket_title     =    $availables['amount_ticket_title'];
+     $quantity_available_validation_rules = [];
+
+     $counter = 0;
+
+     foreach($availables['tickets'] as $ordered_ticket){
+      if($ordered_ticket['ticket']['id'] == $delete_ticket ){
+
+       $remove_ticket_qty = $ordered_ticket['qty'];
+       $remove_ticket_amount = $ordered_ticket['price'];
+
+       //reduce the amount of tickets
+       $availables['total_ticket_quantity'] = $availables['total_ticket_quantity'] - $remove_ticket_qty;
+
+       //reduce the total price
+       $availables['order_total'] = $availables['order_total'] - $remove_ticket_amount;
+
+       //Remove the deleted ticket from the array
+       unset($availables['tickets'][$counter]);
+
+       //Reindex the array
+       $availables['tickets'] = array_values($availables['tickets']);
+
+      }
+     ++$counter;
+     }
+
+     //Reset the session
+     session()->forget('ticket_order_' . $event_id);
+     session()->set('ticket_order_' . $event_id, $availables);
+
+     if($page == "accommodation"){
+           return response()->redirectToRoute('OrderAccommodation', [
+               'event_id'          => $event_id
+           ]);
+     }elseif ($page == "sideevents") {
+      return response()->redirectToRoute('OrderSideEvents', [
+          'event_id'          => $event_id
+      ]);
+     }
+     elseif ($page == "checkout"){
+      return response()->redirectToRoute('showEventCheckout', [
+          'event_id'          => $event_id
+      ]);
+     }
     }
 
 }

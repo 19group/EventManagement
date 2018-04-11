@@ -56,6 +56,8 @@
 
         @endif
        </td>
+       <td><a href="{{url()->current()}}/removeOrderTicket/{{$ticket['ticket']['id']}}" onclick="return confirm('Oh you really sure want to delete this ticket?');"><i class="ico-trash mr5"></i></a></td>
+
       </tr>
       @endforeach
 

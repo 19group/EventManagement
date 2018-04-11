@@ -200,11 +200,11 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row more-options">
                             <div class="col-md-12">
                                 <div class="form-group">
                                      {!! Form::label('type', 'Ticket Type', array('class'=>' control-label')) !!}
-                                     {!! Form::select('type', ['normal'=>'Normal', 'extras'=>'Extras'],null, ['class' => 'form-control']) !!}
+                                     {!! Form::select('type', ['normal'=>'Normal'],null, ['class' => 'form-control']) !!}
                                 </div>
                             </div>
                         </div>
