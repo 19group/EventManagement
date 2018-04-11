@@ -176,17 +176,14 @@ Route::group(['prefix' => 'e'], function () {
          'uses' => 'EventCheckoutController@postOrderAccommodation',
    ]);
 
-   Route::get('{event_id}/order/accommodation/removeOrderTicket/{delete_ticket}', [
+   Route::get('{event_id}/order/{page}/removeOrderTicket/{delete_ticket}', [
        'as'   => 'removeOrderTicket',
-       'uses' => 'EventCheckoutController@removeOrderTicketAccommodation',
+       'uses' => 'EventCheckoutController@removeOrderTicket',
    ]);
-   Route::get('{event_id}/order/sideevents/removeOrderTicket/{delete_ticket}', [
+   
+   Route::get('{event_id}/{page}/create/removeOrderTicket/{delete_ticket}', [
        'as'   => 'removeOrderTicket',
-       'uses' => 'EventCheckoutController@removeOrderTicketSideEvent',
-   ]);
-   Route::get('{event_id}/checkout/create/removeOrderTicket/{delete_ticket}', [
-       'as'   => 'removeOrderTicket',
-       'uses' => 'EventCheckoutController@removeOrderTicketCheckout',
+       'uses' => 'EventCheckoutController@removeOrderTicket',
    ]);
 
 

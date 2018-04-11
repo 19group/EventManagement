@@ -111,9 +111,6 @@ class EventTicketsController extends MyBaseController
     public function showBookingModal($event_id)
     {
       //dd($Event::scope()->find($event_id));
-
-
-
       return view('Public.ViewEvent.Modals.CreateBooking', [
             'event' => Event::scope()->find($event_id),
         ]);
