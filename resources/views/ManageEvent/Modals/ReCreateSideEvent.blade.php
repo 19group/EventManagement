@@ -1,7 +1,34 @@
 <?php $offer=0; $toffers=[];?>
+<style type="text/css">
+    input[type="file"] {
+  display: block;
+}
+.imageThumb {
+  max-height: 75px;
+  border: 2px solid;
+  padding: 1px;
+  cursor: pointer;
+}
+.pip {
+  display: inline-block;
+  margin: 10px 10px 0 0;
+}
+.remove {
+  display: block;
+  background: #444;
+  border: 1px solid black;
+  color: white;
+  text-align: center;
+  cursor: pointer;
+}
+.remove:hover {
+  background: white;
+  color: black;
+}
+</style>
 
 <div role="dialog"  class="modal fade" style="display: none;">
-   {!! Form::open(array('url' => route('postReCreateSideEvent', array('event_id' => $event->id)), 'class' => 'ajax')) !!}
+   {!! Form::open(array('url' => route('postReCreateSideEvent', array('event_id' => $event->id)), 'class' => 'ajax', 'enctype' => 'multipart/form-data')) !!}
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header text-center">
@@ -57,6 +84,39 @@
                                         'class'=>'form-control'
                                         ))  !!}
                         </div>
+
+                        <!--added by DonaldApril10-->
+                        <div class="form-group">
+                            {!! Form::label('sideevent_image', 'Side Event Main Image (Flyer or Graphic etc.)', array('class'=>'control-label ')) !!}
+                            <!--{!! Form::styledFile('event_image', ['onchange'=>"readURL(this);"]) !!}-->
+                            <div class="styledFile" id="input-event_image">
+                                <div class="input-group">
+                                    <span class="input-group-btn">
+                                        <span class="btn btn-primary btn-file ">
+                                            Browse… <input name="sideevent_image" type="file" multiple="" onchange="readURL(this);">
+                                        </span>
+                                    </span>
+                                    <input type="text" class="form-control" readonly="">
+                                    <span style="display: none;" class="input-group-btn btn-upload-file">
+                                        <span class="btn btn-success ">
+                                            Upload
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class='row' id='main_image'>
+
+                        </div>
+
+<div class="form-group">
+    {!! Form::label('event_image', 'Side Event More Images', array('class'=>'control-label ')) !!}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <div class="field" align="left">
+      <input type="file" id="files" name="files[]" multiple="multiple" />
+    </div>
+</div>
+                        <!--end of addition by DonaldApril10-->
 
                 <!--edited by DonaldMar12-->    
                         <div class="row">
@@ -130,7 +190,6 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
 
             </div> <!-- /end modal body-->
@@ -145,7 +204,39 @@
 
 
 <script>
-    
+    $(document).ready(function() {
+  if (window.File && window.FileList && window.FileReader) {
+    $("#files").on("change", function(e) {
+      var files = e.target.files,
+        filesLength = files.length;
+      for (var i = 0; i < filesLength; i++) {
+        var f = files[i]
+        var fileReader = new FileReader();
+        fileReader.onload = (function(e) {
+          var file = e.target;
+          $("<span class=\"pip\">" +
+            "<img class=\"imageThumb\" src=\"" + e.target.result + "\" title=\"" + file.name + "\"/>" +
+            "<br/><span class=\"remove\">Remove photo</span>" +
+            "</span>").insertAfter("#files");
+          $(".remove").click(function(){
+            $(this).parent(".pip").remove();
+          });
+          
+          // Old code here
+          /*$("<img></img>", {
+            class: "imageThumb",
+            src: e.target.result,
+            title: file.name + " | Click to remove"
+          }).insertAfter("#files").click(function(){$(this).remove();});*/
+          
+        });
+        fileReader.readAsDataURL(f);
+      }
+    });
+  } else {
+    alert("Your browser doesn't support to File API")
+  }
+}); 
 
         
     var scheduler = 1;
@@ -193,5 +284,83 @@
     //    t.setAttribute("data-startend", "");
     //    t.setAttribute("data-startendelem", ""); 
     });
+
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                document.getElementById('main_image').innerHTML = '<img id="blah" src="#" width = 150 height = 200 style="margin:0 10px 10px 10px" alt="your image" />';
+                $('#blah')
+                    .attr('src', e.target.result);
+
+            //    $("<span class=\"remove\" onclick = \"$(this).parent(\"#blah\").remove();\">Remove photo</span>").insertAfter("#blah");
+                };
+        //  $(".remove").click(function(){
+        //    $(this).parent("#blah").remove();
+        //  });
+
+            reader.readAsDataURL(input.files[0]);
+
+        }
+    }
+
+/*    
+    var counter = 0;
+    function readMoreURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                var divider = document.createElement('div');
+                var img = document.createElement('img');
+                var imageremover = document.createElement('button');
+
+                divider.setAttribute('id','divblah_' + counter);
+            //    divider.setAttribute('display','inline-block');
+                divider.setAttribute('width','150');
+                divider.setAttribute('height','250');
+                img.setAttribute('id','moreblah_' + counter);
+                img.setAttribute('src','#');
+                img.setAttribute('width','150');
+                img.setAttribute('height','200');
+                img.setAttribute('alt','your image');
+                imageremover.setAttribute('id','imageblah_' + counter);
+                imageremover.setAttribute('class','remove');
+                imageremover.setAttribute('style','display:inline-block');
+                imageremover.setAttribute('width','150');
+                imageremover.textContent = "Remove Photo";
+                //divider.appendChild(img);
+                //divider.appendChild(imageremover);
+                //document.getElementById('more_images').innerHTML = '<img class="moreblah" src="#" width = 150 height = 200 alt="your image" />';
+                document.getElementById('more_images').appendChild(img);
+                document.getElementById('more_images').appendChild(imageremover);
+            //    imageremover.insertAfter(img);
+                //document.getElementById('more_images').appendChild(imageremover);
+            /*    $("<span class=\"pip\">" +
+                "<img class=\"imageThumb\" src=\"" + e.target.result + "\" title=\"" + file.name + "\"/>" +
+                "<br/><span class=\"remove\">Remove image</span>" +
+                "</span>").insertAfter('#moreblah_' + counter); *~/
+                $('#moreblah_' + counter)
+                    .attr('src', e.target.result);
+                ++counter;
+                document.getElementById('input_images').val() = $(this).val + e.target.result;
+            };
+
+
+          /*$('.remove').click(function(){
+            alert('have to delete something');
+            $(this).parent('#moreblah_' + counter).remove();
+          });*~/
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+        //  $('.remove').onclick(function(){
+        $('.remove').on('click', function() {
+            alert('have to delete something');
+            //$(this).parent('#moreblah_' + counter).remove();
+          }); */
 
 </script>

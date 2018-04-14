@@ -4,6 +4,7 @@ use App\Models\Event;
 use App\Models\Ticket;
 use App\Models\Organiser;
 use Illuminate\Http\Request;
+use Image;
 use Carbon\Carbon;
 use DB;
 use Log;
@@ -109,7 +110,49 @@ class OrganiserEventsController extends MyBaseController
         $ticket->ticket_offers = empty($scheduleopts) ? null : implode("+++", $scheduleopts);
         $ticket->is_hidden = 0;
 
-        $ticket->save();
+        //$ticket->save(); DON'T SAVE HERE WITHOUT PHOTO PATHS
+        if ($request->hasFile('sideevent_image')) {
+            $path = public_path() . '/' . config('attendize.sideevent_images_path');
+            $filename = 'sideevent_image-' . md5(time() . $ticket->id) . '.' . strtolower($request->file('sideevent_image')->getClientOriginalExtension());
+            $file_full_path = $path . '/' . $filename;
+            $request->file('sideevent_image')->move($path, $filename);
+            $img = Image::make($file_full_path);
+            $img->resize(800, null, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
+            //$img->save($file_full_path);
+            /* Upload to s3 */
+            \Storage::put(config('attendize.sideevent_images_path') . '/' . $filename, file_get_contents($file_full_path));
+            //save path to ticket table
+            $ticket->ticket_main_photo = config('attendize.sideevent_images_path') . '/' . $filename;
+        }
+
+    //    $countfiles = count($_FILES['files']['name']);
+
+        if ($request->hasFile('files')) { //dd($request);//exit('got here');
+            $ticket_photos = [];
+            $uploadednames = $_FILES['files']['name'];
+            $path = public_path() . '/' . config('attendize.sideevent_images_path');
+            for($filecounter=0;$filecounter<count($_FILES['files']['name']); ++$filecounter){
+                $extension = substr($uploadednames[$filecounter], stripos($uploadednames[$filecounter],'.') + 1); //dd($extension);
+                $filename = 'sideevent_image-' . md5(time() . $ticket->id . $uploadednames[$filecounter]) . '.' . $extension;
+                $file_full_path = $path . '/' . $filename;
+                move_uploaded_file($_FILES['files']['tmp_name'][$filecounter],$file_full_path);
+                $img = Image::make($file_full_path);
+                $img->resize(800, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                    $constraint->upsize();
+                });
+            //    $img->save($file_full_path);
+                /* Upload to s3 */
+                \Storage::put(config('attendize.sideevent_images_path') . '/' . $filename, file_get_contents($file_full_path));
+                $ticket_photos[] = config('attendize.sideevent_images_path') . '/' . $filename; 
+            }
+            if(!empty($ticket_photos)){$ticket->ticket_photos = implode(config('attendize.sideevent_photos_eximploders'),$ticket_photos);}
+        }
+
+        $ticket->save();    
 
         session()->flash('message', 'Successfully Created SideEvent');
 
@@ -172,7 +215,51 @@ class OrganiserEventsController extends MyBaseController
         $ticket->description = $request->get('description');
         $ticket->ticket_offers = empty($scheduleopts) ? null : implode("+++", $scheduleopts);
         $ticket->is_hidden = 0;
+        $ticket_photos = [];
+        if($request->has('photos')){
+            $eventphotos=$request->get('photos');
+            for($photocounter=0;$photocounter<count($eventphotos);++$photocounter){
+                if(!$request->has("remove_photo_$photocounter")){
+                    $ticket_photos[]=$eventphotos[$photocounter];
+                }
+            }
+        }
 
+        if ($request->hasFile('sideevent_image')) {
+            $path = public_path() . '/' . config('attendize.sideevent_images_path');
+            $filename = 'sideevent_image-' . md5(time() . $ticket->id) . '.' . strtolower($request->file('sideevent_image')->getClientOriginalExtension());
+            $file_full_path = $path . '/' . $filename;
+            $request->file('sideevent_image')->move($path, $filename);
+            $img = Image::make($file_full_path);
+            $img->resize(800, null, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
+            /* Upload to s3 */
+            \Storage::put(config('attendize.sideevent_images_path') . '/' . $filename, file_get_contents($file_full_path));
+            //save path to ticket table
+            $ticket->ticket_main_photo = config('attendize.sideevent_images_path') . '/' . $filename;
+        }
+        if ($request->hasFile('files')) {
+            $uploadednames = $_FILES['files']['name'];
+            $path = public_path() . '/' . config('attendize.sideevent_images_path');
+            for($filecounter=0;$filecounter<count($_FILES['files']['name']); ++$filecounter){
+                $extension = substr($uploadednames[$filecounter], stripos($uploadednames[$filecounter],'.') + 1);
+                $filename = 'sideevent_image-' . md5(time() . $ticket->id . $uploadednames[$filecounter]) . '.' . $extension;
+                $file_full_path = $path . '/' . $filename;
+                move_uploaded_file($_FILES['files']['tmp_name'][$filecounter],$file_full_path);
+                $img = Image::make($file_full_path);
+                $img->resize(800, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                    $constraint->upsize();
+                });
+                /* Upload to s3 */
+                \Storage::put(config('attendize.sideevent_images_path') . '/' . $filename, file_get_contents($file_full_path));
+                $ticket_photos[] = config('attendize.sideevent_images_path') . '/' . $filename; 
+            }
+        }
+
+        if(!empty($ticket_photos)){$ticket->ticket_photos = implode(config('attendize.sideevent_photos_eximploders'),$ticket_photos);}
         $ticket->save();
 
         session()->flash('message', 'Successfully Edited Side Event');

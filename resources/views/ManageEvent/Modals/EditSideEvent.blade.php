@@ -1,5 +1,34 @@
+
+<style type="text/css">
+    input[type="file"] {
+  display: block;
+}
+.imageThumb {
+  max-height: 75px;
+  border: 2px solid;
+  padding: 1px;
+  cursor: pointer;
+}
+.pip {
+  display: inline-block;
+  margin: 10px 10px 0 0;
+}
+.remove {
+  display: block;
+  background: #444;
+  border: 1px solid black;
+  color: white;
+  text-align: center;
+  cursor: pointer;
+}
+.remove:hover {
+  background: white;
+  color: black;
+}
+</style>
+
 <div role="dialog"  class="modal fade " style="display: none;">
-    {!! Form::model($ticket, ['url' => route('postEditSideEvent', ['ticket_id' => $ticket->id, 'event_id' => $event->id]), 'class' => 'ajax']) !!}
+    {!! Form::model($ticket, ['url' => route('postEditSideEvent', ['ticket_id' => $ticket->id, 'event_id' => $event->id]), 'class'=>'ajax', enctype' => 'multipart/form-data']) !!}
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header text-center">
@@ -34,7 +63,68 @@
                 </div>
 
                 <!--added by Donald-->
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-md-12 col-sm-12">
+                    {!! Form::label('sideevent_image', 'Side Event Main Image (Flyer or Graphic etc.)', array('class'=>'control-label ')) !!}
+                    <!--{!! Form::styledFile('event_image', ['onchange'=>"readURL(this);"]) !!}-->
+                    <div class="styledFile" id="input-event_image">
+                        <div class="input-group">
+                            <span class="input-group-btn">
+                                <span class="btn btn-primary btn-file ">
+                                    <?php echo $ticket->ticket_main_photo ? 'Change' : 'Browse…';?> <input name="sideevent_image" type="file" multiple="" onchange="readURL(this);">
+                                </span>
+                            </span>
+                            <input type="text" class="form-control" readonly="">
+                            <span style="display: none;" class="input-group-btn btn-upload-file">
+                                <span class="btn btn-success ">
+                                    Upload
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class='row' id='main_image'>
+                    <?php if($ticket->ticket_main_photo){?>
+                    <img height=180 width=150 style="margin: 5px 1px 10px 200px; align:justify" src="{{asset($ticket->ticket_main_photo)}}" />
+                    </br>
+                    <?php }//if-ticket_main_photo?>
+                </div>
+            </div>
+        </div>
 
+<div class="row">
+    <div class="form-group">
+        <div class="col-md-12">
+        {!! Form::label('event_image', 'Other Images', array('class'=>'control-label ')) !!}
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="form-group">
+        <?php if($ticket->ticket_photos){
+            $sideevent_photos = explode(config('attendize.sideevent_photos_eximploders'),$ticket->ticket_photos);
+            $photocounter=0;
+            foreach($sideevent_photos as $morephoto){ ?>
+                {!!Form::hidden("photos[]",$morephoto)!!}
+                <img height=120 width=100 style="margin: 1px 1px 5px 5px; align:justify" src="{{asset($morephoto)}}" />
+               Remove?{!! Form::checkbox("remove_photo_$photocounter") !!}
+            <?php  ++$photocounter;}//end-foreach
+            ?>
+        <div class="row">
+            <div class="form-group">
+                <div class="col-md-12">
+                {!! Form::label('event_image', 'Add More Images', array('class'=>'control-label ')) !!}
+                </div>
+            </div>
+        </div>
+        <?php }//end if ?>
+
+        <div class="field" align="left">
+          <input type="file" id="files" name="files[]" multiple="multiple" />
+        </div>
+    </div>
+</div>
                 <div class="row">
                     <div class="col-sm-10">
                         <!--<div class="form-group">-->
@@ -203,9 +293,40 @@
 
 
 <script>
-    
-
-        
+    $(document).ready(function() {
+  if (window.File && window.FileList && window.FileReader) {
+    $("#files").on("change", function(e) {
+      var files = e.target.files,
+        filesLength = files.length;
+      for (var i = 0; i < filesLength; i++) {
+        var f = files[i]
+        var fileReader = new FileReader();
+        fileReader.onload = (function(e) {
+          var file = e.target;
+          $("<span class=\"pip\">" +
+            "<img class=\"imageThumb\" src=\"" + e.target.result + "\" title=\"" + file.name + "\"/>" +
+            "<br/><span class=\"remove\">Remove photo</span>" +
+            "</span>").insertAfter("#files");
+          $(".remove").click(function(){
+            $(this).parent(".pip").remove();
+          });
+          
+          // Old code here
+          /*$("<img></img>", {
+            class: "imageThumb",
+            src: e.target.result,
+            title: file.name + " | Click to remove"
+          }).insertAfter("#files").click(function(){$(this).remove();});*/
+          
+        });
+        fileReader.readAsDataURL(f);
+      }
+    });
+  } else {
+    alert("Your browser doesn't support to File API")
+  }
+}); 
+       
     var scheduler = 1;
     $('#add_schedule').on('click', function(e) {
         var p = document.createElement('div');
@@ -251,5 +372,26 @@
     //    t.setAttribute("data-startend", "");
     //    t.setAttribute("data-startendelem", "");
     });
+
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                document.getElementById('main_image').innerHTML = '<img id="blah" src="#" width = 150 height = 180 style="margin:1px 1px 10px 200px" alt="your image" />';
+                $('#blah')
+                    .attr('src', e.target.result);
+
+            //    $("<span class=\"remove\" onclick = \"$(this).parent(\"#blah\").remove();\">Remove photo</span>").insertAfter("#blah");
+                };
+        //  $(".remove").click(function(){
+        //    $(this).parent("#blah").remove();
+        //  });
+
+            reader.readAsDataURL(input.files[0]);
+
+        }
+    }
+
 
 </script>

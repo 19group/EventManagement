@@ -24,6 +24,7 @@ return [
     'event_default_bg_image' => 'assets/images/public/EventPage/backgrounds/5.jpg',
 
     'event_images_path'      => 'user_content/event_images',
+    'sideevent_images_path'  => 'user_content/sideevent_images',
     'organiser_images_path'  => 'user_content/organiser_images',
     'event_pdf_tickets_path' => 'user_content/pdf_tickets',
     'event_bg_images'        => 'assets/images/public/EventPage/backgrounds',
@@ -66,5 +67,8 @@ return [
     'default_payment_gateway'    => 5, #Stripe=1 Paypal=2 BitPay=3 MIGS=4 Pesapal 5
 
     'cdn_url_user_assets'   => '',
-    'cdn_url_static_assets' => ''
+    'cdn_url_static_assets' => '',
+
+    /*Imploders and exploders for string<->array conversions*/
+    'sideevent_photos_eximploders' => '#@#'
 ];
