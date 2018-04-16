@@ -28,7 +28,7 @@
 </style>
 
 <div role="dialog"  class="modal fade " style="display: none;">
-    {!! Form::model($ticket, ['url' => route('postEditSideEvent', ['ticket_id' => $ticket->id, 'event_id' => $event->id]), 'class'=>'ajax', enctype' => 'multipart/form-data']) !!}
+    {!! Form::model($ticket, ['url' => route('postEditSideEvent', ['ticket_id' => $ticket->id, 'event_id' => $event->id]), 'class'=>'ajax', 'enctype' => 'multipart/form-data']) !!}
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header text-center">
