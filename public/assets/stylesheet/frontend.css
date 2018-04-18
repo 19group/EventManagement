@@ -150,3 +150,8 @@ html,body{height:100%}body{font-family:'Open Sans',sans-serif}table{margin:0}lab
 /* border: 1px solid rgba(221, 221, 221, 0.40); */
  padding-top: 5px;
 }
+.alert-danger{
+ border: 0.1px solid #faccd1;
+    padding: .8rem 1.5rem;
+    margin: 2rem auto;
+}

@@ -61,7 +61,7 @@ class EventCheckoutController extends Controller
         /*
          * Order expires after X min
          */
-
+        $subscription=null;
         $donation = 0; //DonaldFeb9
     //    $sideeventnotes = []; //DonaldMar13 commented by DonaldMar14
         $order_expires_time = Carbon::now()->addMinutes(config('attendize.checkout_timeout_after'));
@@ -74,7 +74,9 @@ class EventCheckoutController extends Controller
                 'message' => 'No tickets selected',
             ]);
         }
-
+        if($request->has('subscription')){
+          $subscription='Subscribed';
+        }
         $ticket_ids = $request->get('tickets');
 
                 $first_name = $request->get('first_name');
@@ -321,6 +323,7 @@ class EventCheckoutController extends Controller
             'reserved_tickets_id'     => $reservedTickets->id,
             'order_total'             => $order_total,
             'donation'                => $donation, //DonaldFeb9
+            'order_subscription'      => $subscription,
         //    'sideeventnotes'          => $sideeventnotes, //DonaldMar13 commented by DonaldMar14
             'booking_fee'             => $booking_fee,
             'organiser_booking_fee'   => $organiser_booking_fee,
@@ -1298,6 +1301,7 @@ class EventCheckoutController extends Controller
             $order->email = $request_data['order_email'];
             $order->order_status_id = isset($request_data['pay_offline']) ? config('attendize.order_awaiting_payment') : config('attendize.order_complete');
             $order->amount = $ticket_order['order_total'];
+            $order->notes = $ticket_order['order_subscription'];
         /**    $order->notes = empty($ticket_order['sideeventnotes']) ? null : implode('<==>',$ticket_order['sideeventnotes']);  **///commented by DonaldMar14
             $order->booking_fee = $ticket_order['booking_fee'];
             $order->organiser_booking_fee = $ticket_order['organiser_booking_fee'];
