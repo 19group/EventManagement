@@ -208,12 +208,12 @@
                               </tr>
                                </table>
                             </div>
-                                                   <div class="row">
+                                                   <div class="row col-sm-12">
                                                       <div class="form-group">
                                                      {!!Form::checkbox('subscription','1','')!!} &nbsp Please email me about future FOSS4G events
                                                       </div>
                                                    </div>
-                                                   <div class="row">
+                                                   <div class="row col-sm-12 alert-danger">
                                                       <div class="form-group">
                                                      {!!Form::checkbox('validated','1','',['id'=>'validatereg', 'onchange'=>'controlRegister(this)'])!!} &nbsp I understand that by registering here I will receive emails relating to the planning and logistics of FOSS4G2018
                                                       </div>
@@ -246,9 +246,9 @@
 <script>
 /*$(document).ready(function () {
     $('#validatereg').on('click', function () {
-        if (!this.checked) 
+        if (!this.checked)
          alert("am not checked");
-        else 
+        else
             //$('#autoUpdate').fadeOut('slow');
           alert("am checked");
     });
@@ -261,7 +261,7 @@ function txtchanged(){
   document.getElementById('chkdonation').checked = false;
  }
 }
-//Removes the value from the txt 
+//Removes the value from the txt
 function handleChange(checkbox){
  if(checkbox.checked){
   document.getElementById('txtdonation').value = "";
