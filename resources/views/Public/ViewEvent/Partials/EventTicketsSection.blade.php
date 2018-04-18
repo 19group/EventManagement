@@ -208,9 +208,19 @@
                               </tr>
                                </table>
                             </div>
+                                                   <div class="row">
+                                                      <div class="form-group">
+                                                     {!!Form::checkbox('subscription','1','')!!} &nbsp Please email me about future FOSS4G events
+                                                      </div>
+                                                   </div>
+                                                   <div class="row">
+                                                      <div class="form-group">
+                                                     {!!Form::checkbox('validated','1','',['id'=>'validatereg', 'onchange'=>'controlRegister(this)'])!!} &nbsp I understand that by registering here I will receive emails relating to the planning and logistics of FOSS4G2018
+                                                      </div>
+                                                   </div>
                           <!---</div>  -->
                           <div class="col-sm-12">
-                          {!!Form::submit('Register', ['class' => 'btn btn-lg btn-primary pull-right'])!!}
+                          {!!Form::submit('Register', ['class' => 'btn btn-lg btn-primary pull-right', 'id'=>'regbutton', 'disabled'=>'true'])!!}
                          </div>
                         </div>
 
@@ -234,6 +244,15 @@
 </section>
 </div>
 <script>
+/*$(document).ready(function () {
+    $('#validatereg').on('click', function () {
+        if (!this.checked) 
+         alert("am not checked");
+        else 
+            //$('#autoUpdate').fadeOut('slow');
+          alert("am checked");
+    });
+});*/
 
 function txtchanged(){
  if(document.getElementById('txtdonation').value == ""){
@@ -248,6 +267,18 @@ function handleChange(checkbox){
   document.getElementById('txtdonation').value = "";
  }
 }
-
+function controlRegister(acceptemail){
+  if(acceptemail.checked){
+    document.getElementById('regbutton').disabled=false;
+  }else{
+    document.getElementById('regbutton').disabled=true;
+  }
+}
+/*$(document).ready(function() {
+$('#validatereg').on('change', function(e){
+  alert("am changed");
+  document.getElementById('regbutton').style.display="block";
+});
+});*/
 
 </script>
