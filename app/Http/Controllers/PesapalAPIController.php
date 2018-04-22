@@ -55,11 +55,11 @@ class PesapalAPIController extends Controller
             $tracking_id = Input::get('pesapal_transaction_tracking_id');
 
            $response =  Pesapal::getTransactionStatus($notification_type, $merchant_reference, $tracking_id);
-										
+
 											$status = $response['status'];
 
         } else {
-            //uncomment this (next two lines) for testing without pesapal            
+            //uncomment this (next two lines) for testing without pesapal
             /*$tracking_id = 'DHNC5849NDJ19'; $status = 'COMPLETED';
             goto skip;*/
             throw new PesapalException("incorrect parameters in request");
@@ -88,10 +88,14 @@ class PesapalAPIController extends Controller
         }
 
 								if($status == "COMPLETED"){
-								return view('Public.ViewEvent.EventPageCheckout2', $data);
+								return view('Public.ViewEvent.EventPageCheckoutSuccess', $data);
 								}
-								else {
-								return view ('Public.ViewEvent.EventPageCheckout');
+								elseif ($status == "FAILED") {
+									session()->flash('message', 'Payment has failed, please retry the payment');
+							  return view ('Public.ViewEvent.EventPageCheckout',$data);
+								}
+								else{
+
 								}
 
 
