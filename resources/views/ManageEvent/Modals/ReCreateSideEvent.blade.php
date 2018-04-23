@@ -11,7 +11,7 @@
 }
 .pip {
   display: inline-block;
-  margin: 10px 10px 0 0;
+  margin: 5px 10px 5px 0;
 }
 .remove {
   display: block;
@@ -28,7 +28,7 @@
 </style>
 
 <div role="dialog"  class="modal fade" style="display: none;">
-   {!! Form::open(array('url' => route('postReCreateSideEvent', array('event_id' => $event->id)), 'class' => 'ajax', 'enctype' => 'multipart/form-data')) !!}
+   {!! Form::open(array('url' => route('postReCreateSideEvent', array('event_id' => $event->id)), 'enctype' => 'multipart/form-data')) !!}
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header text-center">
@@ -113,9 +113,50 @@
     {!! Form::label('event_image', 'Side Event More Images', array('class'=>'control-label ')) !!}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <div class="field" align="left">
-      <input type="file" id="files" name="files[]" multiple="multiple" />
+      <input type="file" class="files" id="files" name="files[]" multiple="multiple" />
     </div>
 </div>
+
+    <hr>
+    <h4 style="text-align: center">SIDE EVENT MINI PAGES<h4>
+    <h5 style="text-align: center">FIRST MINI PAGE<h5>
+        <div id="sideevent_pages">
+            <div class="form-group">
+                {!! Form::label('title', 'Mini Page Title', array('class'=>'control-label')) !!}
+                {!!Form::hidden('content_pages[]','0')!!}
+                {!!  Form::text('more_title_0', Input::old('title'),
+                            array(
+                            'class'=>'form-control',
+                            'placeholder'=>'Title for specific content eg First Day Activities'
+                            ))  !!}
+            </div>
+            <?php $convention = 'Enter your description using either of the two conventions. <br>Description as a paragraph <br>Its a default, just enter statements and they will appear as a paragragh. <br>Description as Intro and list of statements. <br>Enter the 2 or 3 statements as usual for intro and statements to appear as listed, prefix them with hash character i.e # e.g (You will get the following:- #National Museum tour #Lunch at the white house)<br>Desciption as a list of statements without intro.<br> Just prefix all statements with # e.g (#National Museum tour #Lunch at the white house)'; ?>
+            <div class="form-group">
+                {!! Form::label('description', 'Mini Page Description', array('class'=>'control-label')) !!}
+                {!!  Form::textarea('more_discription_0', null,
+                            array(
+                            'class'=>'form-control',
+                            'placeholder'=>"Enter your description using either of the two conventions. <br>Description as a paragraph <br>Its a default, just enter statements and they will appear as a paragragh. <br>Description as Intro and list of statements. <br>Enter the 2 or 3 statements as usual for intro and statements to appear as listed, prefix them with hash character i.e # e.g (You will get the following:- #National Museum tour #Lunch at the white house)<br>Desciption as a list of statements without intro.<br> Just prefix all statements with # e.g (#National Museum tour #Lunch at the white house)"
+                            ))  !!}
+            </div>
+
+            <div class="form-group">
+                {!! Form::label('more_images', 'Images for This Page', array('class'=>'control-label ')) !!}
+                <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+                <div class="field" align="left">
+                  <input type="file" class="files" id="content_0_files" name="content_0_files[]" multiple="multiple" />
+                </div>
+            </div>
+            <div id="more_contents">
+                
+            </div>
+    <hr style="border-top: 1px solid blue;">
+            <div class="col-md-12" style="text-align: center">
+                <div class="form-group">
+                {!! Form::button('Add Another Page', ['class'=>"btn btn-success", 'id'=>'add_content','align'=>'justify','margin-top'=>'10px']) !!}
+                </div>
+            </div>
+        </div>
                         <!--end of addition by DonaldApril10-->
 
                 <!--edited by DonaldMar12-->    
@@ -206,8 +247,9 @@
 <script>
     $(document).ready(function() {
   if (window.File && window.FileList && window.FileReader) {
-    $("#files").on("change", function(e) {
-      var files = e.target.files,
+    $(".files").on("change", function(event) {
+      var space=event.target.id;
+      var files = event.target.files,
         filesLength = files.length;
       for (var i = 0; i < filesLength; i++) {
         var f = files[i]
@@ -217,7 +259,7 @@
           $("<span class=\"pip\">" +
             "<img class=\"imageThumb\" src=\"" + e.target.result + "\" title=\"" + file.name + "\"/>" +
             "<br/><span class=\"remove\">Remove photo</span>" +
-            "</span>").insertAfter("#files");
+            "</span>").insertAfter("#" + space);
           $(".remove").click(function(){
             $(this).parent(".pip").remove();
           });
@@ -305,62 +347,59 @@
         }
     }
 
-/*    
-    var counter = 0;
-    function readMoreURL(input) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-
-            reader.onload = function (e) {
-                var divider = document.createElement('div');
-                var img = document.createElement('img');
-                var imageremover = document.createElement('button');
-
-                divider.setAttribute('id','divblah_' + counter);
-            //    divider.setAttribute('display','inline-block');
-                divider.setAttribute('width','150');
-                divider.setAttribute('height','250');
-                img.setAttribute('id','moreblah_' + counter);
-                img.setAttribute('src','#');
-                img.setAttribute('width','150');
-                img.setAttribute('height','200');
-                img.setAttribute('alt','your image');
-                imageremover.setAttribute('id','imageblah_' + counter);
-                imageremover.setAttribute('class','remove');
-                imageremover.setAttribute('style','display:inline-block');
-                imageremover.setAttribute('width','150');
-                imageremover.textContent = "Remove Photo";
-                //divider.appendChild(img);
-                //divider.appendChild(imageremover);
-                //document.getElementById('more_images').innerHTML = '<img class="moreblah" src="#" width = 150 height = 200 alt="your image" />';
-                document.getElementById('more_images').appendChild(img);
-                document.getElementById('more_images').appendChild(imageremover);
-            //    imageremover.insertAfter(img);
-                //document.getElementById('more_images').appendChild(imageremover);
-            /*    $("<span class=\"pip\">" +
-                "<img class=\"imageThumb\" src=\"" + e.target.result + "\" title=\"" + file.name + "\"/>" +
-                "<br/><span class=\"remove\">Remove image</span>" +
-                "</span>").insertAfter('#moreblah_' + counter); *~/
-                $('#moreblah_' + counter)
-                    .attr('src', e.target.result);
-                ++counter;
-                document.getElementById('input_images').val() = $(this).val + e.target.result;
-            };
-
-
-          /*$('.remove').click(function(){
-            alert('have to delete something');
-            $(this).parent('#moreblah_' + counter).remove();
-          });*~/
-
-            reader.readAsDataURL(input.files[0]);
-        }
+    function newfunction(event) {
+      //var event=document.getElementById(passedid);
+      var space=event.id;console.dir(event);
+      var files = event.files,
+        filesLength = files.length;
+      for (var i = 0; i < filesLength; i++) {        
+        var f = files[i]
+        var fileReader = new FileReader();
+        fileReader.onload = (function(e) {
+          var file = e.target;
+          $("<span class=\"pip\">" +
+            "<img class=\"imageThumb\" src=\"" + e.target.result + "\" title=\"" + file.name + "\"/>" +
+            "<br/><span class=\"remove\">Remove photo</span>" +
+            "</span>").insertAfter("#" + space);
+          $(".remove").click(function(){
+            $(this).parent(".pip").remove();
+          });
+          
+        });
+        fileReader.readAsDataURL(f);
+      }
     }
 
-        //  $('.remove').onclick(function(){
-        $('.remove').on('click', function() {
-            alert('have to delete something');
-            //$(this).parent('#moreblah_' + counter).remove();
-          }); */
+    var content = 1;
+    $('#add_content').on('click', function(e) {
+        var container=document.createElement('div');
+        var content_title=document.createElement('div');
+        var content_description=document.createElement('div');
+        var content_images=document.createElement('div');
+        var testinput=document.createElement('input');
+        var separator=document.createElement('hr');
+        var parent=document.getElementById('more_contents');
+        separator.setAttribute("style","border-top: 1px solid blue")
+        container.innerHTML='<h5 style="text-align: center">MINI PAGE ' + (1+content) + '<h5>';
+        content_title.classList.add("form-group");
+        content_description.classList.add("form-group");
+        content_title.innerHTML='<label for="title" class="control-label">Mini Page Title</label><input class="form-control" placeholder="Title for specific content eg First Day Activities" name="more_title_' + content + '" type="text"><input type="hidden" name="content_pages[]" value="' + content +'">';
+        content_description.innerHTML='<label for="description" class="control-label">Mini Page Description</label><textarea class="form-control" placeholder="Enter your description using either of the two conventions. <br>Description as a paragraph <br>Its a default, just enter statements and they will appear as a paragragh. <br>Description as Intro and list of statements. <br>Enter the 2 or 3 statements as usual for intro and statements to appear as listed, prefix them with hash character i.e # e.g (You will get the following:- #National Museum tour #Lunch at the white house)<br>Desciption as a list of statements without intro.<br> Just prefix all statements with # e.g (#National Museum tour #Lunch at the white house)" name="more_discription_' + content + '" cols="50" rows="10"></textarea>';
+        content_images.innerHTML='<label for="more_images" class="control-label ">Images for This Page</label>';
+        testinput.setAttribute('type','file');
+        testinput.setAttribute('class','files');
+        testinput.setAttribute('id',"content_" + content + "_files");
+        testinput.setAttribute('name',"content_" + content + "_files[]");
+        testinput.setAttribute('multiple','multiple');
+        testinput.setAttribute('onchange',"newfunction(this);");
+        //testinput.onchange = function("newfunction('content_" + content + "_files');"){}
+        parent.appendChild(separator);
+        parent.appendChild(container);
+        parent.appendChild(content_title);
+        parent.appendChild(content_description);
+        parent.appendChild(content_images);
+        parent.appendChild(testinput);
+        ++content;
+    });
 
 </script>

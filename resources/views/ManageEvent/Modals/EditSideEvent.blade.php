@@ -28,7 +28,7 @@
 </style>
 
 <div role="dialog"  class="modal fade " style="display: none;">
-    {!! Form::model($ticket, ['url' => route('postEditSideEvent', ['ticket_id' => $ticket->id, 'event_id' => $event->id]), 'class'=>'ajax', 'enctype' => 'multipart/form-data']) !!}
+    {!! Form::model($ticket, ['url' => route('postEditSideEvent', ['ticket_id' => $ticket->id, 'event_id' => $event->id]), 'enctype' => 'multipart/form-data']) !!}
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header text-center">
@@ -111,20 +111,112 @@
                Remove?{!! Form::checkbox("remove_photo_$photocounter") !!}
             <?php  ++$photocounter;}//end-foreach
             ?>
-        <div class="row">
             <div class="form-group">
                 <div class="col-md-12">
                 {!! Form::label('event_image', 'Add More Images', array('class'=>'control-label ')) !!}
                 </div>
             </div>
-        </div>
         <?php }//end if ?>
 
-        <div class="field" align="left">
+        <div class="field" align="left" style="margin-left:5px;">
           <input type="file" id="files" name="files[]" multiple="multiple" />
         </div>
     </div>
 </div>
+
+<!------------------Section for Side Event Pages--------------------DonaldApril20;-->
+<?php $pagecount=0;?>
+<hr>
+<h4 style="text-align: center">SIDE EVENT MINI PAGES<h4>
+<?php if($ticket->ticket_extras){
+$pagebundles=explode(config('attendize.sideevent_pages_eximploders'), $ticket->ticket_extras);
+foreach($pagebundles as $pagebundle){
+    $exploded=explode(config('attendize.sideevent_singlepage_eximploders'),$pagebundle);
+    list($pagetitle,$pagedescript,$pagephotopaths) = $exploded;?>
+    <h5 style="text-align: center"><?php echo $pagecount==0 ? "FIRST MINI PAGE" : "MINI PAGE ".(1 + $pagecount);?><h5>
+    <div style="text-align: center;"><span style="text-align: center; color:red;">Delete this page</span>
+    <input type="checkbox" name="remove_page_{{$pagecount}}" style="text-align: center; color:red;"></div>
+     <div id="sideevent_pages">
+        <div class="form-group">
+            {!! Form::label('title', 'Mini Page Title', array('class'=>'control-label')) !!}
+            {!!Form::hidden('existing_content_pages[]',$pagecount)!!}
+            {!!  Form::text('more_title_'.$pagecount, $pagetitle, [
+                        'class'=>'form-control',
+                        'value'=>$pagetitle
+                        ])  !!}
+        </div>
+        <div class="form-group">
+            {!! Form::label('description', 'Mini Page Description', array('class'=>'control-label')) !!}
+            {!!  Form::textarea('more_discription_'.$pagecount, $pagedescript, [
+                        'class'=>'form-control',
+                        'placeholder'=>$pagedescript
+                        ])  !!}
+        </div>
+        <?php
+            $thispagephotos=explode(config('attendize.sideevent_photos_eximploders'),$pagephotopaths);
+            $pagephotocounter=0;
+            for($pagephotocounter=0;$pagephotocounter<count($thispagephotos);++$pagephotocounter){ ?>
+            {!!Form::hidden("page_".$pagecount."_photos[]",$thispagephotos[$pagephotocounter])!!}
+            <img height=120 width=100 style="margin: 1px 1px 5px 5px; align:justify" src="{{asset($thispagephotos[$pagephotocounter])}}" />
+           Remove?{!! Form::checkbox($pagecount."_remove_photo_".$pagephotocounter) !!}
+        <?php }//end-for
+        ?>
+            <div class="form-group">
+                <div class="col-md-12">
+                {!! Form::label('event_image', 'Add More Images For This Page', array('class'=>'control-label ')) !!}
+                </div>
+            </div>
+            <div class="field" align="left" style="margin-left:5px;">
+              <input type="file" onchange="newfunction(this);" id="content_{{$pagecount}}_files" name="content_{{$pagecount}}_files[]" multiple="multiple" />
+            </div>
+    <?php if($pagecount!==count($pagebundles)-1){?>
+        <hr style="border-top: 1px solid blue;">
+    <?php }//end if-not-lastpage
+
+ ++$pagecount;} //end-foreach($pagebundles)
+ }else{?>
+    <h5 style="text-align: center">FIRST MINI PAGE<h5>
+        <div id="sideevent_pages">
+            <div class="form-group">
+                {!! Form::label('title', 'Mini Page Title', array('class'=>'control-label')) !!}
+                {!!Form::hidden('content_pages[]','0')!!}
+                {!!  Form::text('more_title_0', Input::old('title'),
+                            array(
+                            'class'=>'form-control',
+                            'placeholder'=>'Title for specific content eg First Day Activities'
+                            ))  !!}
+            </div>
+            <?php $convention = 'Enter your description using either of the two conventions. <br>Description as a paragraph <br>Its a default, just enter statements and they will appear as a paragragh. <br>Description as Intro and list of statements. <br>Enter the 2 or 3 statements as usual for intro and statements to appear as listed, prefix them with hash character i.e # e.g (You will get the following:- #National Museum tour #Lunch at the white house)<br>Desciption as a list of statements without intro.<br> Just prefix all statements with # e.g (#National Museum tour #Lunch at the white house)'; ?>
+            <div class="form-group">
+                {!! Form::label('description', 'Mini Page Description', array('class'=>'control-label')) !!}
+                {!!  Form::textarea('more_discription_0', null,
+                            array(
+                            'class'=>'form-control',
+                            'placeholder'=>"Enter your description using either of the two conventions. <br>Description as a paragraph <br>Its a default, just enter statements and they will appear as a paragragh. <br>Description as Intro and list of statements. <br>Enter the 2 or 3 statements as usual for intro and statements to appear as listed, prefix them with hash character i.e # e.g (You will get the following:- #National Museum tour #Lunch at the white house)<br>Desciption as a list of statements without intro.<br> Just prefix all statements with # e.g (#National Museum tour #Lunch at the white house)"
+                            ))  !!}
+            </div>
+
+            <div class="form-group">
+                {!! Form::label('more_images', 'Images for This Page', array('class'=>'control-label ')) !!}
+                <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+                <div class="field" align="left">
+                  <input type="file" class="files" id="content_0_files" name="content_0_files[]" multiple="multiple" />
+                </div>
+            </div>
+        </div>
+<?php }//end if($ticket->ticket_extras) -else{} ?>
+<button id="pagestracker" style="display: none" value="<?php echo $pagecount;?>"></button>
+    <div id="more_contents">
+        <!-------additional pages will be inserted here-->        
+    </div>
+    <hr style="border-top: 1px solid blue;">
+            <div class="col-md-12" style="text-align: center">
+                <div class="form-group">
+                {!! Form::button('Add Another Page', ['class'=>"btn btn-success", 'id'=>'add_content','align'=>'justify','margin-top'=>'10px']) !!}
+                </div>
+            </div>
+
+<!------------------end of Side Event Pages Section----------DonaldApril20;-->
                 <div class="row">
                     <div class="col-sm-10">
                         <!--<div class="form-group">-->
@@ -392,6 +484,67 @@
 
         }
     }
+
+    function newfunction(event) {
+      //var event=document.getElementById(passedid);
+      var space=event.id;console.dir(event);
+      var files = event.files,
+        filesLength = files.length;
+      for (var i = 0; i < filesLength; i++) {        
+        var f = files[i]
+        var fileReader = new FileReader();
+        fileReader.onload = (function(e) {
+          var file = e.target;
+          $("<span class=\"pip\">" +
+            "<img class=\"imageThumb\" src=\"" + e.target.result + "\" title=\"" + file.name + "\"/>" +
+            "<br/><span class=\"remove\">Remove photo</span>" +
+            "</span>").insertAfter("#" + space);
+          $(".remove").click(function(){
+            $(this).parent(".pip").remove();
+          });
+          
+        });
+        fileReader.readAsDataURL(f);
+      }
+    }
+
+    //var content = 1;
+    var existpages=document.getElementById('pagestracker').value;
+    if(existpages>0){
+        var content = +existpages;
+    }else{
+        var content = 1;
+    }
+    $('#add_content').on('click', function(e) {
+        var container=document.createElement('div');
+        var content_title=document.createElement('div');
+        var content_description=document.createElement('div');
+        var content_images=document.createElement('div');
+        var testinput=document.createElement('input');
+        var separator=document.createElement('hr');
+        var parent=document.getElementById('more_contents');
+        separator.setAttribute("style","border-top: 1px solid blue")
+        container.innerHTML='<h5 style="text-align: center">MINI PAGE ' + (1+content) + '<h5>';
+        content_title.classList.add("form-group");
+        content_description.classList.add("form-group");
+        content_title.innerHTML='<label for="title" class="control-label">Mini Page Title</label><input class="form-control" placeholder="Title for specific content eg First Day Activities" name="more_title_' + content + '" type="text"><input type="hidden" name="content_pages[]" value="' + content +'">';
+        content_description.innerHTML='<label for="description" class="control-label">Mini Page Description</label><textarea class="form-control" placeholder="Enter your description using either of the two conventions. <br>Description as a paragraph <br>Its a default, just enter statements and they will appear as a paragragh. <br>Description as Intro and list of statements. <br>Enter the 2 or 3 statements as usual for intro and statements to appear as listed, prefix them with hash character i.e # e.g (You will get the following:- #National Museum tour #Lunch at the white house)<br>Desciption as a list of statements without intro.<br> Just prefix all statements with # e.g (#National Museum tour #Lunch at the white house)" name="more_discription_' + content + '" cols="50" rows="10"></textarea>';
+        content_images.innerHTML='<label for="more_images" class="control-label ">Images for This Page</label>';
+        testinput.setAttribute('type','file');
+        testinput.setAttribute('class','files');
+        testinput.setAttribute('id',"content_" + content + "_files");
+        testinput.setAttribute('name',"content_" + content + "_files[]");
+        testinput.setAttribute('multiple','multiple');
+        testinput.setAttribute('onchange',"newfunction(this);");
+        //testinput.onchange = function("newfunction('content_" + content + "_files');"){}
+        parent.appendChild(separator);
+        parent.appendChild(container);
+        parent.appendChild(content_title);
+        parent.appendChild(content_description);
+        parent.appendChild(content_images);
+        parent.appendChild(testinput);
+        ++content;
+    });
 
 
 </script>

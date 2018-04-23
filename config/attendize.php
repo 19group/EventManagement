@@ -70,5 +70,7 @@ return [
     'cdn_url_static_assets' => '',
 
     /*Imploders and exploders for string<->array conversions*/
-    'sideevent_photos_eximploders' => '#@#'
+    'sideevent_photos_eximploders' => '#@#',
+    'sideevent_singlepage_eximploders' => '{#}',
+    'sideevent_pages_eximploders' => '[+]'
 ];

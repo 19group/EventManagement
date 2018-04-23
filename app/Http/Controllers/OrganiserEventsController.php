@@ -131,7 +131,7 @@ class OrganiserEventsController extends MyBaseController
     //    $countfiles = count($_FILES['files']['name']);
 
         if ($request->hasFile('files')) { //dd($request);//exit('got here');
-            $ticket_photos = [];
+        /*    $ticket_photos = [];
             $uploadednames = $_FILES['files']['name'];
             $path = public_path() . '/' . config('attendize.sideevent_images_path');
             for($filecounter=0;$filecounter<count($_FILES['files']['name']); ++$filecounter){
@@ -145,13 +145,46 @@ class OrganiserEventsController extends MyBaseController
                     $constraint->upsize();
                 });
             //    $img->save($file_full_path);
-                /* Upload to s3 */
+                /* Upload to s3 *|/
                 \Storage::put(config('attendize.sideevent_images_path') . '/' . $filename, file_get_contents($file_full_path));
                 $ticket_photos[] = config('attendize.sideevent_images_path') . '/' . $filename; 
             }
+        */
+            $ticket_photos = $this->processuploadedimages('files',$ticket->id);
             if(!empty($ticket_photos)){$ticket->ticket_photos = implode(config('attendize.sideevent_photos_eximploders'),$ticket_photos);}
         }
 
+    //------------working for content pages-------//
+        $contentpagesinfos = [];
+        if($request->has('content_pages')){
+            foreach ($request->get('content_pages') as $contentnumber) {
+                $pagetitle=null; $pagediscript=null;
+                //check if title is available
+                if($request->has('more_title_'.$contentnumber)){
+                    $pagetitle=$request->get('more_title_'.$contentnumber);
+                }else{
+                    continue;
+                }
+                //check if description is available
+                if($request->has('more_discription_'.$contentnumber)){
+                    $pagediscript=$request->get('more_discription_'.$contentnumber);
+                }else{
+                    continue;
+                }
+                //check if photos for the page are uploaded
+                $pageimages=null;
+                if($request->hasFile('content_'.$contentnumber.'_files')){
+                    $pageimagesarray=$this->processuploadedimages('content_'.$contentnumber.'_files',$ticket->id);
+                    $pageimages=implode(config('attendize.sideevent_photos_eximploders'),$pageimagesarray);
+                }
+                $contentpagesinfos[] = implode(config('attendize.sideevent_singlepage_eximploders'), [$pagetitle, $pagediscript, $pageimages]);
+            }
+        }
+        $sideevent_pages = empty($contentpagesinfos) ? null : implode(config('attendize.sideevent_pages_eximploders'),$contentpagesinfos);
+    //--------------end of working for content pages----DonaldApril19-----// 
+
+        //save sideevent pages information in ticket_extras
+        $ticket->ticket_extras = $sideevent_pages;
         $ticket->save();    
 
         session()->flash('message', 'Successfully Created SideEvent');
@@ -175,7 +208,6 @@ class OrganiserEventsController extends MyBaseController
     public function postEditSideEvent(Request $request, $event_id,  $ticket_id)
     {
         $event = Event::scope()->findOrfail($event_id);
-        
         $ticket = Ticket::scope()->findOrFail($ticket_id);
         if (!$ticket->validate($request->all())) {
             return response()->json([
@@ -260,6 +292,66 @@ class OrganiserEventsController extends MyBaseController
         }
 
         if(!empty($ticket_photos)){$ticket->ticket_photos = implode(config('attendize.sideevent_photos_eximploders'),$ticket_photos);}
+
+    $contentpagesinfos = [];
+//---------working for existing content pages, deletion of a page, edits, photos remove and new photo uploads-------DonaldApril23-----
+    if($request->has('existing_content_pages')){
+        $existingpages=$request->get('existing_content_pages');
+        foreach($existingpages as $existingpage){
+            if(!$request->has('remove_page_'.$existingpage)){
+                if($request->has('more_discription_'.$existingpage) && $request->has('more_title_'.$existingpage)){
+                $pagetitle=$request->get('more_title_'.$existingpage);
+                $pagediscript=$request->get('more_discription_'.$existingpage);
+            $pageimages=null; $pageimagesarray=[];
+            if($request->has('page_'.$existingpage.'_photos')){
+                $existingpagephotos=$request->get('page_'.$existingpage.'_photos');
+                for($photoct=0;$photoct<count($existingpagephotos);++$photoct){
+                    if(!$request->has($existingpage.'_remove_photo_'.$photoct)){
+                        $pageimagesarray[]=$existingpagephotos[$photoct];
+                    }
+                }
+            }
+            if($request->hasFile('content_'.$existingpage.'_files')){
+                $pageimagesarray=array_merge($pageimagesarray, $this->processuploadedimages('content_'.$existingpage.'_files',$ticket_id));
+            }
+            if(!empty($pageimagesarray)){
+                $pageimages=implode(config('attendize.sideevent_photos_eximploders'),$pageimagesarray);}
+            $contentpagesinfos[] = implode(config('attendize.sideevent_singlepage_eximploders'), [$pagetitle, $pagediscript, $pageimages]);
+                }
+            }
+        }
+    }
+//-----------end of working for existing content pages, saved in $contentpagesinfos[]
+
+    //------------working for new content pages-------//
+        if($request->has('content_pages')){
+            foreach ($request->get('content_pages') as $contentnumber) {
+                $pagetitle=null; $pagediscript=null;
+                //check if title is available
+                if($request->has('more_title_'.$contentnumber)){
+                    $pagetitle=$request->get('more_title_'.$contentnumber);
+                }else{
+                    continue;
+                }
+                //check if description is available
+                if($request->has('more_discription_'.$contentnumber)){
+                    $pagediscript=$request->get('more_discription_'.$contentnumber);
+                }else{
+                    continue;
+                }
+                //check if photos for the page are uploaded
+                $pageimages=null;
+                if($request->hasFile('content_'.$contentnumber.'_files')){
+                    $pageimagesarray=$this->processuploadedimages('content_'.$contentnumber.'_files',$ticket->id);
+                    $pageimages=implode(config('attendize.sideevent_photos_eximploders'),$pageimagesarray);
+                }
+                $contentpagesinfos[] = implode(config('attendize.sideevent_singlepage_eximploders'), [$pagetitle, $pagediscript, $pageimages]);
+            }
+        }
+    //--------------end of working for content pages----DonaldApril23-----// 
+        $sideevent_pages = empty($contentpagesinfos) ? null : implode(config('attendize.sideevent_pages_eximploders'),$contentpagesinfos);
+        $ticket->ticket_extras = $sideevent_pages;
+        //dd($ticket);
         $ticket->save();
 
         session()->flash('message', 'Successfully Edited Side Event');
@@ -437,4 +529,26 @@ class OrganiserEventsController extends MyBaseController
         ]);
     }
     //end of additions
+
+    //----function for handling mass image uploads---
+    public function processuploadedimages($arrayoffiles,$ticketid){
+        $storagepaths=[];
+        $uploadednames = $_FILES[$arrayoffiles]['name'];
+        $path = public_path() . '/' . config('attendize.sideevent_images_path');
+        for($filecounter=0;$filecounter<count($_FILES[$arrayoffiles]['name']); ++$filecounter){
+            $extension = substr($uploadednames[$filecounter], stripos($uploadednames[$filecounter],'.') + 1);
+            $filename = 'sideevent_image-' . md5(time() . $ticketid . $uploadednames[$filecounter]) . '.' . $extension;
+            $file_full_path = $path . '/' . $filename;
+            move_uploaded_file($_FILES[$arrayoffiles]['tmp_name'][$filecounter],$file_full_path);
+            $img = Image::make($file_full_path);
+            $img->resize(800, null, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
+            /* Upload to s3 */
+    //        \Storage::put(config('attendize.sideevent_images_path') . '/' . $filename, file_get_contents($file_full_path));
+            $storagepaths[] = config('attendize.sideevent_images_path') . '/' . $filename;
+        }
+        return $storagepaths;
+    }
 }
