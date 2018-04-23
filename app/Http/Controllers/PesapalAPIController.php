@@ -73,13 +73,11 @@ class PesapalAPIController extends Controller
 
         $order_session = session()->get('ticket_order_' . $event_id);
 
-
-
         $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
 
         $data = $order_session + [
                 'event'           => Event::findorFail($order_session['event_id']),
-                'secondsToExpire' => $secondsToExpire,
+                'secondsToExpire' => 120,
                 'is_embedded'     => $this->is_embedded,
             ];
 
@@ -91,11 +89,17 @@ class PesapalAPIController extends Controller
 								return view('Public.ViewEvent.EventPageCheckoutSuccess', $data);
 								}
 								elseif ($status == "FAILED") {
-									session()->flash('message', 'Payment has failed, please retry the payment');
+									session()->flash('message', 'Payment has failed, please retry the payment and check your email for more information');
+									//alert("Payment has failed, please retry the payment again");
 							  return view ('Public.ViewEvent.EventPageCheckout',$data);
 								}
-								else{
-
+								elseif ($status == "CANCELLED") {
+									session()->flash('message', 'Payment has been cancelled, please retry the payment again');
+							  return view ('Public.ViewEvent.EventPageCheckout',$data);
+								}
+								elseif ($status == "PENDING"){
+									session()->flash('message', 'Payment is still Pending Verification, please refresh the page in a short while');
+									//return view('Public.ViewEvent.EventPageCheckoutSuccess', $data);
 								}
 
 
