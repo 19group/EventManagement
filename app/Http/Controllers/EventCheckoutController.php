@@ -1083,7 +1083,7 @@ class EventCheckoutController extends Controller
         $validation_messages = $ticket_order['validation_messages'];
         $order->rules = $order->rules + $validation_rules;
         $order->messages = $order->messages + $validation_messages;
-        if (!$order->validate($request->all())) {
+        if (!$order->validate($request->all()) && !$ticket_order['donation']) {
             return response()->json([
                 'status'   => 'error',
                 'messages' => $order->errors(),

@@ -87,12 +87,12 @@ class PesapalAPIController extends Controller
             return view('Public.ViewEvent.Embedded.EventPageCheckout', $data);
         }
 
-								if($status == "COMPLETED"){
-								return view('Public.ViewEvent.EventPageCheckout2', $data);
-								}
-								else {
-								return view ('Public.ViewEvent.EventPageCheckout');
-								}
+		if($status == "COMPLETED"){
+		return view('Public.ViewEvent.EventPageCheckout2', $data);
+		}
+		else {
+		return view ('Public.ViewEvent.EventPageCheckout');
+		}
 
 
 

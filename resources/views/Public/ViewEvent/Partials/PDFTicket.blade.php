@@ -93,8 +93,7 @@ use App\Models\OrderItem;
     </head>
     <body style="background-color: #FFFFFF; font-family: Arial, Helvetica, sans-serif;">
 	<!--added by DonaldFeb28 to set control variables for limiting number of tickets in a page-->
-	<?php
-
+	<?php if(count($attendees)<1){ goto donationstart;}
  $ticketsinpage = 3; $spacefixer = $ticketsinpage; $target = count($attendees);
 
  ?>
@@ -224,8 +223,9 @@ use App\Models\OrderItem;
 
 
             <!--added by DonaldFeb26 edited by DonaldFeb28-->
-            	<?php
+            	<?php  
              // TODO prevent quering the database to just figure out if there is donation or not
+        	 donationstart:
              $order_donation = OrderItem::where(['order_id'=>$order->id, 'title'=>'Donation']);
 
               if($order_donation->count() != 0){
@@ -311,11 +311,11 @@ use App\Models\OrderItem;
                     		<td>
                     		</td>
                     		<td style="border-left: solid 0.5px #dbdbdb; border-style: dashed"><br>
-		                            {!! DNS2D::getBarcodeSVG($attendee->private_reference_number, "QRCODE", 4, 4) !!}
+		                            {!! DNS2D::getBarcodeSVG('attendee->private_reference_number', "QRCODE", 4, 4) !!}
 
 		                        @if($event->is_1d_barcode_enabled)
 
-		                            {!! DNS1D::getBarcodeSVG($attendee->private_reference_number, "C39+", 1, 50) !!}
+		                            {!! DNS1D::getBarcodeSVG('attendee->private_reference_number', "C39+", 1, 50) !!}
 
 		                        @endif
                     		</td>
