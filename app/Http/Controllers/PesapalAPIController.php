@@ -5,6 +5,7 @@ use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input as Input;
 use Pesapal;
+use Studio19\Pesapal\Exceptions\PesapalException;
 use App\Http\Requests;
 use Carbon\Carbon;
 

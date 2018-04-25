@@ -12,8 +12,13 @@
      @include('Public.ViewEvent.Partials.OrderSummary')
 
      <div class="">
-       <a href="{{ route('showEventCheckout', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">Checkout</a>
-       <!--uncomment this to test without pesapal payment<a href="/e/{{$event_id}}/pesament/create?is_embedded=0#order_form" class="btn btn-lg btn-primary pull-right">CheckOut</a>-->
+      @if(Utils::userOwns($event))
+        <a class="btn btn-lg btn-primary" href="{{ route('skippayment', ['event_id'=> $event_id]) }}">Skip Payment</a>
+       <a href="{{ route('showEventCheckout', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">Go Pay</a>
+      @else
+       <!--uncomment this to test without pesapal payment<a href="{{ route('showEventCheckout', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">Checkout</a>-->
+       <a href="/e/{{$event_id}}/pesament/create?is_embedded=0#order_form" class="btn btn-lg btn-primary pull-right">Checkout</a>
+      @endif
     </div>
      </div>
 

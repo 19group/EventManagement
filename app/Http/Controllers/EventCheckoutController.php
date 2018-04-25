@@ -353,6 +353,21 @@ class EventCheckoutController extends Controller
         exit('Please enable Javascript in your browser.');
     }
 
+    //added by DonaldApril25
+    public function organiserSkipPayment($event_id)
+    {        
+        $order_session = session()->get('ticket_order_' . $event_id);
+        $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
+        $data = $order_session + [
+                'event'           => Event::findorFail($order_session['event_id']),
+                'secondsToExpire' => $secondsToExpire,
+                'is_embedded'     => $this->is_embedded,
+            ];
+        if ($this->is_embedded) {
+            return view('Public.ViewEvent.Embedded.EventPageCheckout', $data);
+        }
+        return view('Public.ViewEvent.EventPageCheckout2', $data);
+    }
 
     /**
      * Added by DonaldMar16 to show order side events page
@@ -1084,10 +1099,18 @@ class EventCheckoutController extends Controller
         $order->rules = $order->rules + $validation_rules;
         $order->messages = $order->messages + $validation_messages;
         if (!$order->validate($request->all()) && !$ticket_order['donation']) {
-            return response()->json([
+            /*return response()->json([
                 'status'   => 'error',
                 'messages' => $order->errors(),
-            ]);
+            ]);*/
+            $data = [
+                'event' => $event,
+                'callbackurl' => 'createorder',
+                'messages' => $order->errors(),
+                'request_details' => $request,
+                'parameters' => ['event_id' => $event_id]
+            ];
+            return view('Public.ViewEvent.EventPageErrors', $data);
         }
         /*
          * Add the request data to a session in case payment is required off-site
@@ -1206,10 +1229,18 @@ class EventCheckoutController extends Controller
             }
 
             if ($error) {
-                return response()->json([
+                /*return response()->json([
                     'status'  => 'error',
                     'message' => $error,
-                ]);
+                ]);*/
+            $data = [
+                'event' => $event,
+                'callbackurl' => null,
+                'messages' => $error,
+                'request_details' => null,
+                'parameters' => null
+            ];
+            return view('Public.ViewEvent.EventPageErrors', $data);
             }
     //    }
         /*
