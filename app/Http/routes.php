@@ -212,6 +212,10 @@ Route::group(['prefix' => 'e'], function () {
         'uses' => 'PaymentsController@paymentconfirmation',
     ]);
 
+    Route::post('{event_id}/pesament/skip/',[
+        'as' => 'skippayment',
+        'uses' => 'EventCheckoutController@organiserSkipPayment',
+    ]);
 
     Route::post('{event_id}/checkout/create', [
         'as'   => 'postCreateOrder',
@@ -528,12 +532,6 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
             'uses' => 'EventCheckoutController@updateBooking',
         ]);
 
-         Route::get('{event_id}/skippayment/',[
-            'as' => 'skippayment',
-            'uses' => 'EventCheckoutController@organiserSkipPayment',
-        ]);
-
-
          Route::get('{event_id}/accommodations/', [
             'as'   => 'showAccommodations',
             'uses' => 'EventAttendeesController@showAccommodation',
@@ -545,6 +543,11 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
           Route::post('{event_id}/create/accommodation', [
             'as'   => 'postCreateAccommodation',
             'uses' => 'EventTicketsController@postCreateAccommodation',
+        ]);
+
+        Route::get('{event_id}/pesament/skip/',[
+            'as' => 'orgskippayment',
+            'uses' => 'EventCheckoutController@organiserSkipPayment',
         ]);
 
 

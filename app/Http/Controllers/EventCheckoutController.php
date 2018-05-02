@@ -9,6 +9,7 @@ use App\Models\Attendee;
 use App\Models\Event;
 use App\Models\EventStats;
 use App\Models\Order;
+use Illuminate\Support\Facades\URL;
 use App\Coupon;
 use Session;
 use App\Acccommodation;
@@ -349,11 +350,12 @@ class EventCheckoutController extends Controller
                 'event'           => Event::findorFail($order_session['event_id']),
                 'secondsToExpire' => $secondsToExpire,
                 'is_embedded'     => $this->is_embedded,
+                'previousurl' => URL::previous(),
             ];
         if ($this->is_embedded) {
             return view('Public.ViewEvent.Embedded.EventPageCheckout', $data);
         }
-        return view('Public.ViewEvent.EventPageCheckoutSuccess', $data);
+            return view('Public.ViewEvent.EventPageCheckoutSuccess', $data);
     }
 
     /**
@@ -1029,6 +1031,10 @@ class EventCheckoutController extends Controller
         if (!$order_session || $order_session['expires'] < Carbon::now()) {
             $route_name = $this->is_embedded ? 'showEmbeddedEventPage' : 'showEventPage';
             return redirect()->route($route_name, ['event_id' => $event_id]);
+        }
+        //for skipping payment
+        if($order_session['order_total'] + $order_session['donation'] == 0 && count($order_session['order_has_validdiscount'])>0){
+        return $this->organiserSkipPayment($event_id);
         }
 
         $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);

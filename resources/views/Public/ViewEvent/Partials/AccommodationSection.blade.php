@@ -14,14 +14,12 @@
      <div class="">
       @if(Utils::userOwns($event))
         <?php if($order_total + $donation > 0){ ?>
-        <a class="btn btn-lg btn-primary" href="{{ route('skippayment', ['event_id'=> $event_id]) }}">Skip Paying</a>  <?php } ?>
-        <?php if($order_total + $donation == 0 && $order_has_validdiscount>0){?>
-       <a href="{{ route('skippayment', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">Order</a> <?php }elseif($order_total + $donation > 0){ ?>
-       <a href="{{ route('showEventCheckout', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">Go Pay</a> <?php } ?>
+        <a class="btn btn-lg btn-primary" href="{{ route('orgskippayment', ['event_id'=> $event_id]) }}">Skip Pay</a>  <?php } ?>
+        <?php if(count($order_has_validdiscount)>0 || $order_total + $donation > 0){ ?>
+       <a href="{{ route('showEventCheckout', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">Go Pay</a><?php } ?>
       @else
-       <?php if($order_total + $donation == 0 && $order_has_validdiscount>0){?>
-       <a href="{{ route('skippayment', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">Checkout</a> <?php }elseif($order_total + $donation > 0){ ?>
-       <a href="/e/{{$event_id}}/pesament/create?is_embedded=0#order_form" class="btn btn-lg btn-primary pull-right">Checkout</a><?php } ?>
+       <?php if(count($order_has_validdiscount)>0 || $order_total + $donation > 0){ ?>
+       <a href="{{ route('showEventCheckout', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">Checkout</a><?php } ?>
       @endif
     </div>
      </div>
@@ -181,6 +179,17 @@
 
 </div>
 <script type="text/javascript">
+
+$('#pathtracker').onclick(function(){
+  alert('got here');
+  var form=document.createElement('form');
+  var tracker = document.createElement('input');
+  form.setAttribute('csrf_field');
+  tracker.setAttribute('style','display:none');
+  tracker.setAttribute('name','accomodationroute');
+  form.appendChild('tracke');
+});
+
 function generateDate(){
  document.write('This is a test');
 
