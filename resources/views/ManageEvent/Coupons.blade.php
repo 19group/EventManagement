@@ -138,23 +138,23 @@ Coupons
                                State
                             </th>
                             <th>
-                                Used by
+                                Order Used
                            </th>
                         </tr>
                     </thead>
                     <div id="snackbar">Coupon token copied..</div>
                     <tbody>
-                        @foreach($attendees as $attendee)
+                        @foreach($attendees as $coupon)
                         <tr>
-                            <!--<td><input type="" class="btn btn-danger" style="width: 150px" value="{{$attendee->coupon_code}}" disabled /></td>-->
-                            <td><button class="btn btn-danger" onClick="copy(this)" style="width: 110px;">{{$attendee->coupon_code}}</button></td>
+                            <!--<td><input type="" class="btn btn-danger" style="width: 150px" value="{{$coupon->coupon_code}}" disabled /></td>-->
+                            <td><button class="btn btn-danger" onClick="copy(this)" style="width: 110px;">{{$coupon->coupon_code}}</button></td>
                             <td>
-                                 {{$attendee->ticket}}
+                                 {{$coupon->ticket}}
                             </td>
                             <td>
-                               <?php if($attendee->discount!='')
+                               <?php if($coupon->discount!='')
                                  
-                                 echo($attendee->discount.'%');
+                                 echo($coupon->discount.'%');
 
                                  else 
 
@@ -163,9 +163,9 @@ Coupons
                                  ?>
                             </td>
                             <td>
-                                <?php if($attendee->exact_amount!='')
+                                <?php if($coupon->exact_amount!='')
                                  
-                                 echo($attendee->exact_amount);
+                                 echo($coupon->exact_amount);
 
                                  else 
 
@@ -174,10 +174,10 @@ Coupons
                                  ?>
                             </td>
                              <td>
-                                {{$attendee->state}}
+                                {{$coupon->state}}
                             </td>
                             <td>
-                                {{$attendee->user}}
+                                {{$coupon->user}}
                             </td>
                             
                         </tr>

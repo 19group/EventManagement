@@ -31,7 +31,7 @@
         @else
 
         @if(  $discount[$i]!='' and $discount_ticket_title[$i]==$ticket['ticket']['title'] )
-        <strike>{{ money($ticket['full_price']-$ticket['full_price']*($discount[$i]/100), $event->currency) }}</strike>
+        <strike>{{ money($ticket['full_price'], $event->currency) }}</strike>
         {{ money($ticket['full_price']-$ticket['full_price']*($discount[$i]/100), $event->currency) }}
 
         @php
@@ -39,7 +39,7 @@
         @endphp
 
         @elseif(  $exact_amount[$i]!='' and $amount_ticket_title[$i]==$ticket['ticket']['title'] )
-        <strike>{{ money($exact_amount[$i], $event->currency) }}</strike>
+        <strike>{{ money($ticket['full_price'], $event->currency) }}</strike>
         {{ money($exact_amount[$i], $event->currency) }}
 
         @php
@@ -63,10 +63,16 @@
 
      </table>
     </div>
-    @if($order_total +$donation > 0)
+    @if($order_total + $donation > 0)
     <div class="panel-footer">
      <h5>
       Subtotal: <span style="float: right;"><b>{{ money($order_total + $total_booking_fee  + $donation, $event->currency) }}</b></span>
+     </h5>
+    </div>
+    @elseif(!(count($order_has_validdiscount)>0 && ($order_total + $donation == 0)))
+    <div class="panel-footer">
+     <h5>
+      Your order list is empty. Please go back to ticket purchase and add some items to proceed.
      </h5>
     </div>
     @endif

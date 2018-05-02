@@ -63,6 +63,7 @@ class EventCheckoutController extends Controller
          */
         $subscription=null;
         $donation = 0; //DonaldFeb9
+        $order_has_validdiscount=[]; //contains ['ticketid'=>'couponcode'] for valid coupons
     //    $sideeventnotes = []; //DonaldMar13 commented by DonaldMar14
         $order_expires_time = Carbon::now()->addMinutes(config('attendize.checkout_timeout_after'));
 
@@ -96,6 +97,7 @@ class EventCheckoutController extends Controller
         $validation_rules = [];
         $validation_messages = [];
         $tickets = [];
+        $coupon_flag = [];
         $order_total = 0;
         $total_ticket_quantity = 0;
         $booking_fee = 0;
@@ -146,79 +148,60 @@ class EventCheckoutController extends Controller
             }
 
             /*
-            * Coupon code array validation (Frank)
+            * Coupon code array validation (Frank) edited April
             *
             */
-
-           $coupon_flag = false;
-
            $coupon_code = $request->get('coupon_' . $ticket_id);
-
-
            if ($coupon_code!='') {
-
                 $coupon_single = Coupon::where('coupon_code','=', $coupon_code)->first();
-
-
                 if ($coupon_single) {
-
-
                     if ($coupon_single->state=='Valid') {
-
-
-                        $coupon_flag = true;
-
-
                         if ($coupon_single->ticket_id==$ticket_id && $coupon_single->discount!='') {
-
-
+                            $coupon_flag[] = $coupon_code;
+                            $order_has_validdiscount[$ticket->id] = $coupon_code;
                             $order_total = $order_total + ($current_ticket_quantity * $ticket->price)  - ($ticket->price*($coupon_single->discount/100));
 
                             $discount_array[] = $coupon_single->discount;
                             $discount_ticket_title[] = $coupon_single->ticket;
                             $amount_array[] ='';
                             $amount_title[] ='';
-
-
                         }
-
                         if ($coupon_single->ticket_id==$ticket_id && $coupon_single->exact_amount!='') {
-
+                            $coupon_flag[] = $coupon_code;
+                            $order_has_validdiscount[$ticket->id] = $coupon_code;
                             $order_total = $order_total + $coupon_single->exact_amount;
-
                             $amount_array[] =$coupon_single->exact_amount;
                             $amount_title[] =$coupon_single->ticket;
                             $discount_array[] = '';
                             $discount_ticket_title[] = '';
-
                         }
-
                         else if ($coupon_single->ticket_id!=$ticket_id) {
-
-
                             $order_total = $order_total + ($current_ticket_quantity * $ticket->price);
-                            $amount_array[] ='';
-                            $amount_title[] ='';
-                            $discount_array[] = '';
-                            $discount_ticket_title[] = '';
-
+                            $amount_array[] =null;
+                            $amount_title[] =null;
+                            $discount_array[] = null;
+                            $discount_ticket_title[] = null;
                         }
-
                     }
                      else{
-
                     //$coupon_state = 'Used';
-
+                            $order_total = $order_total + ($current_ticket_quantity * $ticket->price);
+                            $amount_array[] =null;
+                            $amount_title[] =null;
+                            $discount_array[] = null;
+                            $discount_ticket_title[] = null;
                     }
-
                 }
                 else{
                     //$coupon_state = 'Invalid';
+                            $order_total = $order_total + ($current_ticket_quantity * $ticket->price);
+                            $amount_array[] =null;
+                            $amount_title[] =null;
+                            $discount_array[] = null;
+                            $discount_ticket_title[] = null;
                 }
             }
-
             else{
-
                 $order_total = $order_total + ($current_ticket_quantity * $ticket->price);
                             $amount_array[] ='';
                             $amount_title[] ='';
@@ -323,6 +306,7 @@ class EventCheckoutController extends Controller
             'reserved_tickets_id'     => $reservedTickets->id,
             'order_total'             => $order_total,
             'donation'                => $donation, //DonaldFeb9
+            'order_has_validdiscount' => $order_has_validdiscount,
             'order_subscription'      => $subscription,
         //    'sideeventnotes'          => $sideeventnotes, //DonaldMar13 commented by DonaldMar14
             'booking_fee'             => $booking_fee,
@@ -356,6 +340,21 @@ class EventCheckoutController extends Controller
         exit('Please enable Javascript in your browser.');
     }
 
+    //added by DonaldApril25
+    public function organiserSkipPayment($event_id)
+    {
+        $order_session = session()->get('ticket_order_' . $event_id);
+        $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
+        $data = $order_session + [
+                'event'           => Event::findorFail($order_session['event_id']),
+                'secondsToExpire' => $secondsToExpire,
+                'is_embedded'     => $this->is_embedded,
+            ];
+        if ($this->is_embedded) {
+            return view('Public.ViewEvent.Embedded.EventPageCheckout', $data);
+        }
+        return view('Public.ViewEvent.EventPageCheckoutSuccess', $data);
+    }
 
     /**
      * Added by DonaldMar16 to show order side events page
@@ -1086,11 +1085,19 @@ class EventCheckoutController extends Controller
         $validation_messages = $ticket_order['validation_messages'];
         $order->rules = $order->rules + $validation_rules;
         $order->messages = $order->messages + $validation_messages;
-        if (!$order->validate($request->all())) {
-            return response()->json([
+        if (!$order->validate($request->all()) && !isset($ticket_order['donation'])) {
+            /*return response()->json([
                 'status'   => 'error',
                 'messages' => $order->errors(),
-            ]);
+            ]);*/
+            $data = [
+                'event' => $event,
+                'callbackurl' => 'createorder',
+                'messages' => $order->errors(),
+                'request_details' => $request,
+                'parameters' => ['event_id' => $event_id]
+            ];
+            return view('Public.ViewEvent.EventPageErrors', $data);
         }
         /*
          * Add the request data to a session in case payment is required off-site
@@ -1209,10 +1216,18 @@ class EventCheckoutController extends Controller
             }
 
             if ($error) {
-                return response()->json([
+                /*return response()->json([
                     'status'  => 'error',
                     'message' => $error,
-                ]);
+                ]);*/
+            $data = [
+                'event' => $event,
+                'callbackurl' => null,
+                'messages' => $error,
+                'request_details' => null,
+                'parameters' => null
+            ];
+            return view('Public.ViewEvent.EventPageErrors', $data);
             }
     //    }
         /*
@@ -1281,6 +1296,7 @@ class EventCheckoutController extends Controller
 
             $order = new Order();
             $ticket_order = session()->get('ticket_order_' . $event_id);
+            //dd($ticket_order);
             $request_data = $ticket_order['request_data'][0];
             $event = Event::findOrFail($ticket_order['event_id']);
             $attendee_increment = 1;
@@ -1431,7 +1447,7 @@ class EventCheckoutController extends Controller
                 }
             }
 
-    //added by DonaldFeb13
+    //added by DonaldFeb13 DonaldApril27
     if($ticket_order['donation']>0){
 
     $orderItem = new OrderItem();
@@ -1441,6 +1457,14 @@ class EventCheckoutController extends Controller
     $orderItem->unit_price = $ticket_order['donation'];
     $orderItem->unit_booking_fee = 0;
     $orderItem->save();
+    }
+    if(count($ticket_order['order_has_validdiscount'])>0){
+        foreach($ticket_order['order_has_validdiscount'] as $assoctickeid=>$usedcouponcode){
+            $couponobj = Coupon::where('coupon_code','=', $usedcouponcode)->first();
+            $couponobj->user = $order->id;
+            $couponobj->state = 'Used';
+            $couponobj->save();
+        }
     }
     //end of addition DonaldFeb13
 
@@ -1595,6 +1619,12 @@ class EventCheckoutController extends Controller
 
        $remove_ticket_qty = $ordered_ticket['qty'];
        $remove_ticket_amount = $ordered_ticket['price'];
+
+       //remove the discount entry from ordervaliddiscount if it has a discount
+       if(array_key_exists($delete_ticket, $availables['order_has_validdiscount'])){
+          $remove_ticket_amount -= $ordered_ticket['price'] * $discount[$counter] * 0.01;
+          unset($availables['order_has_validdiscount'][$delete_ticket]);
+       }
 
        //reduce the amount of tickets
        $availables['total_ticket_quantity'] = $availables['total_ticket_quantity'] - $remove_ticket_qty;

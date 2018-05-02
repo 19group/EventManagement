@@ -12,8 +12,17 @@
      @include('Public.ViewEvent.Partials.OrderSummary')
 
      <div class="">
-       <a href="{{ route('showEventCheckout', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">Checkout</a>
-       <!--for testing without pesapal: uncomment this--<a href="/e/{{$event_id}}/pesament/create?is_embedded=0#order_form" class="btn btn-lg btn-primary pull-right">CheckOut</a>-->
+      @if(Utils::userOwns($event))
+        <?php if($order_total + $donation > 0){ ?>
+        <a class="btn btn-lg btn-primary" href="{{ route('skippayment', ['event_id'=> $event_id]) }}">Skip Paying</a>  <?php } ?>
+        <?php if($order_total + $donation == 0 && $order_has_validdiscount>0){?>
+       <a href="{{ route('skippayment', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">Order</a> <?php }elseif($order_total + $donation > 0){ ?>
+       <a href="{{ route('showEventCheckout', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">Go Pay</a> <?php } ?>
+      @else
+       <?php if($order_total + $donation == 0 && $order_has_validdiscount>0){?>
+       <a href="{{ route('skippayment', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">Checkout</a> <?php }elseif($order_total + $donation > 0){ ?>
+       <a href="/e/{{$event_id}}/pesament/create?is_embedded=0#order_form" class="btn btn-lg btn-primary pull-right">Checkout</a><?php } ?>
+      @endif
     </div>
      </div>
 

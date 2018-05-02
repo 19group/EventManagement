@@ -528,6 +528,11 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
             'uses' => 'EventCheckoutController@updateBooking',
         ]);
 
+         Route::get('{event_id}/skippayment/',[
+            'as' => 'skippayment',
+            'uses' => 'EventCheckoutController@organiserSkipPayment',
+        ]);
+
 
          Route::get('{event_id}/accommodations/', [
             'as'   => 'showAccommodations',
