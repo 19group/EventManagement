@@ -353,7 +353,7 @@ class EventCheckoutController extends Controller
         if ($this->is_embedded) {
             return view('Public.ViewEvent.Embedded.EventPageCheckout', $data);
         }
-        return view('Public.ViewEvent.EventPageCheckout2', $data);
+        return view('Public.ViewEvent.EventPageCheckoutSuccess', $data);
     }
 
     /**
