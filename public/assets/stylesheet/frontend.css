@@ -28,7 +28,7 @@ padding-bottom:15px;
   left: 30%;
   opacity: 0;
   width: 40%;
-  color: #444;
+  color:#e80b0b;
   padding: 10px;
   text-align: center;
   background-color: #fff;
@@ -149,4 +149,9 @@ html,body{height:100%}body{font-family:'Open Sans',sans-serif}table{margin:0}lab
 .donation-price-container{
 /* border: 1px solid rgba(221, 221, 221, 0.40); */
  padding-top: 5px;
+}
+.alert-danger{
+ border: 0.1px solid #faccd1;
+    padding: .8rem 1.5rem;
+    margin: 2rem auto;
 }
