@@ -75,10 +75,12 @@ class EventDashboardController extends MyBaseController
         }
 
         foreach ($event->tickets as $ticket) {
-            $tickets_data[] = [
-                'value' => $ticket->quantity_sold,
-                'label' => $ticket->title,
-            ];
+            if(!in_array($ticket->type, ['SIDEEVENT','extra','extras'])){
+                $tickets_data[] = [
+                    'value' => $ticket->quantity_sold,
+                    'label' => $ticket->title,
+                ];
+            }
         }
 
         $data = [

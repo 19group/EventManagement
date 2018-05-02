@@ -52,7 +52,9 @@
         </div>
         <div class="col-sm-3">
             <div class="stat-box">
-                <h3>{{ $event->tickets->sum('quantity_sold') }}</h3>
+                <!--h3>{{ $event->tickets->sum('quantity_sold') }}</h3-->
+                <?php $sum=0; foreach($event->tickets as $ticke){ if(!in_array($ticke->type, ['SIDEEVENT','extra','extras'])){ $sum += $ticke->quantity_sold;}} ?>
+                <h3>{{ $sum }}</h3>
                 <span>Tickets Sold</span>
             </div>
         </div>
@@ -82,7 +84,8 @@
                             <h3 class="panel-title">
                                 Tickets Sold
                         <span style="color: green; float: right;">
-                            {{$event->tickets->sum('quantity_sold')}} Total
+                            <!--{{$event->tickets->sum('quantity_sold')}} Total-->
+                            {{ $sum }} Total
                         </span>
                             </h3>
                         </div>
