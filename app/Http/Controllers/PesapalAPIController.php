@@ -56,11 +56,11 @@ class PesapalAPIController extends Controller
             $tracking_id = Input::get('pesapal_transaction_tracking_id');
 
            $response =  Pesapal::getTransactionStatus($notification_type, $merchant_reference, $tracking_id);
-										
+
 											$status = $response['status'];
 
         } else {
-            //uncomment this (next two lines) for testing without pesapal            
+            //uncomment this (next two lines) for testing without pesapal
             /*$tracking_id = 'DHNC5849NDJ19'; $status = 'COMPLETED';
             goto skip;*/
             throw new PesapalException("incorrect parameters in request");
@@ -74,13 +74,11 @@ class PesapalAPIController extends Controller
 
         $order_session = session()->get('ticket_order_' . $event_id);
 
-
-
         $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
 
         $data = $order_session + [
                 'event'           => Event::findorFail($order_session['event_id']),
-                'secondsToExpire' => $secondsToExpire,
+                'secondsToExpire' => 120,
                 'is_embedded'     => $this->is_embedded,
             ];
 
@@ -88,12 +86,22 @@ class PesapalAPIController extends Controller
             return view('Public.ViewEvent.Embedded.EventPageCheckout', $data);
         }
 
-		if($status == "COMPLETED"){
-		return view('Public.ViewEvent.EventPageCheckout2', $data);
-		}
-		else {
-		return view ('Public.ViewEvent.EventPageCheckout');
-		}
+								if($status == "COMPLETED"){
+								return view('Public.ViewEvent.EventPageCheckoutSuccess', $data);
+								}
+								elseif ($status == "FAILED") {
+									session()->flash('message', 'Payment has failed, please retry the payment and check your email for more information');
+									//alert("Payment has failed, please retry the payment again");
+							  return view ('Public.ViewEvent.EventPageCheckout',$data);
+								}
+								elseif ($status == "CANCELLED") {
+									session()->flash('message', 'Payment has been cancelled, please retry the payment again');
+							  return view ('Public.ViewEvent.EventPageCheckout',$data);
+								}
+								elseif ($status == "PENDING"){
+									session()->flash('message', 'Payment is still Pending Verification, please refresh the page in a short while');
+									//return view('Public.ViewEvent.EventPageCheckoutSuccess', $data);
+								}
 
 
 

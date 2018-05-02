@@ -61,7 +61,7 @@ class EventCheckoutController extends Controller
         /*
          * Order expires after X min
          */
-
+        $subscription=null;
         $donation = 0; //DonaldFeb9
         $order_has_validdiscount=[]; //contains ['ticketid'=>'couponcode'] for valid coupons
     //    $sideeventnotes = []; //DonaldMar13 commented by DonaldMar14
@@ -75,7 +75,9 @@ class EventCheckoutController extends Controller
                 'message' => 'No tickets selected',
             ]);
         }
-
+        if($request->has('subscription')){
+          $subscription='Subscribed';
+        }
         $ticket_ids = $request->get('tickets');
 
                 $first_name = $request->get('first_name');
@@ -305,6 +307,7 @@ class EventCheckoutController extends Controller
             'order_total'             => $order_total,
             'donation'                => $donation, //DonaldFeb9
             'order_has_validdiscount' => $order_has_validdiscount,
+            'order_subscription'      => $subscription,
         //    'sideeventnotes'          => $sideeventnotes, //DonaldMar13 commented by DonaldMar14
             'booking_fee'             => $booking_fee,
             'organiser_booking_fee'   => $organiser_booking_fee,
@@ -339,7 +342,7 @@ class EventCheckoutController extends Controller
 
     //added by DonaldApril25
     public function organiserSkipPayment($event_id)
-    {        
+    {
         $order_session = session()->get('ticket_order_' . $event_id);
         $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
         $data = $order_session + [
@@ -350,7 +353,7 @@ class EventCheckoutController extends Controller
         if ($this->is_embedded) {
             return view('Public.ViewEvent.Embedded.EventPageCheckout', $data);
         }
-        return view('Public.ViewEvent.EventPageCheckout2', $data);
+        return view('Public.ViewEvent.EventPageCheckoutSuccess', $data);
     }
 
     /**
@@ -1314,6 +1317,7 @@ class EventCheckoutController extends Controller
             $order->email = $request_data['order_email'];
             $order->order_status_id = isset($request_data['pay_offline']) ? config('attendize.order_awaiting_payment') : config('attendize.order_complete');
             $order->amount = $ticket_order['order_total'];
+            $order->notes = $ticket_order['order_subscription'];
         /**    $order->notes = empty($ticket_order['sideeventnotes']) ? null : implode('<==>',$ticket_order['sideeventnotes']);  **///commented by DonaldMar14
             $order->booking_fee = $ticket_order['booking_fee'];
             $order->organiser_booking_fee = $ticket_order['organiser_booking_fee'];
