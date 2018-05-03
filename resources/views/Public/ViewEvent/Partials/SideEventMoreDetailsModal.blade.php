@@ -26,25 +26,68 @@
            </div>
            <div class="col-sm-12">
             <div class="col-sm-8 field-label">
-             <span>
+<!--------------------ticket_main_photo----------------------------//-->
+<?php if($minevent->ticket_main_photo){
+  $mainphotopath=$minevent->ticket_main_photo;
+}elseif($minevent->ticket_photos){
+  $mainphotopath=explode(config('attendize.sideevent_photos_eximploders'),$minevent->ticket_photos)[0];
+}
+if(isset($mainphotopath)){
+  ///display script here using <img src = "{{asset($mainphotopath)}}">
+}?>
+<!--------------------end-ticket_main_photo------------------------//-->
 
+<!--------------------side-event-more-photos----------------------//-->
+<?php if($minevent->ticket_photos){
+  $morephotospaths=explode(config('attendize.sideevent_photos_eximploders'),$minevent->ticket_photos);
+  foreach($morephotospaths as $morephoto){
+    //display each photo script using <img src="{{asset($morephoto)}}"
+  }
+}?>
+<!------------------end-side-event-more-photos---------------------//-->
+             <span>
               <?php if($minevent->ticket_offers!=NULL){
                        $ticket_offers = explode('+++',$minevent->ticket_offers);
 
-                       echo "<p><b> Please select the schedule you prefer </b></p>";
+                       echo "<p><b> Ticket Schedules for this side event </b></p>";
                        for($i=0;$i<count($ticket_offers);++$i){
                            $sched = explode('<==>',$ticket_offers[$i]);
                            $count = $i+1;
                            echo '<div class="row">';
                            echo '<p>';
-                           echo'<input type="radio" name="mydates" value="'.$ticket_offers[$i].'" required>'.date('d-M-Y H:i', strtotime($sched[0])).' to '.date('d-M-Y H:i', strtotime($sched[1])).'';
+                           echo date('d-M-Y H:i', strtotime($sched[0])).' to '.date('d-M-Y H:i', strtotime($sched[1])).'';
                            echo '</p>';
                            echo '</div>';
                        } ?>
              <?php } ?>
-
              </span>
             </div>
+
+<!---------------------------side-event-pages-------------------------------//-->
+<?php if($minevent->ticket_extras){
+  $sideeventpages=explode(config('attendize.sideevent_pages_eximploders'), $ticket->ticket_extras);
+  foreach($sideeventpages as $sidepage){
+    list($pagetitle,$pagediscription,$pagephotosstring)=explode(config('attendize.sideevent_singlepage_eximploders'),$sidepage);
+    $pagephotospaths=explode(config('attendize.sideevent_photos_eximploders'),$pagephotosstring);
+    /*
+     * $pagetitle is a title for a page
+     * $pagediscription is a formulatable disription: can be paragraph only, list only or intro
+     * paragraph plus a list... depends on the hash character usages
+     * $pagephotospaths is an array of page-photos-paths where foreach($arrayitem as $srcpath) can
+     * be displayed using <img src = "{{asset($srcpath)}}"
+     */
+    $discripts=explode('#', $pagediscription);
+    if(count($discripts)==1){
+      //display discription as a single paragraph
+    }elseif(strlen(trim($discripts[0]))==0){
+      //display discription as a list of discripts
+    }else{
+      //display $discripts[0] as an intro paragraph and the rest as a list of items
+    }
+  }
+}?>
+<!-------------------------end-side-event-pages-----------------------------//-->
+
             <div class="col-sm-4 field-label">
              <div>
               <span><b>{{money($minevent->price, $event->currency)}}</b></span>
@@ -82,8 +125,7 @@
 
         </div>
         <div class="modal-footer">
-         <button class="btn btn-danger" data-dismiss="modal">Cancel</button>
-         <button class="btn btn-success" type="submit" value="submit">Save</button>
+         <button class="btn btn-danger" data-dismiss="modal">Close</button>
         </div>
        </form>
        <script>
