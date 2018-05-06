@@ -180,7 +180,7 @@ Route::group(['prefix' => 'e'], function () {
        'as'   => 'removeOrderTicket',
        'uses' => 'EventCheckoutController@removeOrderTicket',
    ]);
-   
+
    Route::get('{event_id}/{page}/create/removeOrderTicket/{delete_ticket}', [
        'as'   => 'removeOrderTicket',
        'uses' => 'EventCheckoutController@removeOrderTicket',
@@ -455,6 +455,8 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
             'as'   => 'showEditTicket',
             'uses' => 'EventTicketsController@showEditTicket',
         ]);
+
+
         Route::post('{event_id}/tickets/edit/{ticket_id}', [
             'as'   => 'postEditTicket',
             'uses' => 'EventTicketsController@postEditTicket',
@@ -540,6 +542,19 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
             'as'   => 'showCreateAccomodation',
             'uses' => 'EventTicketsController@showBookingModal',
         ]);
+
+        Route::get('{event_id}/accommodation/edit/{ticket_id}', [
+            'as'   => 'showEditAccommodation',
+            'uses' => 'EventTicketsController@showEditAccommodation',
+        ]);
+
+        Route::post('{event_id}/accommodation/edit/{ticket_id}', [
+            'as'   => 'postEditAccommodation',
+            'uses' => 'EventTicketsController@postEditAccommodation',
+        ]);
+
+
+
           Route::post('{event_id}/create/accommodation', [
             'as'   => 'postCreateAccommodation',
             'uses' => 'EventTicketsController@postCreateAccommodation',

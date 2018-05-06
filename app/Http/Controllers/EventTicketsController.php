@@ -73,6 +73,17 @@ class EventTicketsController extends MyBaseController
 
         return view('ManageEvent.Modals.EditTicket', $data);
     }
+    public function showEditAccommodation($event_id, $ticket_id)
+    {
+        $data = [
+            'event'  => Event::scope()->find($event_id),
+            'ticket' => Ticket::scope()->find($ticket_id),
+            'linkable_tickets' =>Ticket::where('type','Extra')->get()->pluck('title', 'id'),
+        ];
+
+        return view('ManageEvent.Modals.EditAccommodation', $data);
+    }
+
 
     /**
      * Show the create ticket modal
@@ -187,9 +198,7 @@ class EventTicketsController extends MyBaseController
 
     public function postCreateAccommodation(Request $request, $event_id)
     {
-
         //dd($request->all());
-
         $ticket = Ticket::createNew();
         $f=0; $miss=0; $toc=0; $ticketoffers=[];
         while($miss<3){
@@ -252,6 +261,79 @@ class EventTicketsController extends MyBaseController
 
         return redirect()->back();
     }
+
+
+    public function postEditAccommodation(Request $request, $event_id, $ticket_id)
+    {
+        //dd($request->all());
+        $ticket = Ticket::scope()->findOrFail($ticket_id);
+        $f=0; $ticketoffers=[]; $toc=0; $mis=0;
+        while($mis<3){
+          if($request->get("ticket_offer_$f")){
+            $ticketoffers[$toc]=$request->get("ticket_offer_$f");++$f;++$toc;$mis=0;
+          }else{++$mis;++$f;}
+        }
+        $fad=0; $misss=0; $tocc=0; $ticketofferss=[];
+        while($misss<3){
+          if($request->get("ticket_offerad_$fad")){
+            $ticketofferss[$tocc]=$request->get("ticket_offerad_$fad");++$tocc;++$fad;$misss=0;
+          }else{++$misss;++$fad;}
+        }
+        $ticketoffers = array_merge($ticketoffers,$ticketofferss);
+
+
+        $validation_rules['quantity_available'] = [
+            'integer',
+            'min:' . ($ticket->quantity_sold + $ticket->quantity_reserved)
+        ];
+        $validation_messages['quantity_available.min'] = 'Quantity available can\'t be less the amount sold or reserved.';
+
+        $ticket->rules = $validation_rules + $ticket->rules;
+        $ticket->messages = $validation_messages + $ticket->messages;
+
+        if (!$ticket->validate($request->all())) {
+            return response()->json([
+                'status'   => 'error',
+                'messages' => $ticket->errors(),
+            ]);
+        }
+
+        $ticket->title = $request->get('title');
+        $ticket->status = $request->get('status');
+        $ticket->quantity_available = !$request->get('quantity_available') ? null : $request->get('quantity_available');
+        $ticket->start_sale_date = $request->get('start_sale_date') ? Carbon::createFromFormat('d-m-Y H:i',
+            $request->get('start_sale_date')) : null;
+        $ticket->end_sale_date = $request->get('end_sale_date') ? Carbon::createFromFormat('d-m-Y H:i',
+            $request->get('end_sale_date')) : null;
+        $ticket->price = $request->get('price');
+        $ticket->min_per_person = $request->get('min_per_person');
+        $ticket->max_per_person = $request->get('max_per_person');
+        $ticket->description = $request->get('description');
+        $ticket->type = $request->get('type');
+        $ticket->ticket_offers = empty($ticketoffers) ? null : implode('#@#',$ticketoffers);
+        $ticket->ticket_extras = empty($ticketextras) ? null : implode('{+}',$ticketextras);
+        $ticket->is_hidden = $request->get('is_hidden') ? 1 : 0;
+
+        $ticket->save();
+
+        session()->flash('message', 'Successfully Edited Ticket');
+
+        /*return response()->json([
+            'status'      => 'success',
+            'id'          => $ticket->id,
+            'message'     => 'Refreshing...',
+            'redirectUrl' => route('showEventTickets', [
+                'event_id' => $event_id,
+            ]),
+        ]);*/
+
+        return redirect()->back();
+    }
+
+
+
+
+
 
 
 
