@@ -8,7 +8,7 @@ Add an Experience at {{$event->title}}
 </h1>
 </div>
 
-  <div class="col-md-4 pull-right">
+  <div class="col-sm-12 col-lg-4 pull-right col-event-order">
 
    @include('Public.ViewEvent.Partials.OrderSummary')
 
@@ -18,7 +18,7 @@ Add an Experience at {{$event->title}}
 
    </div>
 
-   <div class="col-md-8">
+   <div class="col-sm-12 col-lg-8 col-event-details">
 
         @if($event->start_date->isPast())
             <div class="alert alert-boring">
@@ -46,7 +46,7 @@ Add an Experience at {{$event->title}}
                             <div class="col-xs-4 side-event-image">
                               <?php if($minevent->ticket_main_photo){ ?>
                                <img height=180 width=150 src="{{asset($minevent->ticket_main_photo)}}" />
-                              <?php }elseif($minevent->ticket_photos){ 
+                              <?php }elseif($minevent->ticket_photos){
                                 $assumedefault=explode(config('attendize.sideevent_photos_eximploders'),$minevent->ticket_photos)[0];?>
                                <img height=180 width=150 src="{{asset($assumedefault)}}" />
                               <?php }else{ ?>

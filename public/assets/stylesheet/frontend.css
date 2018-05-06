@@ -155,12 +155,22 @@ html,body{height:100%}body{font-family:'Open Sans',sans-serif}table{margin:0}lab
     padding: .8rem 1.5rem;
     margin: 2rem auto;
 }
-.col-md-8{
+.col-event-details{
  position:inherit !important;
 }
-.col-md-4{
+.col-event-order{
  margin-bottom: 10px;
 }
 .modal-dialog{
  margin: 10px auto !important;
+}
+@media (min-width: 720px){
+ .modal-dialog {
+     max-width: 700px !important;
+ }
+}
+@media (min-width: 620px){
+ .modal-dialog {
+     max-width: 600px !important;
+ }
 }

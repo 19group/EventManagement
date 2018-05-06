@@ -18,6 +18,39 @@
             <div class="col-sm-12 field-label">
              <span>
               {{$minevent->description}}
+
+              @php
+              $days = explode ("[+]",$minevent->ticket_extras);
+              @endphp
+
+              @foreach ($days as $day)
+
+              @php
+              $contents = explode("{#}",$day,3);
+              $count = 0;
+              @endphp
+
+              @foreach ($contents as $content)
+
+              @if($count == 0)
+              <h4><b>{{$contents[0]}}</b></h4>
+              @endif
+
+              @if($count == 1)
+              <p>{{$content}}</p>
+              @endif
+
+              @php
+              $count = $count + 1;
+              @endphp
+              @endforeach
+
+              @endforeach
+
+
+             <span>
+
+             </span>
              </span>
             </div>
             <div class="col-sm-9">
@@ -87,7 +120,7 @@
       <!--display discription as a list of discripts-->
       <ul>
         @foreach($discripts as $discript)
-        <li><!--{{$discript}}--></li> 
+        <li><!--{{$discript}}--></li>
         @endforeach
       </ul>
     @else
