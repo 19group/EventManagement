@@ -90,12 +90,12 @@ class PesapalAPIController extends Controller
 								return view('Public.ViewEvent.EventPageCheckoutSuccess', $data);
 								}
 								elseif ($status == "FAILED") {
-									session()->flash('message', 'Payment has failed, please retry the payment and check your email for more information');
+									session()->flash('message', 'Payment has failed, please check your email first, before continuing with another payment, most cases your bank has rejected the payment, thus a confirmation with your bank is sometimes required.');
 									//alert("Payment has failed, please retry the payment again");
 							  return view ('Public.ViewEvent.EventPageCheckout',$data);
 								}
 								elseif ($status == "CANCELLED") {
-									session()->flash('message', 'Payment has been cancelled, please retry the payment again');
+									session()->flash('message', 'Payment has been cancelled, make sure card details are correct, and please retry the payment again');
 							  return view ('Public.ViewEvent.EventPageCheckout',$data);
 								}
 								elseif ($status == "PENDING"){
