@@ -155,3 +155,12 @@ html,body{height:100%}body{font-family:'Open Sans',sans-serif}table{margin:0}lab
     padding: .8rem 1.5rem;
     margin: 2rem auto;
 }
+.col-md-8{
+ position:inherit !important;
+}
+.col-md-4{
+ margin-bottom: 10px;
+}
+.modal-dialog{
+ margin: 10px auto !important;
+}
