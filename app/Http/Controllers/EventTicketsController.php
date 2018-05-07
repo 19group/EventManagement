@@ -158,11 +158,19 @@ class EventTicketsController extends MyBaseController
             }
           }else{++$mix;++$g;}
         }
-        if (!$ticket->validate($request->all())) {
-            return response()->json([
+        if (!$ticket->validate($request->all())) {          
+        $data = [
+            'event' => Event::findOrFail($ticket->event_id),
+            'callbackurl' => null,
+            'messages' =>  $ticket->errors(),
+            'request_details' => null,
+            'parameters' => null
+        ];
+        return view('Public.ViewEvent.EventPageErrors', $data);
+            /*return response()->json([
                 'status'   => 'error',
                 'messages' => $ticket->errors(),
-            ]);
+            ]);*/
         }
 
         $ticket->event_id = $event_id;
@@ -184,15 +192,15 @@ class EventTicketsController extends MyBaseController
         $ticket->save();
 
         session()->flash('message', 'Successfully Created Ticket');
-
-        return response()->json([
+        return redirect()->route('showEventTickets', ['event_id' => $event_id]);
+        /*return response()->json([
             'status'      => 'success',
             'id'          => $ticket->id,
             'message'     => 'Refreshing...',
             'redirectUrl' => route('showEventTickets', [
                 'event_id' => $event_id,
             ]),
-        ]);
+        ]); */
     }
 
 
@@ -222,11 +230,19 @@ class EventTicketsController extends MyBaseController
             }
           }else{++$mix;++$g;}
         }
-        if (!$ticket->validate($request->all())) {
-            return response()->json([
+        if (!$ticket->validate($request->all())) {          
+        $data = [
+            'event' => Event::findOrFail($ticket->event_id),
+            'callbackurl' => null,
+            'messages' =>  $ticket->errors(),
+            'request_details' => null,
+            'parameters' => null
+        ];
+        return view('Public.ViewEvent.EventPageErrors', $data);
+            /*return response()->json([
                 'status'   => 'error',
                 'messages' => $ticket->errors(),
-            ]);
+            ]);*/
         }
 
         $ticket->event_id = $event_id;
@@ -291,11 +307,19 @@ class EventTicketsController extends MyBaseController
         $ticket->rules = $validation_rules + $ticket->rules;
         $ticket->messages = $validation_messages + $ticket->messages;
 
-        if (!$ticket->validate($request->all())) {
-            return response()->json([
+        if (!$ticket->validate($request->all())) {          
+        $data = [
+            'event' => Event::findOrFail($ticket->event_id),
+            'callbackurl' => null,
+            'messages' =>  $ticket->errors(),
+            'request_details' => null,
+            'parameters' => null
+        ];
+        return view('Public.ViewEvent.EventPageErrors', $data);
+            /*return response()->json([
                 'status'   => 'error',
                 'messages' => $ticket->errors(),
-            ]);
+            ]);*/
         }
 
         $ticket->title = $request->get('title');
@@ -374,22 +398,33 @@ class EventTicketsController extends MyBaseController
         $ticket->is_paused = ($ticket->is_paused == 1) ? 0 : 1;
 
         if ($ticket->save()) {
-            return response()->json([
+
+            return redirect()->back();
+            session()->flash('Ticket Successfully Updated.');
+            /*return response()->json([
                 'status'  => 'success',
                 'message' => 'Ticket Successfully Updated',
                 'id'      => $ticket->id,
-            ]);
+            ]); */
         }
 
         Log::error('Ticket Failed to pause/resume', [
             'ticket' => $ticket,
         ]);
 
-        return response()->json([
+        $data = [
+            'event' => Event::findOrFail($ticket->event_id),
+            'callbackurl' => null,
+            'messages' => 'Sorry, something beyond our realization has gone wrong. Please try again',
+            'request_details' => null,
+            'parameters' => null
+        ];
+        return view('Public.ViewEvent.EventPageErrors', $data);
+        /*return response()->json([
             'status'  => 'error',
             'id'      => $ticket->id,
             'message' => 'Whoops! Looks like something went wrong. Please try again.',
-        ]);
+        ]); */
     }
 
     /**
@@ -407,11 +442,15 @@ class EventTicketsController extends MyBaseController
          * Don't allow deletion of tickets which have been sold already.
          */
         if ($ticket->quantity_sold > 0) {
-            return response()->json([
-                'status'  => 'error',
-                'message' => 'Sorry, you can\'t delete this ticket as some have already been sold',
-                'id'      => $ticket->id,
-            ]);
+
+            $data = [
+                'event' => Event::findOrFail($ticket->event_id),
+                'callbackurl' => null,
+                'messages' => 'Sorry, you can\'t delete this ticket as some have already been sold',
+                'request_details' => null,
+                'parameters' => null
+            ];
+            return view('Public.ViewEvent.EventPageErrors', $data);
         }
 
         $event_id = $ticket->event_id;
@@ -426,11 +465,20 @@ class EventTicketsController extends MyBaseController
             'ticket' => $ticket,
         ]);
 
-        return response()->json([
+
+        $data = [
+            'event' => Event::findOrFail($ticket->event_id),
+            'callbackurl' => null,
+            'messages' => 'Sorry, something beyond our realization has gone wrong. Please try again',
+            'request_details' => null,
+            'parameters' => null
+        ];
+        return view('Public.ViewEvent.EventPageErrors', $data);
+        /*return response()->json([
             'status'  => 'error',
             'id'      => $ticket->id,
             'message' => 'Whoops! Looks like something went wrong. Please try again.',
-        ]);
+        ]);*/
     }
 
     /**
@@ -470,10 +518,19 @@ class EventTicketsController extends MyBaseController
         $ticket->messages = $validation_messages + $ticket->messages;
 
         if (!$ticket->validate($request->all())) {
-            return response()->json([
+
+        $data = [
+            'event' => Event::findOrFail($ticket->event_id),
+            'callbackurl' => null,
+            'messages' =>  $ticket->errors(),
+            'request_details' => null,
+            'parameters' => null
+        ];
+        return view('Public.ViewEvent.EventPageErrors', $data);
+            /*return response()->json([
                 'status'   => 'error',
                 'messages' => $ticket->errors(),
-            ]);
+            ]);*/
         }
 
         $ticket->title = $request->get('title');
@@ -493,14 +550,15 @@ class EventTicketsController extends MyBaseController
 
         $ticket->save();
 
-        return response()->json([
+        return redirect()->route('showEventTickets', ['event_id' => $event_id]);
+        /*return response()->json([
             'status'      => 'success',
             'id'          => $ticket->id,
             'message'     => 'Refreshing...',
             'redirectUrl' => route('showEventTickets', [
                 'event_id' => $event_id,
             ]),
-        ]);
+        ]); */
     }
 
     /**
@@ -521,9 +579,12 @@ class EventTicketsController extends MyBaseController
             $sort++;
         }
 
-        return response()->json([
+
+        session()->flash('Ticket Order Successfully Updated.');
+        return redirect()->back();
+        /*return response()->json([
             'status'  => 'success',
             'message' => 'Ticket Order Successfully Updated',
-        ]);
+        ]); */
     }
 }

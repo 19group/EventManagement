@@ -141,11 +141,19 @@ class EventCheckoutController extends Controller
             $validator = Validator::make(['ticket_' . $ticket_id => (int)$request->get('ticket_' . $ticket_id)],
                 $quantity_available_validation_rules, $quantity_available_validation_messages);
 
-            if ($validator->fails()) {
-                return response()->json([
+            if ($validator->fails()) {                
+                $errordata = [
+                    'event' => $event,
+                    'callbackurl' => null,
+                    'messages' => $validator->messages()->toArray(),
+                    'request_details' => null,
+                    'parameters' => ['event_id' => $event_id]
+                ];
+                return view('Public.ViewEvent.EventPageErrors', $errordata);
+                /*return response()->json([
                     'status'   => 'error',
                     'messages' => $validator->messages()->toArray(),
-                ]);
+                ]);*/
             }
 
             /*
@@ -338,7 +346,19 @@ class EventCheckoutController extends Controller
         /*
          * Maybe display something prettier than this?
          */
-        exit('Please enable Javascript in your browser.');
+        //exit('Please enable Javascript in your browser.');
+
+        return $this->javascriptError($event_id);
+    }
+
+    public function javascriptError($event_id){
+        $errordata = [
+            'event' => Event::findOrFail($event_id),
+            'callbackurl' => 'createorder',
+            'messages' => "Javascript is not enabled in your browser. Please enable it first before you continue",
+            'parameters' => ['event_id' => $event_id]
+        ];
+        return view('Public.ViewEvent.EventPageErrors', $errordata);
     }
 
     //added by DonaldApril25
@@ -397,7 +417,8 @@ class EventCheckoutController extends Controller
         /*
          * Maybe display something prettier than this?
          */
-        exit('Please enable Javascript in your browser.');
+        //exit('Please enable Javascript in your browser.');
+        return $this->javascriptError($event_id);
         }
 
         $data = $order_session + [
@@ -756,9 +777,9 @@ class EventCheckoutController extends Controller
          * If we're this far assume everything is OK and redirect them
          * to the the checkout page.
          */
-         return response()->redirectToRoute('OrderSideEvents', [
-             'event_id'          => $event_id
-         ]);
+    //     return response()->redirectToRoute('OrderSideEvents', [
+    //         'event_id'          => $event_id
+    //     ]);
 
         //$printer = session()->get('ticket_order_' . $event->id);
     //    dd($printer);
@@ -768,6 +789,7 @@ class EventCheckoutController extends Controller
          * to the the checkout page.
          */
         if ($request->ajax()) {
+        //    return redirect()->route('OrderSideEvents', ['event_id' => $event_id,'is_embedded' => $this->is_embedded,]). '#order_form';
             return response()->json([
                 'status'      => 'success',
                 'redirectUrl' => route('OrderSideEvents', [
@@ -780,7 +802,8 @@ class EventCheckoutController extends Controller
         /*
          * Maybe display something prettier than this?
          */
-        exit('Please enable Javascript in your browser.');
+        //exit('Please enable Javascript in your browser.');
+        return $this->javascriptError($event_id);
     }
 
 
@@ -1014,7 +1037,8 @@ class EventCheckoutController extends Controller
         /*
          * Maybe display something prettier than this?
          */
-        exit('Please enable Javascript in your browser.');
+        //exit('Please enable Javascript in your browser.');
+        return $this->javascriptError($event_id);
     }
 
     /**
@@ -1492,10 +1516,20 @@ class EventCheckoutController extends Controller
             Log::error($e);
             DB::rollBack();
 
-            return response()->json([
+
+        $errordata = [
+            'event' => $event,
+            'callbackurl' => null,
+            'messages' => 'Sorry, something beyond our realization has gone wrong while trying processing your order. Please try again',
+            'request_details' => null,
+            'parameters' => null
+        ];
+        return view('Public.ViewEvent.EventPageErrors', $errordata);
+
+            /*return response()->json([
                 'status'  => 'error',
                 'message' => 'Whoops! There was a problem processing your order. Please try again.'
-            ]);
+            ]);*/
 
         }
 
