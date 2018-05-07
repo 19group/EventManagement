@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers;////event/2/pesament/skip
 
 //use App\Events\DonationCompletedEvent;
 use App\Events\OrderCompletedEvent;
@@ -27,6 +27,7 @@ use Omnipay;
 use PDF;
 use PhpSpec\Exception\Exception;
 use Validator;
+use Utils;
 
 class EventCheckoutController extends Controller
 {
@@ -365,17 +366,22 @@ class EventCheckoutController extends Controller
     public function organiserSkipPayment($event_id)
     {
         $order_session = session()->get('ticket_order_' . $event_id);
-        $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
-        $data = $order_session + [
-                'event'           => Event::findorFail($order_session['event_id']),
-                'secondsToExpire' => $secondsToExpire,
-                'is_embedded'     => $this->is_embedded,
-                'previousurl' => URL::previous(),
-            ];
-        if ($this->is_embedded) {
-            return view('Public.ViewEvent.Embedded.EventPageCheckout', $data);
+        $event=Event::findOrFail($event_id);
+        if(Utils::userOwns($event) || $order_session['order_total'] + $order_session['donation'] == 0 && count($order_session['order_has_validdiscount'])>0){
+            $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
+            $data = $order_session + [
+                    'event'           => Event::findorFail($order_session['event_id']),
+                    'secondsToExpire' => $secondsToExpire,
+                    'is_embedded'     => $this->is_embedded,
+                    'previousurl' => URL::previous(),
+                ];
+            if ($this->is_embedded) {
+                return view('Public.ViewEvent.Embedded.EventPageCheckout', $data);
+            }
+                return view('Public.ViewEvent.EventPageCheckoutSuccess', $data);
+        }else{
+            return redirect()->back();
         }
-            return view('Public.ViewEvent.EventPageCheckoutSuccess', $data);
     }
 
     /**
