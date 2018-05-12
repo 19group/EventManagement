@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;////event/2/pesament/skip
+namespace App\Http\Controllers;//3,683,690//event/2/pesament/skip
 
 //use App\Events\DonationCompletedEvent;
 use App\Events\OrderCompletedEvent;
@@ -376,7 +376,7 @@ class EventCheckoutController extends Controller
                     'previousurl' => URL::previous(),
                 ];
             if ($this->is_embedded) {
-                return view('Public.ViewEvent.Embedded.EventPageCheckout', $data);
+                return view('Public.ViewEvent.Embedded.EventPageCheckoutSuccess', $data);
             }
                 return view('Public.ViewEvent.EventPageCheckoutSuccess', $data);
         }else{
@@ -1047,6 +1047,52 @@ class EventCheckoutController extends Controller
         return $this->javascriptError($event_id);
     }
 
+    public function paypalSuccess(Request $request, $event_id,$payment_token){
+        $event=Event::findOrFail($event_id);
+        $order_session = session()->get('ticket_order_' . $event_id);
+        if(!isset($order_session['paymenttoken'])){
+            //exit('Sorry, your payment couldn\'t be verified. Contact the organiser');
+            $data = [
+                'event' => $event,
+                'callbackurl' => null,
+                'messages' => 'Sorry, your payment couldn\'t be verified. Contact the organiser.',
+                'request_details' => null,
+                'parameters' => null
+            ];
+            return view('Public.ViewEvent.EventPageErrors', $data);
+        }
+        $tempo=session()->get('ticket_order_' . $event_id); //dd($tempo['paymenttoken'][0]);
+        if($payment_token==$order_session['paymenttoken'][0]){
+        //$event=Event::findOrFail($event_id);
+        $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
+        $data = $order_session + [
+                'event'           => Event::findorFail($order_session['event_id']),
+                'secondsToExpire' => $secondsToExpire,
+                'is_embedded'     => $this->is_embedded,
+                'previousurl' => URL::previous(),
+            ];
+        session()->unset('ticket_order'.$event_id.'paymenttoken');
+        if ($this->is_embedded) {
+            return view('Public.ViewEvent.Embedded.EventPageCheckoutSuccess', $data);
+        }
+            return view('Public.ViewEvent.EventPageCheckoutSuccess', $data);
+        }else{
+            //exit('Sorry, couldn\'t verify your payment');
+            $data = [
+                'event' => $event,
+                'callbackurl' => null,
+                'messages' => 'Sorry, your payment couldn\'t be verified. Contact the organiser',
+                'request_details' => null,
+                'parameters' => null
+            ];
+            return view('Public.ViewEvent.EventPageErrors', $data);
+        }
+    }
+
+    public function paypalNotification(Request $request, $event_id){
+        //dd($request);
+    }
+
     /**
      * Show the checkout page
      *
@@ -1140,7 +1186,7 @@ class EventCheckoutController extends Controller
          */
         //session()->push('ticket_order_' . $event_id . '.request_data', $request->except(['card-number', 'card-cvc']));
         session()->push('ticket_order_' . $event_id . '.request_data', $request/*->except(['tracking_id', 'merchant_reference'])*/);
-        return $this->completeOrder($event_id);
+//        return $this->completeOrder($event_id);
         //this section was re-commented by Donald on Sat 20, 2018 at 3:34 pm
         /*
          * Begin payment attempt before creating the attendees etc.
@@ -1159,8 +1205,152 @@ class EventCheckoutController extends Controller
                         'currency'    => $event->currency->code,
                         'description' => 'Order for customer: ' . $request->get('order_email'),
                     ];
+    //$forceway=2;
                 switch ($ticket_order['payment_gateway']->id) {
+                //switch($forceway){
                     case config('attendize.payment_gateway_paypal'):
+//------------------------paypal-------------------------------------------------------
+if(substr(URL::previous(),-22)!=='/paypal/paymentsuccess'){
+    $payment_token=substr(session()->getId(),0,10).$ticket_order['order_started'].substr(session()->getId(), 10);
+     session()->push('ticket_order_' . $event_id . '.paymenttoken',$payment_token);
+    // PayPal settings   
+    $paypal_email = 'donald@studio19.co.tz';//'user@domain.com';
+    $return_url = 'http://localhost:8000/e/'.$event_id.'/paypal/paymentsuccess'.$payment_token;
+    $cancel_url = 'http://localhost:8000/e/'.$event_id.'/order/accommodation';
+    $notify_url = 'http://localhost:8000/e/'.$event_id.'/paypal/notification';
+    $items=[]; $itemcount=0; //dd($ticket_order['tickets']);
+/*    foreach($ticket_order['tickets'] as $prioritems){
+        $items["item_name_".$itemcount]=$prioritems['ticket']['title'];
+        $items["amount_".$itemcount]=$prioritems['full_price'];
+        $items["quantity_".$itemcount]=$prioritems['qty'];
+        ++$itemcount;
+    }
+    if($ticket_order['donation']>0){
+        $items["item_name_".$itemcount]='Donation';
+        $items["amount_".$itemcount]=$ticket_order['donation'];
+        ++$itemcount;
+    }
+*/
+    $item_name = 'Tickets Order';//'Test Item';
+    $item_amount = $ticket_order['donation'] + $ticket_order['order_total']; //5.00;
+
+    // Include Functions
+    include("PaypalFunctions.php");
+    //dd($request);
+    // Check if paypal request or response
+    if (!isset($_POST["txn_id"]) && !isset($_POST["txn_type"])){
+        $querystring = '';
+        
+        // Firstly Append paypal account to querystring
+        $querystring .= "?business=".urlencode($paypal_email)."&";
+        
+        // Append amount& currency (£) to quersytring so it cannot be edited in html
+        
+        //The item name and amount can be brought in dynamically by querying the $_POST['item_number'] variable.
+        $querystring .= "item_name=".urlencode($item_name)."&";
+        $querystring .= "amount=".urlencode($item_amount)."&";
+/*        foreach($items as $item_name=>$item_amount){
+            $querystring .= "item_name=".urlencode($item_name)."&";
+            $querystring .= "amount=".urlencode($item_amount)."&";
+        }*/
+        
+        //loop for posted values and append to querystring
+        foreach($_POST as $key => $value){
+            $value = urlencode(stripslashes($value));
+            $querystring .= "$key=$value&";
+        }
+        
+        // Append paypal return addresses
+        $querystring .= "return=".urlencode(stripslashes($return_url))."&";
+        $querystring .= "cancel_return=".urlencode(stripslashes($cancel_url))."&";
+        $querystring .= "notify_url=".urlencode($notify_url);
+        
+        // Append querystring with custom field
+        //$querystring .= "&custom=".USERID;
+        
+        // Redirect to paypal IPN
+        header('location:https://www.sandbox.paypal.com/cgi-bin/webscr'.$querystring);
+        exit();
+    } else {
+        //Database Connection
+        $link = mysql_connect($host, $user, $pass);
+        mysql_select_db($db_name);
+        
+        // Response from Paypal
+
+        // read the post from PayPal system and add 'cmd'
+        $req = 'cmd=_notify-validate';
+        foreach ($_POST as $key => $value) {
+            $value = urlencode(stripslashes($value));
+            $value = preg_replace('/(.*[^%^0^D])(%0A)(.*)/i','${1}%0D%0A${3}',$value);// IPN fix
+            $req .= "&$key=$value";
+        }
+        
+        // assign posted variables to local variables
+        $data['item_name']          = $_POST['item_name'];
+        $data['item_number']        = $_POST['item_number'];
+        $data['payment_status']     = $_POST['payment_status'];
+        $data['payment_amount']     = $_POST['mc_gross'];
+        $data['payment_currency']   = $_POST['mc_currency'];
+        $data['txn_id']             = $_POST['txn_id'];
+        $data['receiver_email']     = $_POST['receiver_email'];
+        $data['payer_email']        = $_POST['payer_email'];
+        $data['custom']             = $_POST['custom'];
+            
+        // post back to PayPal system to validate
+        $header = "POST /cgi-bin/webscr HTTP/1.0\r\n";
+        $header .= "Content-Type: application/x-www-form-urlencoded\r\n";
+        $header .= "Content-Length: " . strlen($req) . "\r\n\r\n";
+        
+        $fp = fsockopen ('ssl://www.sandbox.paypal.com', 443, $errno, $errstr, 30);
+        
+        if (!$fp) {
+            // HTTP ERROR
+            
+        } else {
+            fputs($fp, $header . $req);
+            while (!feof($fp)) {
+                $res = fgets ($fp, 1024);
+                if (strcmp($res, "VERIFIED") == 0) {
+                    
+                    // Used for debugging
+                    // mail('user@domain.com', 'PAYPAL POST - VERIFIED RESPONSE', print_r($post, true));
+                            
+                    // Validate payment (Check unique txnid & correct price)
+                    $valid_txnid = check_txnid($data['txn_id']);
+                    $valid_price = check_price($data['payment_amount'], $data['item_number']);
+                    // PAYMENT VALIDATED & VERIFIED!
+                    if ($valid_txnid && $valid_price) {
+                        
+                        $orderid = updatePayments($data);
+                        
+                        if ($orderid) {
+                            // Payment has been made & successfully inserted into the Database
+                        } else {
+                            // Error inserting into DB
+                            // E-mail admin or alert user
+                            // mail('user@domain.com', 'PAYPAL POST - INSERT INTO DB WENT WRONG', print_r($data, true));
+                        }
+                    } else {
+                        // Payment made but data has been changed
+                        // E-mail admin or alert user
+                    }
+                
+                } else if (strcmp ($res, "INVALID") == 0) {
+                
+                    // PAYMENT INVALID & INVESTIGATE MANUALY!
+                    // E-mail admin or alert user
+                    
+                    // Used for debugging
+                    //@mail("user@domain.com", "PAYPAL DEBUGGING", "Invalid Response<br />data = <pre>".print_r($post, true)."</pre>");
+                }
+            }
+        fclose ($fp);
+        }
+    }
+}
+//------------------------------end-paypal---------------------------------------------
+
                     case config('attendize.payment_gateway_coinbase'):
                         $transaction_data += [
                             'cancelUrl' => route('showEventCheckoutPaymentReturn', [

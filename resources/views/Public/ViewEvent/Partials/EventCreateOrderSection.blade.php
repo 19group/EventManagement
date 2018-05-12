@@ -14,8 +14,8 @@
         </div>
         <div class="col-md-8 col-md-pull-4">
             <div class="event_order_form">
-                {!! Form::open(['url' => route('postCreateOrder', ['event_id' => $event->id]), 'class' => ($order_requires_payment && @$payment_gateway->is_on_site) ? 'ajax payment-form' : 'ajax', 'data-stripe-pub-key' => isset($account_payment_gateway->config['publishableKey']) ? $account_payment_gateway->config['publishableKey'] : '']) !!}
-
+            <!--    {!! Form::open(['url' => route('postCreateOrder', ['event_id' => $event->id]),'class' => ($order_requires_payment && @$payment_gateway->is_on_site) ? 'ajax payment-form' : 'ajax','data-stripe-pub-key' => isset($account_payment_gateway->config['publishableKey']) ? $account_payment_gateway->config['publishableKey'] : '']) !!} -->
+                {!! Form::open(['url' => route('postCreateOrder', ['event_id' => $event->id]),'data-stripe-pub-key' => isset($account_payment_gateway->config['publishableKey']) ? $account_payment_gateway->config['publishableKey'] : '']) !!}
                 {!! Form::hidden('event_id', $event->id) !!}
 
 
@@ -178,39 +178,75 @@
 
                 <!-- PayPal -->
                @if(@$payment_gateway->id==2)
-                   <div class="row">
-                                <label class="col-md-12 text-center"><h3>PayPal</h3></label>
+                   <!--div class="row">
+                        <label class="col-md-12 text-center"><h3>PayPal</h3></label>
 
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            {!! Form::label('first_name', 'First Name', array('class'=>'control-label required')) !!}
-                                            {!!  Form::text('first_name', Input::old('first_name'),
-                                        array(
-                                        'class'=>'form-control'
-                                        ))  !!}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            {!! Form::label('last_name', 'Last Name', array('class'=>'control-label required')) !!}
-                                            {!!  Form::text('last_name', Input::old('last_name'),
-                                        array(
-                                        'class'=>'form-control'
-                                        ))  !!}
-                                        </div>
-                                    </div>
-                                </div>
-                                 <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            {!! Form::label('email', 'Email', array('class'=>'control-label required')) !!}
-                                            {!!  Form::text('email', Input::old('email'),
-                                        array(
-                                        'class'=>'form-control'
-                                        ))  !!}
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {!! Form::label('first_name', 'First Name', array('class'=>'control-label required')) !!}
+                                {!!  Form::text('first_name', Input::old('first_name'),
+                            array(
+                            'class'=>'form-control'
+                            ))  !!}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {!! Form::label('last_name', 'Last Name', array('class'=>'control-label required')) !!}
+                                {!!  Form::text('last_name', Input::old('last_name'),
+                            array(
+                            'class'=>'form-control'
+                            ))  !!}
+                            </div>
+                        </div>
+                    </div>
+                     <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {!! Form::label('payer_email', 'Email', array('class'=>'control-label required')) !!}
+                                {!!  Form::text('payer_email', Input::old('payer_email'),
+                            array(
+                            'class'=>'form-control'
+                            ))  !!}
+                            </div>
+                        </div>
+                    </div-->
+
+            @php $itemcount=1; $fromsession=session()->get('ticket_order_'.$event->id);@endphp
+            {!!Form::hidden("cmd","_xclick")!!}
+            {!!Form::hidden("no_note","1")!!}
+            {!!Form::hidden("lc","UK")!!}
+            {!!Form::hidden("currency_code","GBP")!!}
+            {!!Form::hidden("bn","PP-BuyNowBF:btn_buynow_LG.gif:NonHostedGuest")!!}
+            {!!Form::hidden("first_name",$fromsession['first_name'])!!}
+            {!!Form::hidden("last_name",$fromsession['last_name'])!!}
+            {!!Form::hidden("payer_email",$fromsession['email'])!!}
+            {!!Form::hidden("item_number","123456")!!}
+                    {!! Form::submit('Paypal', ['class' => 'btn btn-lg btn-success card-submit', 'style' => 'width:100%;']) !!}
+        <!--    @foreach($fromsession['tickets'] as $prioritems)
+            {!!Form::hidden("item_name_".$itemcount,$prioritems['ticket']['title'])!!}
+            {!!Form::hidden("amount_".$itemcount,$prioritems['full_price'])!!}
+            {!!Form::hidden("quantity_".$itemcount,$prioritems['qty'])!!}
+            @php ++$itemcount;@endphp
+            @endforeach
+            @if($fromsession['donation']>0)
+            {!!Form::hidden("item_name_".$itemcount,'Donation')!!}
+            {!!Form::hidden("amount_".$itemcount,$fromsession['donation'])!!}
+            @php ++$itemcount; @endphp
+            @endif-->
+    <!--form class="paypal" action="payments.php" method="post" id="paypal_form" target="_blank"-->
+<!--    <form action="<?php //route('postCreateOrder', ['event_id' => $event->id])?>", 'class' = "<?php //($order_requires_payment && @$payment_gateway->is_on_site) ? 'ajax payment-form' : 'ajax'?>" method="post" id="paypal_form" target="_blank">
+        <input type="hidden" name="cmd" value="_xclick" />
+        <input type="hidden" name="no_note" value="1" />
+        <input type="hidden" name="lc" value="UK" />
+        <input type="hidden" name="currency_code" value="GBP" />
+        <input type="hidden" name="bn" value="PP-BuyNowBF:btn_buynow_LG.gif:NonHostedGuest" />
+        <input type="hidden" name="first_name" value="Customer's First Name"  />
+        <input type="hidden" name="last_name" value="Customer's Last Name"  />
+        <input type="hidden" name="payer_email" value="customer@example.com"  />
+        <input type="hidden" name="item_number" value="123456" / >
+        <input type="submit" name="submit" value="Submit Payment"/>
+    </form-->
 
 
                 @endif
