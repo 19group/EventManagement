@@ -202,18 +202,23 @@ Route::group(['prefix' => 'e'], function () {
         'uses' => 'PesapalAPIController@handleCallback',
     ]);
 
-    Route::get('{event_id}/payment/postPayment',[
-        'as' => 'PostPayment',
-        'uses' => 'PaymentsController@PostPayment',
+    Route::get('{event_id}/payment/postpayment',[
+        'as' => 'postPayment',
+        'uses' => 'PaymentsController@postPayment',
     ]);
 
-    Route::post('{event_id}/payment/postPayment',[
-        'as' => 'PostPayment',
-        'uses' => 'PaymentsController@PostPayment',
+    Route::post('{event_id}/payment/postpayment',[
+        'as' => 'postPayment',
+        'uses' => 'PaymentsController@postPayment',
     ]);
 
     Route::get('{event_id}/paypal/notification',[
-        'as' => 'paypalnotification',
+        'as' => 'paypalNotification',
+        'uses' => 'PaymentsController@paypalNotification',
+    ]);
+
+    Route::post('{event_id}/paypal/notification',[
+        'as' => 'paypalNotification',
         'uses' => 'PaymentsController@paypalNotification',
     ]);
 

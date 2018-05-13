@@ -305,7 +305,8 @@ class PaymentsController extends Controller
  }
 
  public function paypalNotification(Request $request, $event_id){
-     //dd($request);
+     //dd($request);-
+     echo " I am here";
  }
 
 
