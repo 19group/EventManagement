@@ -231,6 +231,8 @@ Route::group(['prefix' => 'e'], function () {
         'as'   => 'postCreateOrder',
         'uses' => 'EventCheckoutController@postCreateOrder',
     ]);
+
+
 });
 
 /*

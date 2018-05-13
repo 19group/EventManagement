@@ -164,6 +164,14 @@ html,body{height:100%}body{font-family:'Open Sans',sans-serif}table{margin:0}lab
 .modal-dialog{
  margin: 10px auto !important;
 }
+a#mirror_buyer_info{
+ padding:5px !important;
+ font-weight:bold;
+}
+a#mirror_buyer_info:hover{
+ font-size:11.5px;
+}
+
 @media (min-width: 720px){
  .modal-dialog {
      max-width: 700px !important;

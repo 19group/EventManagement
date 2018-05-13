@@ -215,14 +215,11 @@
             @php $itemcount=1; $fromsession=session()->get('ticket_order_'.$event->id);@endphp
             {!!Form::hidden("cmd","_xclick")!!}
             {!!Form::hidden("no_note","1")!!}
-            {!!Form::hidden("lc","UK")!!}
-            {!!Form::hidden("currency_code","GBP")!!}
             {!!Form::hidden("bn","PP-BuyNowBF:btn_buynow_LG.gif:NonHostedGuest")!!}
             {!!Form::hidden("first_name",$fromsession['first_name'])!!}
             {!!Form::hidden("last_name",$fromsession['last_name'])!!}
             {!!Form::hidden("payer_email",$fromsession['email'])!!}
-            {!!Form::hidden("item_number","123456")!!}
-                    {!! Form::submit('Paypal', ['class' => 'btn btn-lg btn-success card-submit', 'style' => 'width:100%;']) !!}
+            {!! Form::submit('Paypal', ['class' => 'btn btn-lg btn-success card-submit', 'style' => 'width:100%;']) !!}
         <!--    @foreach($fromsession['tickets'] as $prioritems)
             {!!Form::hidden("item_name_".$itemcount,$prioritems['ticket']['title'])!!}
             {!!Form::hidden("amount_".$itemcount,$prioritems['full_price'])!!}

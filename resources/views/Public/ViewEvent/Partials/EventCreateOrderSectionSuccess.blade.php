@@ -1,7 +1,7 @@
 <section id='order_form' class="row bg-white" style="margin-top: 5%">
      <div class="container"><br><br>
         <h1 class="section_head">
-            Order Details
+            Ticket Details
         </h1>
     </div>
      <div class="container">
@@ -52,12 +52,17 @@
             </div>
         </div>
         <div class="col-md-8 col-md-pull-4">
+         <div class="container-fluid">
+             <center>
+                 <h1>Payment Successful. Thank you</h1><br>
+             </center>
+         </div>
+
             <div class="event_order_form">
                 {!! Form::open(['url' => route('postCreateOrder', ['event_id' => $event->id])]) !!}
 
                 {!! Form::hidden('event_id', $event->id) !!}
 
-                <h3>Your Information </h3>
 
                 <div class="row" style="display: none;">
                     <div class="col-xs-6">
@@ -83,10 +88,12 @@
                     </div>
                 </div>
 
-                <div class="p20 pl0">
+                <div class="p20 pl0 row">
+                 <div class="col-md-12">
                     <a href="javascript:void(0);" class="btn btn-primary btn-xs" id="mirror_buyer_info">
-                        Copy buyer details to all ticket holders
+                        Click here to Copy buyers details to all tickets below
                     </a>
+                 </div>
                 </div>
 
                 <div class="row">
@@ -387,12 +394,6 @@
 
                 @endif-->
 
-                <div class="container-fluid">
-                    <center>
-                        <h1>Payment Successful.</h1><br>
-                        <h2>Thank you...</h2><br>
-                    </center>
-                    </div>
 
                 @if($event->pre_order_display_message)
                 <div class="well well-small">
@@ -401,7 +402,7 @@
                 @endif
 
                {!! Form::hidden('is_embedded', $is_embedded) !!}
-               {!! Form::submit('Checkout', ['class' => 'btn btn-lg btn-success card-submit', 'style' => 'width:100%;']) !!}
+               {!! Form::submit('Generate Tickets', ['class' => 'btn btn-lg btn-success card-submit', 'style' => 'width:100%;']) !!}
 </br>
 </br>
 </br>
