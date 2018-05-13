@@ -1047,63 +1047,6 @@ class EventCheckoutController extends Controller
         return $this->javascriptError($event_id);
     }
 
-    public function paypalSuccess(Request $request, $event_id,$payment_token){
-        $event=Event::findOrFail($event_id);
-        $order_session = session()->get('ticket_order_' . $event_id);
-
-       //[TODO] - Check if the token is getting set
-       $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
-       $data = $order_session + [
-               'event'           => Event::findorFail($order_session['event_id']),
-               'secondsToExpire' => $secondsToExpire,
-               'is_embedded'     => $this->is_embedded,
-               'previousurl' => URL::previous(),
-           ];
-       return view('Public.ViewEvent.EventPageCheckoutSuccess', $data);
-
-        if(!isset($order_session['paymenttoken'])){
-            //exit('Sorry, your payment couldn\'t be verified. Contact the organiser');
-            $data = [
-                'event' => $event,
-                'callbackurl' => null,
-                'messages' => 'Sorry, your payment couldn\'t be verified. Contact the organiser.',
-                'request_details' => null,
-                'parameters' => null
-            ];
-            return view('Public.ViewEvent.EventPageErrors', $data);
-        }
-
-        if($payment_token==$order_session['paymenttoken'][0]){
-        //$event=Event::findOrFail($event_id);
-        $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
-        $data = $order_session + [
-                'event'           => Event::findorFail($order_session['event_id']),
-                'secondsToExpire' => $secondsToExpire,
-                'is_embedded'     => $this->is_embedded,
-                'previousurl' => URL::previous(),
-            ];
-        session()->unset('ticket_order'.$event_id.'paymenttoken');
-
-        if ($this->is_embedded) {
-            return view('Public.ViewEvent.Embedded.EventPageCheckoutSuccess', $data);
-        }
-            return view('Public.ViewEvent.EventPageCheckoutSuccess', $data);
-        }else{
-            //exit('Sorry, couldn\'t verify your payment');
-            $data = [
-                'event' => $event,
-                'callbackurl' => null,
-                'messages' => 'Sorry, your payment couldn\'t be verified. Contact the organiser',
-                'request_details' => null,
-                'parameters' => null
-            ];
-            return view('Public.ViewEvent.EventPageErrors', $data);
-        }
-    }
-
-    public function paypalNotification(Request $request, $event_id){
-        //dd($request);
-    }
 
     /**
      * Show the checkout page
@@ -1198,234 +1141,34 @@ class EventCheckoutController extends Controller
          */
         //session()->push('ticket_order_' . $event_id . '.request_data', $request->except(['card-number', 'card-cvc']));
         session()->push('ticket_order_' . $event_id . '.request_data', $request/*->except(['tracking_id', 'merchant_reference'])*/);
-//        return $this->completeOrder($event_id);
+
+        return $this->completeOrder($event_id);
         //this section was re-commented by Donald on Sat 20, 2018 at 3:34 pm
         /*
          * Begin payment attempt before creating the attendees etc.
          * */
     //    if ($ticket_order['order_requires_payment']) {
-            /*
-             * Check if the user has chosen to pay offline
-             * and if they are allowed
-             */
-            if ($request->get('pay_offline') && $event->enable_offline_payments) {
-                return $this->completeOrder($event_id);
-            }
-            try {
-                $transaction_data = [
-                        'amount'      => ($ticket_order['order_total'] + $ticket_order['organiser_booking_fee']),
-                        'currency'    => $event->currency->code,
-                        'description' => 'Order for customer: ' . $request->get('order_email'),
-                    ];
-    //$forceway=2;
-                switch ($ticket_order['payment_gateway']->id) {
-                //switch($forceway){
-                    case config('attendize.payment_gateway_paypal'):
-//------------------------paypal-------------------------------------------------------
-
-//[TO-CHECK] -- What does this do? the if statement below?
-if(substr(URL::previous(),-22)!=='/paypal/paymentsuccess'){
-
-    $payment_token=substr(session()->getId(),0,10).$ticket_order['order_started'].substr(session()->getId(), 10);
-     session()->set('ticket_order_' . $event_id . '.paymenttoken',$payment_token);
-     //Session::save();
-
-      //testing if payment order is set onto the sessionse
-
-     $ticket_order = session()->get('ticket_order_' . $event_id);
-     //dd($ticket_order);
-
-    // PayPal settings
-
-    $paypal_email = env('PAYPAL_EMAIL');//'user@domain.com';
-    $return_url = env('SERVER_ROOT').'e/'.$event_id.'/paypal/paymentsuccess'.$payment_token;
-    $cancel_url = env('SERVER_ROOT').'e/'.$event_id.'/checkout/create';
-    $notify_url = env('SERVER_ROOT').'e/'.$event_id.'/paypal/notification';
-    $cmd = "_cart";
-    $upload = 1;
 
 
-    $items=[]; $itemcount=0; //dd($ticket_order['tickets']);
+    /*
 
-    $item_name = 'FOSS4G 2018 Tickets Payment';//'Test Item';
-    $item_amount = $ticket_order['donation'] + $ticket_order['order_total']; //5.00;
-
-    // Include Functions
-    //include("PaypalFunctions.php");
-    //dd($request);
-    // Check if paypal request or response
-    if (!isset($_POST["txn_id"]) && !isset($_POST["txn_type"])){
-        $querystring = '';
-
-        // Firstly Append paypal account to querystring
-        $querystring .= "?business=".urlencode($paypal_email)."&";
-
-        //Initiates a cart allowing an ability to add more than one item
-        //$querystring .= "cmd=".urlencode($cmd)."&";
-        //$querystring .= "upload=".urlencode($upload)."&";
-
-        // Append amount& currency (£) to quersytring so it cannot be edited in html
-
-        //The item name and amount can be brought in dynamically by querying the $_POST['item_number'] variable.
-        $querystring .= "item_name=".urlencode($item_name)."&";
-        $querystring .= "amount=".urlencode($item_amount)."&";
-/*        foreach($items as $item_name=>$item_amount){
-            $querystring .= "item_name=".urlencode($item_name)."&";
-            $querystring .= "amount=".urlencode($item_amount)."&";
-        }
-
-        $tickets = $ticket_order['tickets'];
-        $donation = $ticket_order['donation'];
-        if($donation > 0){
-         $querystring .= "item_name_1=".urlencode("donation")."&";
-         $querystring .= "amount_1=".urlencode($donation)."&";
-         $querystring .= "quantity_1=".urlencode(1)."&";
-
-         $count = 2;
-
-         foreach($tickets as $ticket){
-          //dd($ticket);
-          $querystring .= "item_name_".$count."=".urlencode($ticket['ticket']['title'])."&";
-          $querystring .= "amount_".$count."=".urlencode($ticket['price'])."&";
-          $querystring .= "quantity_".$count."=".urlencode($ticket['qty'])."&";
-          $count = $count + 1;
-         }
-
-        }
-        else{
-
-         $count = 1;
-
-         foreach($tickets as $ticket){
-          //dd($ticket);
-          $querystring .= "item_name_".$count."=".urlencode($ticket['ticket']['title'])."&";
-          $querystring .= "amount_".$count."=".urlencode($ticket['price'])."&";
-          $querystring .= "quantity_".$count."=".urlencode($ticket['qty'])."&";
-
-          $count = $count + 1;
-         }
-
-
-        }
-
-*/
-        //loop for posted values and append to querystring
-        foreach($_POST as $key => $value){
-            $value = urlencode(stripslashes($value));
-            $querystring .= "$key=$value&";
-        }
-
-        // Append paypal return addresses
-        $querystring .= "return=".urlencode(stripslashes($return_url))."&";
-        $querystring .= "cancel_return=".urlencode(stripslashes($cancel_url))."&";
-        $querystring .= "notify_url=".urlencode($notify_url);
-
-        // Append querystring with custom field
-        //$querystring .= "&custom=".USERID;
-
-        // Redirect to paypal IPN
-
-        //session_write_close();
-        //session()->save();
-        //dd("I am jere");
-
-        return redirect('https://www.sandbox.paypal.com/cgi-bin/webscr'.$querystring);
-
-        //header('location:https://www.sandbox.paypal.com/cgi-bin/webscr'.$querystring);
-        //exit();
+    $transaction = '{';
+    foreach ($transaction_data as $key => $value) {
+        $transaction = $transaction.'"'.$key.'":"'.$value.'",';
     }
-}
-//------------------------------end-paypal---------------------------------------------
 
-                    case config('attendize.payment_gateway_coinbase'):
-                        $transaction_data += [
-                            'cancelUrl' => route('showEventCheckoutPaymentReturn', [
-                                'event_id'             => $event_id,
-                                'is_payment_cancelled' => 1
-                            ]),
-                            'returnUrl' => route('showEventCheckoutPaymentReturn', [
-                                'event_id'              => $event_id,
-                                'is_payment_successful' => 1
-                            ]),
-                            'brandName' => isset($ticket_order['account_payment_gateway']->config['brandingName'])
-                                ? $ticket_order['account_payment_gateway']->config['brandingName']
-                                : $event->organiser->name
-                        ];
-                        break;
-                    case config('attendize.payment_gateway_stripe'):
-                        $token = $request->get('stripeToken');
-                        $transaction_data += [
-                            'token'         => $token,
-                            'receipt_email' => $request->get('order_email'),
-                        ];
-                        break;
-                    case config('attendize.payment_gateway_migs'):
-                        $transaction_data += [
-                            'transactionId' => $event_id . date('YmdHis'),       // TODO: Where to generate transaction id?
-                            'returnUrl' => route('showEventCheckoutPaymentReturn', [
-                                'event_id'              => $event_id,
-                                'is_payment_successful' => 1
-                            ]),
-                        ];
-                        // Order description in MIGS is only 34 characters long; so we need a short description
-                        $transaction_data['description'] = "Ticket sales " . $transaction_data['transactionId'];
-                        break;
-                    case config('attendize.payment_gateway_pesapal'):
-                        $transaction_data += [
-                            'pesapal_transaction_tracking_id'=> session()->get('tracking_id'),
-                            'pesapal_merchant_reference' => session()->get('merchant_reference'),
-                        ];
-                        break;
-                    default:
-                        Log::error('No payment gateway configured.');
-                        return repsonse()->json([
-                            'status'  => 'error',
-                            'message' => 'No payment gateway configured.'
-                        ]);
-                        break;
-                }
-                $transaction = '{';
-                foreach ($transaction_data as $key => $value) {
-                    $transaction = $transaction.'"'.$key.'":"'.$value.'",';
-                }
-                $transaction = substr($transaction,0,strlen($transaction)-1).'}';
-        /*        $transaction = $gateway->purchase($transaction_data);
-                $response = $transaction->send();
-                if ($response->isSuccessful()) {
-                    session()->push('ticket_order_' . $event_id . '.transaction_id',
-                        $response->getTransactionReference());
-        */            session()->push('ticket_order_' . $event_id . '.transaction_id',
-                        session()->get('tracking_id'));
-                    return $this->completeOrder($event_id);
-        /*        } elseif ($response->isRedirect()) {
+    $transaction = substr($transaction,0,strlen($transaction)-1).'}';
+/*        $transaction = $gateway->purchase($transaction_data);
+    $response = $transaction->send();
+    if ($response->isSuccessful()) {
+        session()->push('ticket_order_' . $event_id . '.transaction_id',
+            $response->getTransactionReference());
+         session()->push('ticket_order_' . $event_id . '.transaction_id', session()->get('tracking_id'));
 
-                    /*
-                     * As we're going off-site for payment we need to store some data in a session so it's available
-                     * when we return
-                     */
-        /*            session()->push('ticket_order_' . $event_id . '.transaction_data', $transaction_data);
-                    Log::info("Redirect url: " . $response->getRedirectUrl());
-                    $return = [
-                        'status'       => 'success',
-                        'redirectUrl'  => $response->getRedirectUrl(),
-                        'message'      => 'Redirecting to ' . $ticket_order['payment_gateway']->provider_name
-                    ];
-                    // GET method requests should not have redirectData on the JSON return string
-                    if($response->getRedirectMethod() == 'POST') {
-                        $return['redirectData'] = $response->getRedirectData();
-                    }
-                    return response()->json($return);
-                } else {
-                    // display error to customer
-                    return response()->json([
-                        'status'  => 'error',
-                        'message' => $response->getMessage(),
-                    ]);
-                }
-        */    } catch (\Exeption $e) {
-                Log::error($e);
-                $error = 'Sorry, there was an error processing your payment. Please try again.';
-            }
+        return $this->completeOrder($event_id);
+
+        */
+
 
             if ($error) {
                 /*return response()->json([

@@ -202,14 +202,24 @@ Route::group(['prefix' => 'e'], function () {
         'uses' => 'PesapalAPIController@handleCallback',
     ]);
 
+    Route::get('{event_id}/payment/postPayment',[
+        'as' => 'PostPayment',
+        'uses' => 'PaymentsController@PostPayment',
+    ]);
+
+    Route::post('{event_id}/payment/postPayment',[
+        'as' => 'PostPayment',
+        'uses' => 'PaymentsController@PostPayment',
+    ]);
+
     Route::get('{event_id}/paypal/notification',[
         'as' => 'paypalnotification',
-        'uses' => 'EventCheckoutController@paypalNotification',
+        'uses' => 'PaymentsController@paypalNotification',
     ]);
 
     Route::get('{event_id}/paypal/paymentsuccess{payment_token}',[
         'as' => 'paypalsuccess',
-        'uses' => 'EventCheckoutController@paypalSuccess',
+        'uses' => 'PaymentsController@paypalSuccess',
     ]);
 
     Route::get('{event_id}/pesament/create', [
