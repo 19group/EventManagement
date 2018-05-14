@@ -135,11 +135,11 @@ class PaymentsController extends Controller
     // PayPal settings
 
     $paypal_email = env('PAYPAL_EMAIL');//'user@domain.com';
-    $return_url = env('SERVER_ROOT').'e/'.$event_id.'/paypal/paymentsuccess'.$payment_token;
+    $return_url = env('SERVER_ROOT').'e/'.$event_id.'/paypal/paymentsuccess'.$payment_token;env('SERVER_ROOT').'e/'.$event_id.'/paypal/paymentsuccess'.$payment_token;
     $cancel_url = env('SERVER_ROOT').'e/'.$event_id.'/checkout/create';
     $notify_url = env('SERVER_ROOT').'e/'.$event_id.'/paypal/notification';
-    $cmd = "_cart";
-    $upload = 1;
+///    $cmd = "_cart";
+///    $upload = 1;
 
 
     $items=[]; $itemcount=0; //dd($ticket_order['tickets']);
@@ -254,17 +254,31 @@ class PaymentsController extends Controller
      $event=Event::findOrFail($event_id);
      $order_session = session()->get('ticket_order_' . $event_id);
 
-    //[TODO] - Check if the token is getting set
-    $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
-    $data = $order_session + [
-            'event'           => Event::findorFail($order_session['event_id']),
-            'secondsToExpire' => $secondsToExpire,
-            'is_embedded'     => $this->is_embedded,
-            'previousurl' => URL::previous(),
-        ];
-    return view('Public.ViewEvent.EventPageCheckoutSuccess', $data);
-
-     if(!isset($order_session['paymenttoken'])){
+     /*
+      * check if payment_token is the one created from current session variables
+      * problem::can still be tricked for adding items to the paid order
+      */
+    //[TODO] - Check if the token is getting set and unset for correct security
+    if($payment_token==substr(session()->getId(),0,10).$order_session['order_started'].substr(session()->getId(), 10)){
+        $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
+        $data = $order_session + [
+                'event'           => Event::findorFail($order_session['event_id']),
+                'secondsToExpire' => $secondsToExpire,
+                'is_embedded'     => $this->is_embedded,
+                'previousurl' => URL::previous(),
+            ];
+        return view('Public.ViewEvent.EventPageCheckoutSuccess', $data);
+    }else{
+         $data = [
+             'event' => $event,
+             'callbackurl' => null,
+             'messages' => 'Sorry, the page you are looking for doesn\'t exist. If you have been redirected here after payment, please contact the organiser for a follow up.',
+             'request_details' => null,
+             'parameters' => null
+         ];
+         return view('Public.ViewEvent.EventPageErrors', $data);
+    }
+    if(!isset($order_session['paymenttoken'])){
          //exit('Sorry, your payment couldn\'t be verified. Contact the organiser');
          $data = [
              'event' => $event,
@@ -274,7 +288,7 @@ class PaymentsController extends Controller
              'parameters' => null
          ];
          return view('Public.ViewEvent.EventPageErrors', $data);
-     }
+    }
 
      if($payment_token==$order_session['paymenttoken'][0]){
      //$event=Event::findOrFail($event_id);
