@@ -26,10 +26,10 @@
                 echo $messages;
             } 
             if(isset($route)){?>
-                <br>
-                <span class="row" style="text-align: center;" >
-                <a href="{{route($route, $routeparameters)}}">I am the LINK. Please click Me.</a>
-                </span>
+                <br><br>
+                <div class="row" text-align="center" >
+                <u><a text-align="center" href="{{route($route, $routeparameters)}}">I am the LINK. Please click Me.</a></u>
+                </div>
             <?php }    
                 ?>
         </div>
