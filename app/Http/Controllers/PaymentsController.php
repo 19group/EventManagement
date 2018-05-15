@@ -10,6 +10,7 @@ use App\Payment;
 use App\Models\Event;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\URL;
+use Dotenv;
 
 class PaymentsController extends Controller
 {
@@ -135,7 +136,7 @@ class PaymentsController extends Controller
     // PayPal settings
 
     $paypal_email = env('PAYPAL_EMAIL');//'user@domain.com';
-    $return_url = env('SERVER_ROOT').'e/'.$event_id.'/paypal/paymentsuccess'.$payment_token;env('SERVER_ROOT').'e/'.$event_id.'/paypal/paymentsuccess'.$payment_token;
+    $return_url = env('SERVER_ROOT').'e/'.$event_id.'/paypal/paymentsuccess'.$payment_token;
     $cancel_url = env('SERVER_ROOT').'e/'.$event_id.'/checkout/create';
     $notify_url = env('SERVER_ROOT').'e/'.$event_id.'/paypal/notification';
 ///    $cmd = "_cart";

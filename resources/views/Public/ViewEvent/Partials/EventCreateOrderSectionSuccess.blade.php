@@ -1,10 +1,10 @@
 <section id='order_form' class="row bg-white" style="margin-top: 5%">
-     <div class="container"><br><br>
+    <div class="container"><br><br>
         <h1 class="section_head">
             Ticket Details
         </h1>
     </div>
-     <div class="container">
+    <div class="container" id='blurr'>
         <div class="col-md-4 col-md-push-8">
             <div class="panel">
                 <div class="panel-heading">
@@ -46,11 +46,11 @@
                 </div>
                 @endif
 
-            </div>
+            </div><!--div class="panel"-->
             <div class="help-block">
                 Please note you only have <span id='countdown'></span> to complete this transaction before your tickets are re-released.
             </div>
-        </div>
+        </div><!--div class="col-md-4 col-md-push-8"-->
         <div class="col-md-8 col-md-pull-4">
          <div class="container-fluid">
              <center>
@@ -59,7 +59,7 @@
          </div>
 
             <div class="event_order_form">
-                {!! Form::open(['url' => route('postCreateOrder', ['event_id' => $event->id])]) !!}
+                {!! Form::open(['url' => route('postCreateOrder', ['event_id' => $event->id]), 'onsubmit'=>"loadFunction(this)"]) !!}
 
                 {!! Form::hidden('event_id', $event->id) !!}
 
@@ -402,14 +402,33 @@
                 @endif
 
                {!! Form::hidden('is_embedded', $is_embedded) !!}
-               {!! Form::submit('Generate Tickets', ['class' => 'btn btn-lg btn-success card-submit', 'style' => 'width:100%;']) !!}
+               {!! Form::submit('Generate Tickets', ['class' => 'btn btn-lg btn-success card-submit', 'style' => 'width:100%;', 'id'=>'generatorbutton']) !!}
+               <!--, 'onClick'=>"this.disabled=true; this.value='Generating Your Tickets';"-->
 </br>
 </br>
 </br>
             </div>
         </div>
     </div>
+    <div class='container' id='replacer' style="display: hidden">
+        
+    </div>
 </section>
 @if(session()->get('message'))
     <script>showMessage('{{session()->get('message')}}');</script>
 @endif
+
+<script>
+
+function loadFunction(e){
+    var wait = document.getElementById("generatorbutton");
+    wait.disabled=true;
+    wait.value="Generating Your Tickets.";
+    var dots = window.setInterval( function() {
+    if ( wait.value.length > 30 ) 
+        wait.value = "Generating Your Tickets.";
+    else 
+        wait.value += " .";
+    }, 500);
+}
+</script>

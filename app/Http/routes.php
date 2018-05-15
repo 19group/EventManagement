@@ -242,7 +242,7 @@ Route::group(['prefix' => 'e'], function () {
         'uses' => 'EventCheckoutController@organiserSkipPayment',
     ]);
 
-    Route::post('{event_id}/checkout/create', [
+    Route::post('{event_id}/checkout/complete', [
         'as'   => 'postCreateOrder',
         'uses' => 'EventCheckoutController@postCreateOrder',
     ]);
