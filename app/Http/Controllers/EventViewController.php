@@ -14,6 +14,11 @@ use Validator;
 
 class EventViewController extends Controller
 {
+
+    public function beforeShowEventHome(Request $request, $event_id, $slug = '', $preview = false){
+        session()->forget('ticket_order_'.$event_id);
+        return redirect(route('showEventPage', $event_id, $slug));
+    }
     /**
      * Show the homepage for an event
      *
@@ -24,8 +29,23 @@ class EventViewController extends Controller
      * @return mixed
      */
     public function showEventHome(Request $request, $event_id, $slug = '', $preview = false)
-    {
+    {   //session()->forget('ticket_order_'.$event_id);
+        //dd($request);
+
         $event = Event::findOrFail($event_id);
+
+        if(session()->get('ticket_order_'.$event_id)){
+            $errordata = [
+                'event' => $event,
+                'callbackurl' => null,
+                'messages' => 'Sorry, it looks like there is another payment process going on in one tab of your device browser. If you are SURE that this is not the case, please click the link below to load this page and be alerted that all the pending transaction data will be lost.',
+                'request_details' => null,
+                'parameters' => null,
+                'route' => 'passToEventPage',
+                'routeparameters'=> ['event_id'=>$event_id]
+            ];
+            return view('Public.ViewEvent.EventPageErrors', $errordata);
+        }
 
         if (!Utils::userOwns($event) && !$event->is_live) {
             return view('Public.ViewEvent.EventNotLivePage');

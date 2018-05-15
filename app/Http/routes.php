@@ -121,6 +121,11 @@ Route::group(['prefix' => 'e'], function () {
         'uses' => 'EventViewController@showCalendarIcs',
     ]);
 
+    Route::get('/{event_id}/forget', [
+        'as'   => 'passToEventPage',
+        'uses' => 'EventViewController@beforeShowEventHome',
+    ]);
+
     Route::get('/{event_id}/{event_slug?}', [
         'as'   => 'showEventPage',
         'uses' => 'EventViewController@showEventHome',
