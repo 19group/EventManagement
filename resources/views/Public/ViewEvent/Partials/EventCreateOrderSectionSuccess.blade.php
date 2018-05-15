@@ -53,9 +53,7 @@
         </div>
         <div class="col-md-8 col-md-pull-4">
          <div class="container-fluid">
-             <center>
-                 <h1>Payment Successful. Thank you</h1><br>
-             </center>
+                 <h3>Payment Successful. Thank you</h3><br>
          </div>
 
             <div class="event_order_form">
@@ -402,7 +400,9 @@
                 @endif
 
                {!! Form::hidden('is_embedded', $is_embedded) !!}
-               {!! Form::submit('Generate Tickets', ['class' => 'btn btn-lg btn-success card-submit', 'style' => 'width:100%;']) !!}
+               <div class="col-md-12">
+               {!! Form::submit('Generate Tickets', ['class' => 'btn btn-lg btn-success card-submit', 'style' => 'width:100%;', 'id' =>'btngenerateticket']) !!}\
+              </div>
 </br>
 </br>
 </br>
@@ -413,3 +413,15 @@
 @if(session()->get('message'))
     <script>showMessage('{{session()->get('message')}}');</script>
 @endif
+<!--
+<script>
+var submit = document.getElementById('btngenerateticket');
+submit.onclick = function() {
+    //alert("Button pressed!");
+    this.disabled=true;
+    this.value='Generating Tickets';
+    return window.doSubmit;
+
+}
+</script>
+-->

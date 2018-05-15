@@ -1115,6 +1115,7 @@ class EventCheckoutController extends Controller
                 ])
             ]);
         }
+        dd("I am here");
         $event = Event::findOrFail($event_id);
         $order = new Order;
         $ticket_order = session()->get('ticket_order_' . $event_id);
@@ -1150,7 +1151,7 @@ class EventCheckoutController extends Controller
     //    if ($ticket_order['order_requires_payment']) {
 
 
-    /*
+
 
     $transaction = '{';
     foreach ($transaction_data as $key => $value) {
@@ -1163,11 +1164,9 @@ class EventCheckoutController extends Controller
     if ($response->isSuccessful()) {
         session()->push('ticket_order_' . $event_id . '.transaction_id',
             $response->getTransactionReference());
-         session()->push('ticket_order_' . $event_id . '.transaction_id', session()->get('tracking_id'));
+*/            session()->push('ticket_order_' . $event_id . '.transaction_id', session()->get('tracking_id'));
 
         return $this->completeOrder($event_id);
-
-        */
 
 
             if ($error) {
