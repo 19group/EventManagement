@@ -189,14 +189,16 @@ class OrganiserEventsController extends MyBaseController
 
         session()->flash('message', 'Successfully Created SideEvent');
 
-        return response()->json([
+        return redirect()->route('showSideEvents', ['event_id' => $event_id]);
+
+        /*return response()->json([
             'status'      => 'success',
             'id'          => $ticket->id,
             'message'     => 'Refreshing...',
             'redirectUrl' => route('showSideEvents', [
                 'event_id' => $event_id,
             ]),
-        ]);
+        ]);*/
     }
 
     /**
@@ -355,15 +357,16 @@ class OrganiserEventsController extends MyBaseController
         $ticket->save();
 
         session()->flash('message', 'Successfully Edited Side Event');
+        return redirect()->route('showSideEvents', ['event_id' => $event_id]);
 
-        return response()->json([
+        /*return response()->json([
             'status'      => 'success',
             'id'          => $ticket->id,
             'message'     => 'Refreshing...',
             'redirectUrl' => route('showSideEvents', [
                 'event_id' => $event_id,
             ]),
-        ]);
+        ]);*/
     }
 
     /**

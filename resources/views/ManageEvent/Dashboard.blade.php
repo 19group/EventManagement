@@ -40,7 +40,9 @@
     <div class="row">
         <div class="col-sm-3">
             <div class="stat-box">
-                <h3>{{ money($event->sales_volume + $event->organiser_fees_volume, $event->currency) }}</h3>
+                <?php $ticketcount=0; $ticketsales=0; foreach($event->tickets as $ticke){ if(!in_array($ticke->type, ['SIDEEVENT','extra','extras'])){ $ticketcount += $ticke->quantity_sold; $ticketsales+=$ticke->price;}} ?>
+                <!--h3>{{ money($event->sales_volume + $event->organiser_fees_volume, $event->currency) }}</h3-->
+                <h3>{{ money($ticketsales + $event->organiser_fees_volume, $event->currency) }}</h3>
                 <span>Sales Volume</span>
             </div>
         </div>
@@ -53,8 +55,7 @@
         <div class="col-sm-3">
             <div class="stat-box">
                 <!--h3>{{ $event->tickets->sum('quantity_sold') }}</h3-->
-                <?php $sum=0; foreach($event->tickets as $ticke){ if(!in_array($ticke->type, ['SIDEEVENT','extra','extras'])){ $sum += $ticke->quantity_sold;}} ?>
-                <h3>{{ $sum }}</h3>
+                <h3>{{ $ticketcount }}</h3>
                 <span>Tickets Sold</span>
             </div>
         </div>
@@ -85,7 +86,7 @@
                                 Tickets Sold
                         <span style="color: green; float: right;">
                             <!--{{$event->tickets->sum('quantity_sold')}} Total-->
-                            {{ $sum }} Total
+                            {{ $ticketcount }} Total
                         </span>
                             </h3>
                         </div>
@@ -102,7 +103,7 @@
                             <h3 class="panel-title">
                                 Ticket Sales Volume
                                 <span style="color: green; float: right;">
-                                    {{money($event->sales_volume + $event->organiser_fees_volume, $event->currency)}}
+                                    {{money($ticketsales + $event->organiser_fees_volume, $event->currency)}}
                                     Total
                                 </span>
                             </h3>

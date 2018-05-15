@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers;//3,683,690//event/2/pesament/skip
 
 //use App\Events\DonationCompletedEvent;
 use App\Events\OrderCompletedEvent;
@@ -27,6 +27,7 @@ use Omnipay;
 use PDF;
 use PhpSpec\Exception\Exception;
 use Validator;
+use Utils;
 
 class EventCheckoutController extends Controller
 {
@@ -142,10 +143,18 @@ class EventCheckoutController extends Controller
                 $quantity_available_validation_rules, $quantity_available_validation_messages);
 
             if ($validator->fails()) {
-                return response()->json([
+                $errordata = [
+                    'event' => $event,
+                    'callbackurl' => null,
+                    'messages' => $validator->messages()->toArray(),
+                    'request_details' => null,
+                    'parameters' => ['event_id' => $event_id]
+                ];
+                return view('Public.ViewEvent.EventPageErrors', $errordata);
+                /*return response()->json([
                     'status'   => 'error',
                     'messages' => $validator->messages()->toArray(),
-                ]);
+                ]);*/
             }
 
             /*
@@ -338,24 +347,41 @@ class EventCheckoutController extends Controller
         /*
          * Maybe display something prettier than this?
          */
-        exit('Please enable Javascript in your browser.');
+        //exit('Please enable Javascript in your browser.');
+
+        return $this->javascriptError($event_id);
+    }
+
+    public function javascriptError($event_id){
+        $errordata = [
+            'event' => Event::findOrFail($event_id),
+            'callbackurl' => 'createorder',
+            'messages' => "Javascript is not enabled in your browser. Please enable it first before you continue",
+            'parameters' => ['event_id' => $event_id]
+        ];
+        return view('Public.ViewEvent.EventPageErrors', $errordata);
     }
 
     //added by DonaldApril25
     public function organiserSkipPayment($event_id)
     {
         $order_session = session()->get('ticket_order_' . $event_id);
-        $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
-        $data = $order_session + [
-                'event'           => Event::findorFail($order_session['event_id']),
-                'secondsToExpire' => $secondsToExpire,
-                'is_embedded'     => $this->is_embedded,
-                'previousurl' => URL::previous(),
-            ];
-        if ($this->is_embedded) {
-            return view('Public.ViewEvent.Embedded.EventPageCheckout', $data);
+        $event=Event::findOrFail($event_id);
+        if(Utils::userOwns($event) || $order_session['order_total'] + $order_session['donation'] == 0 && count($order_session['order_has_validdiscount'])>0){
+            $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
+            $data = $order_session + [
+                    'event'           => Event::findorFail($order_session['event_id']),
+                    'secondsToExpire' => $secondsToExpire,
+                    'is_embedded'     => $this->is_embedded,
+                    'previousurl' => URL::previous(),
+                ];
+            if ($this->is_embedded) {
+                return view('Public.ViewEvent.Embedded.EventPageCheckoutSuccess', $data);
+            }
+                return view('Public.ViewEvent.EventPageCheckoutSuccess', $data);
+        }else{
+            return redirect()->back();
         }
-            return view('Public.ViewEvent.EventPageCheckoutSuccess', $data);
     }
 
     /**
@@ -397,7 +423,8 @@ class EventCheckoutController extends Controller
         /*
          * Maybe display something prettier than this?
          */
-        exit('Please enable Javascript in your browser.');
+        //exit('Please enable Javascript in your browser.');
+        return $this->javascriptError($event_id);
         }
 
         $data = $order_session + [
@@ -756,9 +783,9 @@ class EventCheckoutController extends Controller
          * If we're this far assume everything is OK and redirect them
          * to the the checkout page.
          */
-         return response()->redirectToRoute('OrderSideEvents', [
-             'event_id'          => $event_id
-         ]);
+    //     return response()->redirectToRoute('OrderSideEvents', [
+    //         'event_id'          => $event_id
+    //     ]);
 
         //$printer = session()->get('ticket_order_' . $event->id);
     //    dd($printer);
@@ -768,6 +795,7 @@ class EventCheckoutController extends Controller
          * to the the checkout page.
          */
         if ($request->ajax()) {
+        //    return redirect()->route('OrderSideEvents', ['event_id' => $event_id,'is_embedded' => $this->is_embedded,]). '#order_form';
             return response()->json([
                 'status'      => 'success',
                 'redirectUrl' => route('OrderSideEvents', [
@@ -780,7 +808,8 @@ class EventCheckoutController extends Controller
         /*
          * Maybe display something prettier than this?
          */
-        exit('Please enable Javascript in your browser.');
+        //exit('Please enable Javascript in your browser.');
+        return $this->javascriptError($event_id);
     }
 
 
@@ -1014,8 +1043,10 @@ class EventCheckoutController extends Controller
         /*
          * Maybe display something prettier than this?
          */
-        exit('Please enable Javascript in your browser.');
+        //exit('Please enable Javascript in your browser.');
+        return $this->javascriptError($event_id);
     }
+
 
     /**
      * Show the checkout page
@@ -1084,6 +1115,7 @@ class EventCheckoutController extends Controller
                 ])
             ]);
         }
+        //dd("I am here");
         $event = Event::findOrFail($event_id);
         $order = new Order;
         $ticket_order = session()->get('ticket_order_' . $event_id);
@@ -1110,116 +1142,32 @@ class EventCheckoutController extends Controller
          */
         //session()->push('ticket_order_' . $event_id . '.request_data', $request->except(['card-number', 'card-cvc']));
         session()->push('ticket_order_' . $event_id . '.request_data', $request/*->except(['tracking_id', 'merchant_reference'])*/);
+
         return $this->completeOrder($event_id);
         //this section was re-commented by Donald on Sat 20, 2018 at 3:34 pm
         /*
          * Begin payment attempt before creating the attendees etc.
          * */
     //    if ($ticket_order['order_requires_payment']) {
-            /*
-             * Check if the user has chosen to pay offline
-             * and if they are allowed
-             */
-            if ($request->get('pay_offline') && $event->enable_offline_payments) {
-                return $this->completeOrder($event_id);
-            }
-            try {
-                $transaction_data = [
-                        'amount'      => ($ticket_order['order_total'] + $ticket_order['organiser_booking_fee']),
-                        'currency'    => $event->currency->code,
-                        'description' => 'Order for customer: ' . $request->get('order_email'),
-                    ];
-                switch ($ticket_order['payment_gateway']->id) {
-                    case config('attendize.payment_gateway_paypal'):
-                    case config('attendize.payment_gateway_coinbase'):
-                        $transaction_data += [
-                            'cancelUrl' => route('showEventCheckoutPaymentReturn', [
-                                'event_id'             => $event_id,
-                                'is_payment_cancelled' => 1
-                            ]),
-                            'returnUrl' => route('showEventCheckoutPaymentReturn', [
-                                'event_id'              => $event_id,
-                                'is_payment_successful' => 1
-                            ]),
-                            'brandName' => isset($ticket_order['account_payment_gateway']->config['brandingName'])
-                                ? $ticket_order['account_payment_gateway']->config['brandingName']
-                                : $event->organiser->name
-                        ];
-                        break;
-                    case config('attendize.payment_gateway_stripe'):
-                        $token = $request->get('stripeToken');
-                        $transaction_data += [
-                            'token'         => $token,
-                            'receipt_email' => $request->get('order_email'),
-                        ];
-                        break;
-                    case config('attendize.payment_gateway_migs'):
-                        $transaction_data += [
-                            'transactionId' => $event_id . date('YmdHis'),       // TODO: Where to generate transaction id?
-                            'returnUrl' => route('showEventCheckoutPaymentReturn', [
-                                'event_id'              => $event_id,
-                                'is_payment_successful' => 1
-                            ]),
-                        ];
-                        // Order description in MIGS is only 34 characters long; so we need a short description
-                        $transaction_data['description'] = "Ticket sales " . $transaction_data['transactionId'];
-                        break;
-                    case config('attendize.payment_gateway_pesapal'):
-                        $transaction_data += [
-                            'pesapal_transaction_tracking_id'=> session()->get('tracking_id'),
-                            'pesapal_merchant_reference' => session()->get('merchant_reference'),
-                        ];
-                        break;
-                    default:
-                        Log::error('No payment gateway configured.');
-                        return repsonse()->json([
-                            'status'  => 'error',
-                            'message' => 'No payment gateway configured.'
-                        ]);
-                        break;
-                }
-                $transaction = '{';
-                foreach ($transaction_data as $key => $value) {
-                    $transaction = $transaction.'"'.$key.'":"'.$value.'",';
-                }
-                $transaction = substr($transaction,0,strlen($transaction)-1).'}';
-        /*        $transaction = $gateway->purchase($transaction_data);
-                $response = $transaction->send();
-                if ($response->isSuccessful()) {
-                    session()->push('ticket_order_' . $event_id . '.transaction_id',
-                        $response->getTransactionReference());
-        */            session()->push('ticket_order_' . $event_id . '.transaction_id',
-                        session()->get('tracking_id'));
-                    return $this->completeOrder($event_id);
-        /*        } elseif ($response->isRedirect()) {
 
-                    /*
-                     * As we're going off-site for payment we need to store some data in a session so it's available
-                     * when we return
-                     */
-        /*            session()->push('ticket_order_' . $event_id . '.transaction_data', $transaction_data);
-                    Log::info("Redirect url: " . $response->getRedirectUrl());
-                    $return = [
-                        'status'       => 'success',
-                        'redirectUrl'  => $response->getRedirectUrl(),
-                        'message'      => 'Redirecting to ' . $ticket_order['payment_gateway']->provider_name
-                    ];
-                    // GET method requests should not have redirectData on the JSON return string
-                    if($response->getRedirectMethod() == 'POST') {
-                        $return['redirectData'] = $response->getRedirectData();
-                    }
-                    return response()->json($return);
-                } else {
-                    // display error to customer
-                    return response()->json([
-                        'status'  => 'error',
-                        'message' => $response->getMessage(),
-                    ]);
-                }
-        */    } catch (\Exeption $e) {
-                Log::error($e);
-                $error = 'Sorry, there was an error processing your payment. Please try again.';
-            }
+
+
+
+    $transaction = '{';
+    foreach ($transaction_data as $key => $value) {
+        $transaction = $transaction.'"'.$key.'":"'.$value.'",';
+    }
+
+    $transaction = substr($transaction,0,strlen($transaction)-1).'}';
+/*        $transaction = $gateway->purchase($transaction_data);
+    $response = $transaction->send();
+    if ($response->isSuccessful()) {
+        session()->push('ticket_order_' . $event_id . '.transaction_id',
+            $response->getTransactionReference());
+*/            session()->push('ticket_order_' . $event_id . '.transaction_id', session()->get('tracking_id'));
+
+        return $this->completeOrder($event_id);
+
 
             if ($error) {
                 /*return response()->json([
@@ -1302,7 +1250,7 @@ class EventCheckoutController extends Controller
 
             $order = new Order();
             $ticket_order = session()->get('ticket_order_' . $event_id);
-            //dd($ticket_order);
+            //dd($ticket_order['request_data'][0]);
             $request_data = $ticket_order['request_data'][0];
             $event = Event::findOrFail($ticket_order['event_id']);
             $attendee_increment = 1;
@@ -1492,10 +1440,20 @@ class EventCheckoutController extends Controller
             Log::error($e);
             DB::rollBack();
 
-            return response()->json([
+
+        $errordata = [
+            'event' => $event,
+            'callbackurl' => null,
+            'messages' => 'Sorry, something beyond our realization has gone wrong while trying processing your order. Please try again',
+            'request_details' => null,
+            'parameters' => null
+        ];
+        return view('Public.ViewEvent.EventPageErrors', $errordata);
+
+            /*return response()->json([
                 'status'  => 'error',
                 'message' => 'Whoops! There was a problem processing your order. Please try again.'
-            ]);
+            ]);*/
 
         }
 

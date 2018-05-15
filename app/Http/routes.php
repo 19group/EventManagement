@@ -180,7 +180,7 @@ Route::group(['prefix' => 'e'], function () {
        'as'   => 'removeOrderTicket',
        'uses' => 'EventCheckoutController@removeOrderTicket',
    ]);
-   
+
    Route::get('{event_id}/{page}/create/removeOrderTicket/{delete_ticket}', [
        'as'   => 'removeOrderTicket',
        'uses' => 'EventCheckoutController@removeOrderTicket',
@@ -202,6 +202,31 @@ Route::group(['prefix' => 'e'], function () {
         'uses' => 'PesapalAPIController@handleCallback',
     ]);
 
+    Route::get('{event_id}/payment/postpayment',[
+        'as' => 'postPayment',
+        'uses' => 'PaymentsController@postPayment',
+    ]);
+
+    Route::post('{event_id}/payment/postpayment',[
+        'as' => 'postPayment',
+        'uses' => 'PaymentsController@postPayment',
+    ]);
+
+    Route::get('{event_id}/paypal/notification',[
+        'as' => 'paypalNotification',
+        'uses' => 'PaymentsController@paypalNotification',
+    ]);
+
+    Route::post('{event_id}/paypal/notification',[
+        'as' => 'paypalNotification',
+        'uses' => 'PaymentsController@paypalNotification',
+    ]);
+
+    Route::get('{event_id}/paypal/paymentsuccess/{payment_token}',[
+        'as' => 'paypalsuccess',
+        'uses' => 'PaymentsController@paypalSuccess',
+    ]);
+
     Route::get('{event_id}/pesament/create', [
         'as'   => 'confirm',
         'uses' => 'PesapalAPIController@handleIPN',
@@ -217,10 +242,12 @@ Route::group(['prefix' => 'e'], function () {
         'uses' => 'EventCheckoutController@organiserSkipPayment',
     ]);
 
-    Route::post('{event_id}/checkout/create', [
+    Route::post('{event_id}/checkout/complete', [
         'as'   => 'postCreateOrder',
         'uses' => 'EventCheckoutController@postCreateOrder',
     ]);
+
+
 });
 
 /*
@@ -455,6 +482,8 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
             'as'   => 'showEditTicket',
             'uses' => 'EventTicketsController@showEditTicket',
         ]);
+
+
         Route::post('{event_id}/tickets/edit/{ticket_id}', [
             'as'   => 'postEditTicket',
             'uses' => 'EventTicketsController@postEditTicket',
@@ -540,6 +569,19 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
             'as'   => 'showCreateAccomodation',
             'uses' => 'EventTicketsController@showBookingModal',
         ]);
+
+        Route::get('{event_id}/accommodation/edit/{ticket_id}', [
+            'as'   => 'showEditAccommodation',
+            'uses' => 'EventTicketsController@showEditAccommodation',
+        ]);
+
+        Route::post('{event_id}/accommodation/edit/{ticket_id}', [
+            'as'   => 'postEditAccommodation',
+            'uses' => 'EventTicketsController@postEditAccommodation',
+        ]);
+
+
+
           Route::post('{event_id}/create/accommodation', [
             'as'   => 'postCreateAccommodation',
             'uses' => 'EventTicketsController@postCreateAccommodation',

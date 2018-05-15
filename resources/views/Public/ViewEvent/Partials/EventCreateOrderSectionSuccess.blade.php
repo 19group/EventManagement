@@ -1,10 +1,10 @@
 <section id='order_form' class="row bg-white" style="margin-top: 5%">
-     <div class="container"><br><br>
+    <div class="container"><br><br>
         <h1 class="section_head">
-            Order Details
+            Ticket Details
         </h1>
     </div>
-     <div class="container">
+    <div class="container" id='blurr'>
         <div class="col-md-4 col-md-push-8">
             <div class="panel">
                 <div class="panel-heading">
@@ -46,18 +46,21 @@
                 </div>
                 @endif
 
-            </div>
+            </div><!--div class="panel"-->
             <div class="help-block">
                 Please note you only have <span id='countdown'></span> to complete this transaction before your tickets are re-released.
             </div>
-        </div>
+        </div><!--div class="col-md-4 col-md-push-8"-->
         <div class="col-md-8 col-md-pull-4">
+         <div class="container-fluid">
+                 <h3>Payment Successful. Thank you</h3><br>
+         </div>
+
             <div class="event_order_form">
-                {!! Form::open(['url' => route('postCreateOrder', ['event_id' => $event->id])]) !!}
+                {!! Form::open(['url' => route('postCreateOrder', ['event_id' => $event->id]), 'onsubmit'=>"loadFunction(this)"]) !!}
 
                 {!! Form::hidden('event_id', $event->id) !!}
 
-                <h3>Your Information </h3>
 
                 <div class="row" style="display: none;">
                     <div class="col-xs-6">
@@ -83,10 +86,12 @@
                     </div>
                 </div>
 
-                <div class="p20 pl0">
+                <div class="p20 pl0 row">
+                 <div class="col-md-12">
                     <a href="javascript:void(0);" class="btn btn-primary btn-xs" id="mirror_buyer_info">
-                        Copy buyer details to all ticket holders
+                        Click here to Copy buyers details to all tickets below
                     </a>
+                 </div>
                 </div>
 
                 <div class="row">
@@ -387,12 +392,6 @@
 
                 @endif-->
 
-                <div class="container-fluid">
-                    <center>
-                        <h1>Payment Successful.</h1><br>
-                        <h2>Thank you...</h2><br>
-                    </center>
-                    </div>
 
                 @if($event->pre_order_display_message)
                 <div class="well well-small">
@@ -401,14 +400,35 @@
                 @endif
 
                {!! Form::hidden('is_embedded', $is_embedded) !!}
-               {!! Form::submit('Checkout', ['class' => 'btn btn-lg btn-success card-submit', 'style' => 'width:100%;']) !!}
+<div class="col-md-12">
+               {!! Form::submit('Generate Tickets', ['class' => 'btn btn-lg btn-success card-submit', 'style' => 'width:100%;', 'id'=>'generatorbutton']) !!}
+               <!--, 'onClick'=>"this.disabled=true; this.value='Generating Your Tickets';"-->
+              </div>
 </br>
 </br>
 </br>
             </div>
         </div>
     </div>
+    <div class='container' id='replacer' style="display: hidden">
+
+    </div>
 </section>
 @if(session()->get('message'))
     <script>showMessage('{{session()->get('message')}}');</script>
 @endif
+
+<script>
+
+function loadFunction(e){
+    var wait = document.getElementById("generatorbutton");
+    wait.disabled=true;
+    wait.value="Generating Your Tickets.";
+    var dots = window.setInterval( function() {
+    if ( wait.value.length > 30 )
+        wait.value = "Generating Your Tickets.";
+    else
+        wait.value += " .";
+    }, 500);
+}
+</script>
