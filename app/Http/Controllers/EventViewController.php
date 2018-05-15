@@ -41,7 +41,8 @@ class EventViewController extends Controller
                 'request_details' => null,
                 'parameters' => null,
                 'route' => 'passToEventPage',
-                'routeparameters'=> ['event_id'=>$event_id]
+                'routeparameters'=> ['event_id'=>$event_id],
+                'routedisplay'=>'Forget past activity and return to home page'
             ];
             return view('Public.ViewEvent.EventPageErrors', $errordata);
         }
