@@ -227,7 +227,7 @@ Route::group(['prefix' => 'e'], function () {
         'uses' => 'PaymentsController@paypalNotification',
     ]);
 
-    Route::get('{event_id}/paypal/paymentsuccess{payment_token}',[
+    Route::get('{event_id}/paypal/paymentsuccess/{payment_token}',[
         'as' => 'paypalsuccess',
         'uses' => 'PaymentsController@paypalSuccess',
     ]);

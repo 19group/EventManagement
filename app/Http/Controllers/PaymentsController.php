@@ -136,7 +136,7 @@ class PaymentsController extends Controller
     // PayPal settings
 
     $paypal_email = env('PAYPAL_EMAIL');//'user@domain.com';
-    $return_url = env('SERVER_ROOT').'e/'.$event_id.'/paypal/paymentsuccess'.$payment_token;
+    $return_url = env('SERVER_ROOT').'e/'.$event_id.'/paypal/paymentsuccess/'.$payment_token;
     $cancel_url = env('SERVER_ROOT').'e/'.$event_id.'/checkout/create';
     $notify_url = env('SERVER_ROOT').'e/'.$event_id.'/paypal/notification';
 ///    $cmd = "_cart";
@@ -159,6 +159,7 @@ class PaymentsController extends Controller
         $querystring .= "item_name=".urlencode($item_name)."&";
         $querystring .= "amount=".urlencode($item_amount)."&";
 
+
         //loop for posted values and append to querystring
         foreach($_POST as $key => $value){
             $value = urlencode(stripslashes($value));
@@ -166,12 +167,11 @@ class PaymentsController extends Controller
         }
 
         // Append paypal return addresses
-        $querystring .= "return=".urlencode(stripslashes($return_url))."&";
         $querystring .= "cancel_return=".urlencode(stripslashes($cancel_url))."&";
+        $querystring .= "return=".urlencode(stripslashes($return_url))."&";
         $querystring .= "notify_url=".urlencode($notify_url);
 
-
-        return redirect('https://www.sandbox.paypal.com/cgi-bin/webscr'.$querystring);
+        return redirect(env('PAYPAL_HOST').$querystring);
 
         //header('location:https://www.sandbox.paypal.com/cgi-bin/webscr'.$querystring);
         //exit();
@@ -321,7 +321,122 @@ class PaymentsController extends Controller
 
  public function paypalNotification(Request $request, $event_id){
      //dd($request);-
-     echo " I am here";
+     $raw_post_data = file_get_contents('php://input');
+     $raw_post_array = explode('&', $raw_post_data);
+     $myPost = array();
+
+     foreach ($raw_post_array as $keyval) {
+      $keyval = explode ('=', $keyval);
+      if (count($keyval) == 2)
+      $myPost[$keyval[0]] = urldecode($keyval[1]);
+     }
+     // read the post from PayPal system and add 'cmd'
+     $req = 'cmd=_notify-validate';
+     if(function_exists('get_magic_quotes_gpc')) {
+      $get_magic_quotes_exists = true;
+     }
+     foreach ($myPost as $key => $value) {
+      if($get_magic_quotes_exists == true && get_magic_quotes_gpc() == 1) {
+       $value = urlencode(stripslashes($value));
+      } else {
+       $value = urlencode($value);
+      }
+      $req .= "&$key=$value";
+     }
+
+
+     // STEP 2: Post IPN data back to paypal to validate
+
+     //$ch = curl_init('https://www.paypal.com/cgi-bin/webscr'); // change to [...]sandbox.paypal[...] when using sandbox to test
+     $ch = curl_init(env('PAYPAL_HOST'));
+     curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+     curl_setopt($ch, CURLOPT_POST, 1);
+     curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+     curl_setopt($ch, CURLOPT_POSTFIELDS, $req);
+     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
+     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+     curl_setopt($ch, CURLOPT_FORBID_REUSE, 1);
+     curl_setopt($ch, CURLOPT_HTTPHEADER, array('Connection: Close'));
+
+     // In wamp like environments that do not come bundled with root authority certificates,
+     // please download 'cacert.pem' from "http://curl.haxx.se/docs/caextract.html" and set the directory path
+     // of the certificate as shown below.
+     // curl_setopt($ch, CURLOPT_CAINFO, dirname(__FILE__) . '/cacert.pem');
+     if( !($res = curl_exec($ch)) ) {
+      // error_log("Got " . curl_error($ch) . " when processing IPN data");
+      curl_close($ch);
+      exit;
+     }
+     curl_close($ch);
+
+
+     // STEP 3: Inspect IPN validation result and act accordingly
+
+     if (strcmp ($res, "VERIFIED") == 0) {
+      //sendSuccessEmail();
+       $payment_success_status = 1;
+       $this->paymentconfirmed($event_id,$payment_success_status);
+
+      //Payment Is Successful, do something here
+
+      // check whether the payment_status is Completed
+      // check that txn_id has not been previously processed
+      // check that receiver_email is your Primary PayPal email
+      // check that payment_amount/payment_currency are correct
+      // process payment
+
+      // assign posted variables to local variables
+      $item_name = $_POST['item_name'];
+      $item_number = $_POST['item_number'];
+      $payment_status = $_POST['payment_status'];
+      if ($_POST['mc_gross'] != NULL)
+      $payment_amount = $_POST['mc_gross'];
+      else
+      $payment_amount = $_POST['mc_gross1'];
+      $payment_currency = $_POST['mc_currency'];
+      $txn_id = $_POST['txn_id'];
+      $receiver_email = $_POST['receiver_email'];
+      $payer_email = $_POST['payer_email'];
+      $custom = $_POST['custom'];
+
+      // Insert your actions here
+
+     } else if (strcmp ($res, "INVALID") == 0) {
+      // log for manual investigation
+      dd("Payment Failed");
+      $payment_success_status = 0;
+      $this->paymentconfirmed($event_id,$payment_success_status);
+
+      //Payment has failed, do something here
+
+     }
+
+ }
+
+ public function paymentconfirmed($event_id,$payment_success_status){
+
+  $order_session = session()->get('ticket_order_' . $event_id);
+  $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
+  $data = $order_session + [
+   //'event'           => Event::findorFail($order_session['event_id']),
+   'secondsToExpire' => $secondsToExpire,
+   'is_embedded'     => $this->is_embedded,
+   //'previousurl' => URL::previous(),
+  ];
+
+
+  if($payment_success_status == 1){
+   //dd("I am here successfully");
+  return view('Public.ViewEvent.EventPageCheckoutSuccess', $data);
+  }
+  else{
+   //dd("I am here unsuccessful");
+   session()->flash('message', 'Payment has failed, please make sure that all details are correct, and try again');
+   // dd("I am here");
+   //dd(" i am not successful at payment");
+   return view ('Public.ViewEvent.EventPageCheckout',$data);
+   }
+  //return view()
  }
 
 
