@@ -1115,7 +1115,7 @@ class EventCheckoutController extends Controller
                 ])
             ]);
         }
-        dd("I am here");
+        //dd("I am here");
         $event = Event::findOrFail($event_id);
         $order = new Order;
         $ticket_order = session()->get('ticket_order_' . $event_id);

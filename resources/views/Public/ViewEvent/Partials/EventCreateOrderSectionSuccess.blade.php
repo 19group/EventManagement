@@ -400,9 +400,10 @@
                 @endif
 
                {!! Form::hidden('is_embedded', $is_embedded) !!}
-
+<div class="col-md-12">
                {!! Form::submit('Generate Tickets', ['class' => 'btn btn-lg btn-success card-submit', 'style' => 'width:100%;', 'id'=>'generatorbutton']) !!}
                <!--, 'onClick'=>"this.disabled=true; this.value='Generating Your Tickets';"-->
+              </div>
 </br>
 </br>
 </br>
