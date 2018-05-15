@@ -171,7 +171,7 @@ class PaymentsController extends Controller
         $querystring .= "return=".urlencode(stripslashes($return_url))."&";
         $querystring .= "notify_url=".urlencode($notify_url);
 
-        return redirect('https://www.sandbox.paypal.com/cgi-bin/webscr'.$querystring);
+        return redirect(env('PAYPAL_HOST').$querystring);
 
         //header('location:https://www.sandbox.paypal.com/cgi-bin/webscr'.$querystring);
         //exit();
