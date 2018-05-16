@@ -25,6 +25,7 @@ return [
 
     'event_images_path'      => 'user_content/event_images',
     'sideevent_images_path'  => 'user_content/sideevent_images',
+    'workshop_images_path'  => 'user_content/sideevent_images',
     'organiser_images_path'  => 'user_content/organiser_images',
     'event_pdf_tickets_path' => 'user_content/pdf_tickets',
     'event_bg_images'        => 'assets/images/public/EventPage/backgrounds',
