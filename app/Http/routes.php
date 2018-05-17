@@ -151,6 +151,26 @@ Route::group(['prefix' => 'e'], function () {
         'uses' => 'EventCheckoutController@postValidateTickets',
     ]);
 
+    Route::get('{event_id}/transactions/control', [
+        'as'   => 'handleTransactions',
+        'uses' => 'EventTransactionsController@handleTransactions',
+    ]);
+
+    Route::get('{event_id}/order/workshops/', [
+        'as'   => 'OrderWorkshops',
+        'uses' => 'WorkshopCheckoutController@showOrderWorkshops',
+    ]);
+
+    Route::post('{event_id}/ordered/workshops/', [
+        'as'   => 'postOrderWorkshops',
+        'uses' => 'WorkshopCheckoutController@postOrderWorkshops',
+    ]);
+
+    Route::get('{event_id}/order/workshops/complete', [
+        'as'   => 'completeOrderWorkshops',
+        'uses' => 'WorkshopCheckoutController@completeOrderWorkshops',
+    ]);
+
     Route::get('{event_id}/order/sideevents/', [
         'as'   => 'OrderSideEvents',
         'uses' => 'EventCheckoutController@showOrderSideEvents',
@@ -168,6 +188,10 @@ Route::group(['prefix' => 'e'], function () {
     Route::post('{event_id}/order/sideevents/book', [
         'as'   => 'postBookSideEvent',
         'uses' => 'EventCheckoutController@postBookSideEvent',
+    ]);
+    Route::get('{event_id}/order/sideevents/complete', [
+        'as'   => 'completeOrderSideEvents',
+        'uses' => 'SideEventCheckoutController@completeOrderSideEvents',
     ]);
 
 
@@ -344,6 +368,31 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
         ]);
 
         //added by DonaldFeb21 DonaldMar2
+        Route::get('{event_id}/workshops', [
+            'as'   => 'showWorkshops',
+            'uses' => 'OrganiserWorkshopsController@showEventWorkshops',
+        ]);
+        Route::get('{event_id}/workshop/create', [
+            'as'   => 'showCreateWorkshop',
+            'uses' => 'OrganiserWorkshopsController@showCreateWorkshop',
+        ]);
+        Route::post('{event_id}/newworkshop', [
+            'as'   => 'postCreateWorkshop',
+            'uses' => 'OrganiserWorkshopsController@postCreateWorkshop',
+        ]);
+        Route::get('{event_id}/workshops/edit/{workshop_id}', [
+            'as'   => 'showEditWorkshop',
+            'uses' => 'OrganiserWorkshopsController@showEditWorkshop',
+        ]);
+        Route::post('{event_id}/workshops/edit/{workshop_id}', [
+            'as'   => 'postEditWorkshop',
+            'uses' => 'OrganiserWorkshopsController@postEditWorkshop',
+        ]);
+        Route::get('{ticket_id}/workshops/delete', [
+            'as'   => 'postDeleteWorkshop',
+            'uses' => 'OrganiserWorkshopsController@postDeleteWorkshop',
+        ]);
+
         Route::get('{event_id}/choosesideevents', [
             'as'   => 'chooseSideEvents',
             'uses' => 'OrganiserEventsController@chooseSideEvents',

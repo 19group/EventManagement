@@ -31,6 +31,12 @@
                 </a>
             </li>
             <li class="{{ Request::is('*tickets*') ? 'active' : '' }}">
+                <a href="{{route('showWorkshops', array('event_id' => $event->id))}}">
+                    <span class="figure"><i class="glyphicon glyphicon-tag"></i></span>
+                    <span class="text">Workshops</span>
+                </a>
+            </li>
+            <li class="{{ Request::is('*tickets*') ? 'active' : '' }}">
                 <a href="{{route('showSideEvents', array('event_id' => $event->id))}}">
                     <span class="figure"><i class="glyphicon glyphicon-tag"></i></span>
                     <span class="text">Side Events</span>

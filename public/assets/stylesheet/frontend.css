@@ -130,6 +130,17 @@ html,body{height:100%}body{font-family:'Open Sans',sans-serif}table{margin:0}lab
  margin-bottom: 10px;
  padding-bottom: 5px;
  padding-top: 5px;
+ background-color: #f8f8f8;
+}
+.workshop-day
+{
+    margin-bottom: 10px;
+    background-color: rgba(35, 103, 121, 0.71);
+    color: white;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    border: 1px solid rgba(35, 103, 121, 0.80);
+    border-radius: 2px;
 }
 .no-left-padding{
  padding-left:0px !important;

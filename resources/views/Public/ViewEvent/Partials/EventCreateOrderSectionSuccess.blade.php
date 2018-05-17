@@ -160,7 +160,7 @@
                                                 }
                                             }*///DonaldMar27
                                             //DonaldApril03
-                                            if(isset($ticket['dates']) && $ticket['ticket']['type']==='SIDEEVENT'){
+                                            if(isset($ticket['dates']) && in_array($ticket['ticket']['type'],['SIDEEVENT','WORKSHOP'])){
                                                 $sched = explode('<==>',$ticket['dates']);
                                                 $option = date('d-M-Y H:i', strtotime($sched[0])).' to '.date('d-M-Y H:i', strtotime($sched[1]));
                                                 //echo '<div class = \'row\'>';

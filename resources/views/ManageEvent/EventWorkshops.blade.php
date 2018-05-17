@@ -17,7 +17,7 @@ Event Orders
 
 @section('page_title')
 <i class='ico-cart mr5'></i>
-Side Events for {{$event->title}}
+Workshops for {{$event->title}}
 <span class="page_title_sub_title hide">
     Showing 30 orders out of <b></b> Total
 </span>
@@ -31,7 +31,7 @@ Side Events for {{$event->title}}
 <div class="col-md-9 col-sm-6">
     <div class="btn-toolbar" role="toolbar">
         <div class="btn-group btn-group-responsive">
-            <button data-modal-id="InviteAttendee" href="javascript:void(0);"  data-href="{{route('showReCreateSideEvent', array('event_id'=>$event->id))}}" class="loadModal btn" type="button"><i class="glyphicon glyphicon-tag"></i> Create Side Event</button>
+            <button data-modal-id="InviteAttendee" href="javascript:void(0);"  data-href="{{route('showCreateWorkshop', array('event_id'=>$event->id))}}" class="loadModal btn" type="button"><i class="glyphicon glyphicon-tag"></i> Create New Workshop</button>
         </div>
     </div>
 </div>
@@ -42,7 +42,7 @@ Side Events for {{$event->title}}
 <!--Start Attendees table-->
 <div class="row">
 
-    @if($sideevents)
+    @if($workshops)
 
 
     <div class="col-md-12">
@@ -54,22 +54,22 @@ Side Events for {{$event->title}}
                     <thead>
                         <tr>
                             <th>
-                               SIDE Event Title
+                                Workshop Title
                             </th>
                             <th>
-                               SIDE Event Description
+                                Workshop Description
                             </th>
                             <th>
-                               Ticket Price
+                                Attendance Price
                             </th>
                             <th>
                                 Tickets Sold
                             </th>
                             <th>
-                               Schedules
+                                Sessions
                             </th>
                             <th>
-                               Tickets purchased
+                                Tickets purchased
                             </th>
                             <th>
                                 Manage
@@ -78,25 +78,25 @@ Side Events for {{$event->title}}
                     </thead>
                     <tbody>
 
-                        @foreach($sideevents as $sideevent)
+                        @foreach($workshops as $workshop)
                         <tr>
                             <td>
-                                {{$sideevent->title}}
+                                {{$workshop->title}}
                             </td>
                             <td>
-                                {{$sideevent->description}}
+                                {{$workshop->description}}
                             </td>
                             <td>
-                                {{$sideevent->price}}
+                                {{$workshop->price}}
                             </td>
                             <td>
-                                {{$sideevent->quantity_sold}}
+                                {{$workshop->quantity_sold}}
                             </td>
                             <td>
                                 <?php 
                                     $schedules =[];
-                                    if(isset($sideevent->ticket_offers)){
-                                        $toffers = explode('+++',$sideevent->ticket_offers);
+                                    if(isset($workshop->ticket_offers)){
+                                        $toffers = explode('+++',$workshop->ticket_offers);
                                         for($count=0;$count<count($toffers);++$count){
                                         $sched = explode('<==>',$toffers[$count]);
                                         $schedule = date('d-M-Y H:i', strtotime($sched[0]))." to ".date('d-M-Y H:i', strtotime($sched[1]));
@@ -104,7 +104,7 @@ Side Events for {{$event->title}}
                                         $schedules[] = $schedule;
                                         }
                                     }else{
-                                        echo 'No schedule set.';
+                                        echo 'No session set.';
                                     }
                                 ?>
                                 
@@ -113,7 +113,7 @@ Side Events for {{$event->title}}
                                 <?php
                                     if(!empty($schedules)){
                                         foreach($schedules as $scheduler){
-                                            $tempobj = \App\Models\Attendee::where(['period'=>$scheduler, 'ticket_id'=>$sideevent->id])->get();
+                                            $tempobj = \App\Models\Attendee::where(['period'=>$scheduler, 'ticket_id'=>$workshop->id])->get();
                                             echo count($tempobj); echo '</br>......</br>';
                                         }
                                     }else{
@@ -123,10 +123,10 @@ Side Events for {{$event->title}}
                                 
                             </td>
                             <td>
-                <span style="cursor: pointer;" data-modal-id='ticket-{{ $sideevent->id }}'
-                             data-href="{{ route('showEditSideEvent', ['event_id' => $event->id, 'ticket_id' => $sideevent->id]) }}"
+                <span style="cursor: pointer;" data-modal-id='ticket-{{ $workshop->id }}'
+                             data-href="{{ route('showEditWorkshop', ['event_id' => $event->id, 'ticket_id' => $workshop->id]) }}"
                              class="panel-heading loadModal"><i class="ico-edit"></i>Edit </span>
-                                <a href="{{route('postDeleteSideEvent', ['ticket_id' => $sideevent->id])}}" onClick="return confirm('Oh you really sure want to delete this SIDE event?');">
+                                <a href="{{route('postDeleteWorkshop', ['ticket_id' => $workshop->id])}}" onClick="return confirm('Oh you really sure want to delete this Workshop?');">
                     <i class="ico-remove"></i> Delete
                 </a>
                             </td>

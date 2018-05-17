@@ -9,12 +9,12 @@ use Carbon\Carbon;
 use DB;
 use Log;
 use DateTime;
-class OrganiserEventsController extends MyBaseController
+class OrganiserWorkshopsController extends MyBaseController
 {
 
     /**
      * added by DonaldMar2
-     * Show the organiser events page
+     * Show the organiser workshops page
      *
      * @param Request $request
      * @param $organiser_id
@@ -62,9 +62,9 @@ class OrganiserEventsController extends MyBaseController
      * @param $organiser_id
      * @return mixed
      */
-    public function showReCreateSideEvent($event_id)
+    public function showCreateWorkshop($event_id)
     {
-        return view('ManageEvent.Modals.ReCreateSideEvent', [
+        return view('ManageEvent.Modals.CreateWorkshop', [
             'event' => Event::scope()->find($event_id),
         ]);
     }
@@ -74,7 +74,7 @@ class OrganiserEventsController extends MyBaseController
      * @param $organiser_id
      * @return mixed
      */
-    public function postReCreateSideEvent(Request $request, $event_id)
+    public function postCreateWorkshop(Request $request, $event_id)
     {
         $event = Event::scope()->findOrfail($event_id);
         
@@ -86,7 +86,7 @@ class OrganiserEventsController extends MyBaseController
             ]);*/
             $data = [
                 'event' => $event,
-                'callbackurl' => 'showReCreateSideEvent',
+                'callbackurl' => 'showCreateWorkshop',
                 'messages' => $ticket->errors(),
                 'request_details' => $request,
                 'parameters' => ['event_id' => $event_id]
@@ -104,7 +104,7 @@ class OrganiserEventsController extends MyBaseController
         }
 
         $ticket->event_id = $event_id;
-        $ticket->type = 'SIDEEVENT';
+        $ticket->type = 'WORKSHOP';
         $ticket->title = $request->get('title');
         $ticket->quantity_available = !$request->get('quantity_available') ? null : $request->get('quantity_available');
         $ticket->start_sale_date = $request->get('start_sale_date') ? Carbon::createFromFormat('d-m-Y H:i',
@@ -115,15 +115,16 @@ class OrganiserEventsController extends MyBaseController
         $ticket->min_per_person = $request->get('min_per_person');
         $ticket->max_per_person = $request->get('max_per_person');
         $ticket->description = $request->get('description');
+        $ticket->ticket_extras = $request->get('ticket_extras');
         $ticket->ticket_offers = empty($scheduleopts) ? null : implode("+++", $scheduleopts);
         $ticket->is_hidden = 0;
 
         //$ticket->save(); DON'T SAVE HERE WITHOUT PHOTO PATHS
-        if ($request->hasFile('sideevent_image')) {
-            $path = public_path() . '/' . config('attendize.sideevent_images_path');
-            $filename = 'sideevent_image-' . md5(time() . $ticket->id) . '.' . strtolower($request->file('sideevent_image')->getClientOriginalExtension());
+        if ($request->hasFile('workshop_image')) {
+            $path = public_path() . '/' . config('attendize.workshop_images_path');
+            $filename = 'workshop_image-' . md5(time() . $ticket->id) . '.' . strtolower($request->file('workshop_image')->getClientOriginalExtension());
             $file_full_path = $path . '/' . $filename;
-            $request->file('sideevent_image')->move($path, $filename);
+            $request->file('workshop_image')->move($path, $filename);
             $img = Image::make($file_full_path);
             $img->resize(800, null, function ($constraint) {
                 $constraint->aspectRatio();
@@ -131,73 +132,16 @@ class OrganiserEventsController extends MyBaseController
             });
             //$img->save($file_full_path);
             /* Upload to s3 */
-            \Storage::put(config('attendize.sideevent_images_path') . '/' . $filename, file_get_contents($file_full_path));
+            \Storage::put(config('attendize.workshop_images_path') . '/' . $filename, file_get_contents($file_full_path));
             //save path to ticket table
-            $ticket->ticket_main_photo = config('attendize.sideevent_images_path') . '/' . $filename;
+            $ticket->ticket_main_photo = config('attendize.workshop_images_path') . '/' . $filename;
         }
 
-    //    $countfiles = count($_FILES['files']['name']);
-
-        if ($request->hasFile('files')) { //dd($request);//exit('got here');
-        /*    $ticket_photos = [];
-            $uploadednames = $_FILES['files']['name'];
-            $path = public_path() . '/' . config('attendize.sideevent_images_path');
-            for($filecounter=0;$filecounter<count($_FILES['files']['name']); ++$filecounter){
-                $extension = substr($uploadednames[$filecounter], stripos($uploadednames[$filecounter],'.') + 1); //dd($extension);
-                $filename = 'sideevent_image-' . md5(time() . $ticket->id . $uploadednames[$filecounter]) . '.' . $extension;
-                $file_full_path = $path . '/' . $filename;
-                move_uploaded_file($_FILES['files']['tmp_name'][$filecounter],$file_full_path);
-                $img = Image::make($file_full_path);
-                $img->resize(800, null, function ($constraint) {
-                    $constraint->aspectRatio();
-                    $constraint->upsize();
-                });
-            //    $img->save($file_full_path);
-                /* Upload to s3 *|/
-                \Storage::put(config('attendize.sideevent_images_path') . '/' . $filename, file_get_contents($file_full_path));
-                $ticket_photos[] = config('attendize.sideevent_images_path') . '/' . $filename; 
-            }
-        */
-            $ticket_photos = $this->processuploadedimages('files',$ticket->id);
-            if(!empty($ticket_photos)){$ticket->ticket_photos = implode(config('attendize.sideevent_photos_eximploders'),$ticket_photos);}
-        }
-
-    //------------working for content pages-------//
-        $contentpagesinfos = [];
-        if($request->has('content_pages')){
-            foreach ($request->get('content_pages') as $contentnumber) {
-                $pagetitle=null; $pagediscript=null;
-                //check if title is available
-                if($request->has('more_title_'.$contentnumber)){
-                    $pagetitle=$request->get('more_title_'.$contentnumber);
-                }else{
-                    continue;
-                }
-                //check if description is available
-                if($request->has('more_discription_'.$contentnumber)){
-                    $pagediscript=$request->get('more_discription_'.$contentnumber);
-                }else{
-                    continue;
-                }
-                //check if photos for the page are uploaded
-                $pageimages=null;
-                if($request->hasFile('content_'.$contentnumber.'_files')){
-                    $pageimagesarray=$this->processuploadedimages('content_'.$contentnumber.'_files',$ticket->id);
-                    $pageimages=implode(config('attendize.sideevent_photos_eximploders'),$pageimagesarray);
-                }
-                $contentpagesinfos[] = implode(config('attendize.sideevent_singlepage_eximploders'), [$pagetitle, $pagediscript, $pageimages]);
-            }
-        }
-        $sideevent_pages = empty($contentpagesinfos) ? null : implode(config('attendize.sideevent_pages_eximploders'),$contentpagesinfos);
-    //--------------end of working for content pages----DonaldApril19-----// 
-
-        //save sideevent pages information in ticket_extras
-        $ticket->ticket_extras = $sideevent_pages;
         $ticket->save();    
 
-        session()->flash('message', 'Successfully Created SideEvent');
+        session()->flash('message', 'Successfully Created Workshop');
 
-        return redirect()->route('showSideEvents', ['event_id' => $event_id]);
+        return redirect()->route('showWorkshops', ['event_id' => $event_id]);
 
         /*return response()->json([
             'status'      => 'success',
@@ -215,7 +159,7 @@ class OrganiserEventsController extends MyBaseController
      * @param $ticket_id
      * @return mixed
      */
-    public function postEditSideEvent(Request $request, $event_id,  $ticket_id)
+    public function postEditWorkshop(Request $request, $event_id,  $ticket_id)
     {
         $event = Event::scope()->findOrfail($event_id);
         $ticket = Ticket::scope()->findOrFail($ticket_id);
@@ -226,7 +170,7 @@ class OrganiserEventsController extends MyBaseController
             ]);*/
             $data = [
                 'event' => $event,
-                'callbackurl' => 'showEditSideEvent',
+                'callbackurl' => 'showEditWorkshop',
                 'messages' => $ticket->errors(),
                 'request_details' => $request,
                 'parameters' => ['event_id' => $event_id]
@@ -252,7 +196,7 @@ class OrganiserEventsController extends MyBaseController
         }
 
         $ticket->event_id = $event_id;
-        $ticket->type = 'SIDEEVENT';
+        $ticket->type = 'WORKSHOP';
         $ticket->title = $request->get('title');
         $ticket->quantity_available = !$request->get('quantity_available') ? null : $request->get('quantity_available');
         $ticket->start_sale_date = $request->get('start_sale_date') ? Carbon::createFromFormat('d-m-Y H:i',
@@ -263,117 +207,30 @@ class OrganiserEventsController extends MyBaseController
         $ticket->min_per_person = $request->get('min_per_person');
         $ticket->max_per_person = $request->get('max_per_person');
         $ticket->description = $request->get('description');
+        $ticket->ticket_extras = $request->get('ticket_extras');
         $ticket->ticket_offers = empty($scheduleopts) ? null : implode("+++", $scheduleopts);
         $ticket->is_hidden = 0;
-        $ticket_photos = [];
-        if($request->has('photos')){
-            $eventphotos=$request->get('photos');
-            for($photocounter=0;$photocounter<count($eventphotos);++$photocounter){
-                if(!$request->has("remove_photo_$photocounter")){
-                    $ticket_photos[]=$eventphotos[$photocounter];
-                }
-            }
-        }
 
-        if ($request->hasFile('sideevent_image')) {
-            $path = public_path() . '/' . config('attendize.sideevent_images_path');
-            $filename = 'sideevent_image-' . md5(time() . $ticket->id) . '.' . strtolower($request->file('sideevent_image')->getClientOriginalExtension());
+        if ($request->hasFile('workshop_image')) {
+            $path = public_path() . '/' . config('attendize.workshop_images_path');
+            $filename = 'workshop_image-' . md5(time() . $ticket->id) . '.' . strtolower($request->file('workshop_image')->getClientOriginalExtension());
             $file_full_path = $path . '/' . $filename;
-            $request->file('sideevent_image')->move($path, $filename);
+            $request->file('workshop_image')->move($path, $filename);
             $img = Image::make($file_full_path);
             $img->resize(800, null, function ($constraint) {
                 $constraint->aspectRatio();
                 $constraint->upsize();
             });
             /* Upload to s3 */
-            \Storage::put(config('attendize.sideevent_images_path') . '/' . $filename, file_get_contents($file_full_path));
+            \Storage::put(config('attendize.workshop_images_path') . '/' . $filename, file_get_contents($file_full_path));
             //save path to ticket table
-            $ticket->ticket_main_photo = config('attendize.sideevent_images_path') . '/' . $filename;
-        }
-        if ($request->hasFile('files')) {
-            $uploadednames = $_FILES['files']['name'];
-            $path = public_path() . '/' . config('attendize.sideevent_images_path');
-            for($filecounter=0;$filecounter<count($_FILES['files']['name']); ++$filecounter){
-                $extension = substr($uploadednames[$filecounter], stripos($uploadednames[$filecounter],'.') + 1);
-                $filename = 'sideevent_image-' . md5(time() . $ticket->id . $uploadednames[$filecounter]) . '.' . $extension;
-                $file_full_path = $path . '/' . $filename;
-                move_uploaded_file($_FILES['files']['tmp_name'][$filecounter],$file_full_path);
-                $img = Image::make($file_full_path);
-                $img->resize(800, null, function ($constraint) {
-                    $constraint->aspectRatio();
-                    $constraint->upsize();
-                });
-                /* Upload to s3 */
-                \Storage::put(config('attendize.sideevent_images_path') . '/' . $filename, file_get_contents($file_full_path));
-                $ticket_photos[] = config('attendize.sideevent_images_path') . '/' . $filename; 
-            }
+            $ticket->ticket_main_photo = config('attendize.workshop_images_path') . '/' . $filename;
         }
 
-        if(!empty($ticket_photos)){$ticket->ticket_photos = implode(config('attendize.sideevent_photos_eximploders'),$ticket_photos);}
-
-    $contentpagesinfos = [];
-//---------working for existing content pages, deletion of a page, edits, photos remove and new photo uploads-------DonaldApril23-----
-    if($request->has('existing_content_pages')){
-        $existingpages=$request->get('existing_content_pages');
-        foreach($existingpages as $existingpage){
-            if(!$request->has('remove_page_'.$existingpage)){
-                if($request->has('more_discription_'.$existingpage) && $request->has('more_title_'.$existingpage)){
-                $pagetitle=$request->get('more_title_'.$existingpage);
-                $pagediscript=$request->get('more_discription_'.$existingpage);
-            $pageimages=null; $pageimagesarray=[];
-            if($request->has('page_'.$existingpage.'_photos')){
-                $existingpagephotos=$request->get('page_'.$existingpage.'_photos');
-                for($photoct=0;$photoct<count($existingpagephotos);++$photoct){
-                    if(!$request->has($existingpage.'_remove_photo_'.$photoct)){
-                        $pageimagesarray[]=$existingpagephotos[$photoct];
-                    }
-                }
-            }
-            if($request->hasFile('content_'.$existingpage.'_files')){
-                $pageimagesarray=array_merge($pageimagesarray, $this->processuploadedimages('content_'.$existingpage.'_files',$ticket_id));
-            }
-            if(!empty($pageimagesarray)){
-                $pageimages=implode(config('attendize.sideevent_photos_eximploders'),$pageimagesarray);}
-            $contentpagesinfos[] = implode(config('attendize.sideevent_singlepage_eximploders'), [$pagetitle, $pagediscript, $pageimages]);
-                }
-            }
-        }
-    }
-//-----------end of working for existing content pages, saved in $contentpagesinfos[]
-
-    //------------working for new content pages-------//
-        if($request->has('content_pages')){
-            foreach ($request->get('content_pages') as $contentnumber) {
-                $pagetitle=null; $pagediscript=null;
-                //check if title is available
-                if($request->has('more_title_'.$contentnumber)){
-                    $pagetitle=$request->get('more_title_'.$contentnumber);
-                }else{
-                    continue;
-                }
-                //check if description is available
-                if($request->has('more_discription_'.$contentnumber)){
-                    $pagediscript=$request->get('more_discription_'.$contentnumber);
-                }else{
-                    continue;
-                }
-                //check if photos for the page are uploaded
-                $pageimages=null;
-                if($request->hasFile('content_'.$contentnumber.'_files')){
-                    $pageimagesarray=$this->processuploadedimages('content_'.$contentnumber.'_files',$ticket->id);
-                    $pageimages=implode(config('attendize.sideevent_photos_eximploders'),$pageimagesarray);
-                }
-                $contentpagesinfos[] = implode(config('attendize.sideevent_singlepage_eximploders'), [$pagetitle, $pagediscript, $pageimages]);
-            }
-        }
-    //--------------end of working for content pages----DonaldApril23-----// 
-        $sideevent_pages = empty($contentpagesinfos) ? null : implode(config('attendize.sideevent_pages_eximploders'),$contentpagesinfos);
-        $ticket->ticket_extras = $sideevent_pages;
-        //dd($ticket);
         $ticket->save();
 
-        session()->flash('message', 'Successfully Edited Side Event');
-        return redirect()->route('showSideEvents', ['event_id' => $event_id]);
+        session()->flash('message', 'Successfully Edited Workshop');
+        return redirect()->route('showWorkshops', ['event_id' => $event_id]);
 
         /*return response()->json([
             'status'      => 'success',
@@ -392,14 +249,14 @@ class OrganiserEventsController extends MyBaseController
      * @param $sideevent_id
      * @return mixed
      */
-    public function showEditSideEvent($event_id, $sideevent_id)
+    public function showEditWorkshop($event_id, $workshop_id)
     {
         $data = [
             'event'  => Event::scope()->find($event_id),
-            'ticket' => Ticket::scope()->find($sideevent_id),
+            'ticket' => Ticket::scope()->find($workshop_id),
         ];
 
-        return view('ManageEvent.Modals.EditSideEvent', $data);
+        return view('ManageEvent.Modals.EditWorkshop', $data);
     }
 
     //end of addition DonaldMar2 DonaldMar12
@@ -410,7 +267,7 @@ class OrganiserEventsController extends MyBaseController
      * @param $organiser_id
      * @return mixed
      */
-    public function showSideEvents(Request $request, $event_id)
+    public function showEventWorkshops(Request $request, $event_id)
     {
         /** commented by Donald Mar9 due to change of approach
 
@@ -423,12 +280,12 @@ class OrganiserEventsController extends MyBaseController
         return view('ManageEvent.SideEvents', $data);
         */
         $event = Event::scope()->findOrfail($event_id);
-        $closeevents = Ticket::scope()->where(['event_id'=>$event->id, 'type'=>'SIDEEVENT'])->get();
+        $workshops = Ticket::scope()->where(['event_id'=>$event->id, 'type'=>'WORKSHOP'])->get();
         $data = [ 
-            'sideevents'    => $closeevents,
+            'workshops'    => $workshops,
             'event'         => $event,
         ];
-        return view('ManageEvent.ReSideEvents', $data);
+        return view('ManageEvent.EventWorkshops', $data);
     }
 
 
@@ -439,7 +296,7 @@ class OrganiserEventsController extends MyBaseController
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function postDeleteSideEvent(Request $request, $ticket_id)
+    public function postDeleteWorkshop(Request $request, $ticket_id)
     {
         $data['ticket_id'] = $ticket_id;
         $ticket = Ticket::where('id','=', $ticket_id)->first();
@@ -454,29 +311,37 @@ class OrganiserEventsController extends MyBaseController
                 'title'      => $ticket->title,
             ]);*/
 
-            session()->flash('message','Sorry, you can\'t delete this side event as some tickets have already been sold.');
-            return response()->redirectToRoute('showSideEvents', [
+            session()->flash('message','Sorry, you can\'t delete this workshop as some tickets have already been sold.');
+            return response()->redirectToRoute('showWorkshops', [
                 'event_id'      => $ticket->event_id,
             ]);
         }
 
         $event_id = $ticket->event_id;
         if ($ticket->delete()) {
-            session()->flash('message', $ticket->title.' Side Event Successfully Deleted.');
-            return response()->redirectToRoute('showSideEvents', [
+            session()->flash('message', ' Workshop Successfully Deleted.');
+            return response()->redirectToRoute('showWorkshops', [
                 'event_id'      => $event_id,
             ]);
         }
 
-        Log::error('Ticket Failed to delete', [
+        Log::error('Workshop Failed to delete', [
             'ticket' => $ticket,
         ]);
 
-        return response()->json([
+        /*return response()->json([
             'status'  => 'error',
             'title'      => $ticket->title,
             'message' => 'Whoops! Looks like something went wrong. Please try again.',
-        ]);
+        ]);*/
+        $data = [
+            'event' => Event::findOrFail($event_id),
+            'callbackurl' => 'showCreateWorkshop',
+            'messages' => 'Whoops! Looks like something went wrong. Please try again.',
+            'request_details' => $request,
+            'parameters' => ['event_id' => $event_id]
+        ];
+        return view('Public.ViewEvent.EventPageErrors', $data);
     }
 
     //end of addition DonaldMar2 DonaldMar9
