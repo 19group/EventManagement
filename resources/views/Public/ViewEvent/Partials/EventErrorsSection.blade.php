@@ -25,6 +25,12 @@
             }else{
                 echo $messages;
             } 
+            if(isset($route)){?>
+                <br><br>
+                <div class="row" text-align="center" >
+                <u><a text-align="center" href="{{route($route, $routeparameters)}}">{{$routedisplay}}</a></u>
+                </div>
+            <?php }    
                 ?>
         </div>
 

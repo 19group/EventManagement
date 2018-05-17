@@ -94,13 +94,12 @@ use App\Models\OrderItem;
     <body style="background-color: #FFFFFF; font-family: Arial, Helvetica, sans-serif;">
 	<!--added by DonaldFeb28 to set control variables for limiting number of tickets in a page-->
 	<?php if(count($attendees)<1){ goto donationstart;}
- $ticketsinpage = 3; $spacefixer = $ticketsinpage; $target = count($attendees);
-
- ?>
-	<!--end of addition by DonaldFeb28-->
+ $ticketsinpage = 2; $spacefixer = $ticketsinpage; $target = count($attendees);?>
+	<!--end of addition by DonaldFeb28  pageheight found 1325px-->
         <div class="row">
             @foreach($attendees as $attendee)
                 @if(!$attendee->is_cancelled)
+                <div id="heihtsetter" style="height: 650px;">
                     <div class="ticket">
 
                     <table class="text-center">
@@ -177,47 +176,14 @@ use App\Models\OrderItem;
 
                     </table>
 
-                    		<!--   Commented by Frank    -->
-
-                        <!--<div class='logo'>
-				<img alt="{{$event->organiser->full_logo_path}}" src="data:image/png;base64, {{$image}}" />
-                        </div>
-
-                        <div class="event_details">
-                            <h4>Event</h4>
-                            {{$event->title}}
-                            <h4>Organiser</h4>
-                            {{$event->organiser->name}}
-                            <h4>Venue</h4>
-                            {{$event->venue_name}}
-                            <h4>Start Date / Time</h4>
-                            {{$event->start_date->format('M dS g:iA')}}
-                            <h4>End Date / Time</h4>
-                            {{$event->end_date->format('M dS g:iA')}}
-                        </div>
-
-                        <div class="attendee_details">
-                            <h4>Name</h4>
-                            {{$attendee->first_name.' '.$attendee->last_name}}
-
-                            <h4>Ticket Type</h4>
-                            {{$attendee->ticket->title}}
-                            <h4>Order Ref.</h4>
-                            {{$order->order_reference}}
-                            <h4>Attendee Ref.</h4>
-                            {{$attendee->reference}}
-                            <h4>Price</h4>
-                            {{money($attendee->ticket->total_price, $order->event->currency)}} (inc. {{money($attendee->ticket->total_booking_fee, $order->event->currency)}} Fees)
-                        </div>-->
-
-
                     </div>
+                </div>
                     <!--added/edited by DonaldFeb28 trying limiting number of tickets in page-->
-                    <?php --$spacefixer;
-                    	  if($spacefixer==0 && $target>0){ $spacefixer=$ticketsinpage; $blankspace='80px'; echo "</div><div style='height:".$blankspace."'></div> <div class='row'>"; }
+                    <?php //--$spacefixer; 
+                    	//  if($spacefixer==0 && $target>0){ $spacefixer=$ticketsinpage; $blankspace='80px'; echo "</div><div style='height:".$blankspace."'></div> <div class='row'>"; }
                     	?>
                 @endif
-                <?php --$target; ?>
+                <?php //--$target; ?>
                 <!--end of adding/editing by DonaldFeb28-->
             @endforeach
 

@@ -37,13 +37,41 @@
 
 @section('content')
 
+@php $ticketcount=0; $othercount=0; $ticketsales=0; $othersales=0; $totaldonation=0;@endphp
+@foreach($event->tickets as $ticke) 
+    @if(!in_array($ticke->type, ['SIDEEVENT','extra','extras'])) 
+        @php $ticketcount += $ticke->quantity_sold; $ticketsales+=$ticke->price; @endphp
+    @else
+        @php $othercount += $ticke->quantity_sold; $othersales+=$ticke->price; @endphp
+    @endif
+@endforeach 
+@foreach ($event->orders as $donorder)
+    @php $orderwithdonation= \App\Models\OrderItem::where(['order_id'=>$donorder->id, 'title'=>'Donation'])->first(); @endphp
+    @if(count($orderwithdonation) != 0)
+        @php $totaldonation += $orderwithdonation->unit_price; @endphp
+    @endif
+@endforeach
+
     <div class="row">
         <div class="col-sm-3">
             <div class="stat-box">
-                <?php $ticketcount=0; $ticketsales=0; foreach($event->tickets as $ticke){ if(!in_array($ticke->type, ['SIDEEVENT','extra','extras'])){ $ticketcount += $ticke->quantity_sold; $ticketsales+=$ticke->price;}} ?>
                 <!--h3>{{ money($event->sales_volume + $event->organiser_fees_volume, $event->currency) }}</h3-->
                 <h3>{{ money($ticketsales + $event->organiser_fees_volume, $event->currency) }}</h3>
-                <span>Sales Volume</span>
+                <span>Tickets Sales Volume</span>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="stat-box">
+                <!--h3>{{ money($event->sales_volume + $event->organiser_fees_volume, $event->currency) }}</h3-->
+                <h3>{{ money($othersales + $event->organiser_fees_volume, $event->currency) }}</h3>
+                <span>Other Sales Volume</span>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="stat-box">
+                <!--h3>{{ money($event->sales_volume + $event->organiser_fees_volume, $event->currency) }}</h3-->
+                <h3>{{ money($totaldonation, $event->currency) }}</h3>
+                <span>Donations Volume</span>
             </div>
         </div>
         <div class="col-sm-3">
@@ -56,7 +84,13 @@
             <div class="stat-box">
                 <!--h3>{{ $event->tickets->sum('quantity_sold') }}</h3-->
                 <h3>{{ $ticketcount }}</h3>
-                <span>Tickets Sold</span>
+                <span>Event Tickets Sold</span>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="stat-box">
+                <h3>{{ $othercount }}</h3>
+                <span>Other Tickets Sold</span>
             </div>
         </div>
         <div class="col-sm-3">
