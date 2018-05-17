@@ -31,13 +31,13 @@
               <?php if($minevent->ticket_offers!=NULL){
                        $ticket_offers = explode('+++',$minevent->ticket_offers);
 
-                       echo "<p><b> Please select the schedule you prefer </b></p>";
+                       echo "<p><b> Available Schedules </b></p>";
                        for($i=0;$i<count($ticket_offers);++$i){
                            $sched = explode('<==>',$ticket_offers[$i]);
                            $count = $i+1;
                            echo '<div class="row">';
                            echo '<p>';
-                           echo'<input type="radio" name="mydates" value="'.$ticket_offers[$i].'" required>'.date('d-M-Y H:i', strtotime($sched[0])).' to '.date('d-M-Y H:i', strtotime($sched[1])).'';
+                           echo'<input type="radio" name="mydates" value="'.$ticket_offers[$i].'" >'.date('d-M-Y H:i', strtotime($sched[0])).' to '.date('d-M-Y H:i', strtotime($sched[1])).'';
                            echo '</p>';
                            echo '</div>';
                        } ?>

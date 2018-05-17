@@ -29,6 +29,9 @@ Attend a Workshop at {{$event->title}}
         <?php $tickets = $sideeventsar;?>
               @if(count($tickets) > 0)
 
+              <div class="col-md-12 workshop-day">
+
+              </div>
                           @foreach ($tickets as $minevent)
                           <div class="row side-event-container">
                            <div class="col-sm-12">
@@ -38,22 +41,33 @@ Attend a Workshop at {{$event->title}}
                             </span>
                            </div>
                            <div class="col-xs-4">
-                             <!--<span class="side-event-days">3 days and 2 nights</span>-->
+
+                                          <?php if($minevent->ticket_offers!=NULL){
+                                                   $ticket_offers = explode('+++',$minevent->ticket_offers);
+
+                                                   for($i=0;$i<count($ticket_offers);++$i){
+                                                       $sched = explode('<==>',$ticket_offers[$i]);
+                                                       $count = $i+1;
+                                                       echo '<div class="row">';
+                                                       echo '<p>';
+                                                       echo'<b>'.date('l, d-M-Y', strtotime($sched[0])).'</b>';
+                                                       echo '</p>';
+                                                       echo '</div>';
+                                                   } ?>
+                                         <?php } ?>
+
                            </div>
                             <br />
                            </div>
                            <div class="col-xs-12">
-                            <div class="col-xs-4 side-event-image">
+                            <div class="col-xs-2 side-event-image">
                               <?php if($minevent->ticket_main_photo){ ?>
-                               <img height=180 width=150 src="{{asset($minevent->ticket_main_photo)}}" />
-                              <?php }elseif($minevent->ticket_photos){
-                                $assumedefault=explode(config('attendize.sideevent_photos_eximploders'),$minevent->ticket_photos)[0];?>
-                               <img height=180 width=150 src="{{asset($assumedefault)}}" />
+                               <img height=70 width=70 src="{{asset($minevent->ticket_main_photo)}}" />
                               <?php }else{ ?>
-                              <img src="{{asset('assets/images/default/trip.jpg')}}" />
+                              <img height=70 width=70 src="{{asset('assets/images/default/trip.jpg')}}" />
                               <?php } ?>
                             </div>
-                            <div class="col-xs-8">
+                            <div class="col-xs-10">
                              <p class="ticket-descripton mb0 side-event-description " property="description">
                               {{$minevent->description}}
                              </p>
@@ -61,7 +75,7 @@ Attend a Workshop at {{$event->title}}
                            </div>
                            <div class="col-xs-12">
                             <div class="col-xs-8 no-left-padding">
-                             <button  data-toggle="modal" data-target="#more_details_{{$minevent->id}}" class="btn btn-primary" style="width:150px"> More Details</button>
+                             <!--button  data-toggle="modal" data-target="#more_details_{{$minevent->id}}" class="btn btn-primary" style="width:150px"> More Details</button>-->
                             </div>
                             <div class="col-xs-2">
                              <span>{{money($minevent->price, $event->currency)}} </span>
