@@ -329,6 +329,8 @@ class EventCheckoutController extends Controller
             'payment_gateway'         => count($event->account->active_payment_gateway) ? $event->account->active_payment_gateway->payment_gateway : false,
         ]);
 
+        session()->set('transaction_'.$event_id,1);
+
         /*
          * If we're this far assume everything is OK and redirect them
          * to the the checkout page.
@@ -337,7 +339,8 @@ class EventCheckoutController extends Controller
             return response()->json([
                 'status'      => 'success',
             //    'redirectUrl' => route('showEventCheckout', [])
-                  'redirectUrl' => route('OrderSideEvents', [
+        //          'redirectUrl' => route('OrderSideEvents', [
+                  'redirectUrl' => route('handleTransactions', [
                         'event_id'    => $event_id,
                     //    'is_embedded' => $this->is_embedded,
                     ])// . '#order_form',
@@ -804,6 +807,8 @@ class EventCheckoutController extends Controller
                     ]) . '#order_form',
             ]);
         }
+
+        return redirect(route('OrderSideEvents',['event_id'=>$event_id]));
 
         /*
          * Maybe display something prettier than this?

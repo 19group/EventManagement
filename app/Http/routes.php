@@ -151,6 +151,26 @@ Route::group(['prefix' => 'e'], function () {
         'uses' => 'EventCheckoutController@postValidateTickets',
     ]);
 
+    Route::get('{event_id}/transactions/control', [
+        'as'   => 'handleTransactions',
+        'uses' => 'EventTransactionsController@handleTransactions',
+    ]);
+
+    Route::get('{event_id}/order/workshops/', [
+        'as'   => 'OrderWorkshops',
+        'uses' => 'WorkshopCheckoutController@showOrderWorkshops',
+    ]);
+
+    Route::post('{event_id}/ordered/workshops/', [
+        'as'   => 'postOrderWorkshops',
+        'uses' => 'WorkshopCheckoutController@postOrderWorkshops',
+    ]);
+
+    Route::get('{event_id}/order/workshops/complete', [
+        'as'   => 'completeOrderWorkshops',
+        'uses' => 'WorkshopCheckoutController@completeOrderWorkshops',
+    ]);
+
     Route::get('{event_id}/order/sideevents/', [
         'as'   => 'OrderSideEvents',
         'uses' => 'EventCheckoutController@showOrderSideEvents',

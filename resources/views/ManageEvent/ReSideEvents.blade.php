@@ -98,7 +98,7 @@ Side Events for {{$event->title}}
                                     if(isset($sideevent->ticket_offers)){
                                         $toffers = explode('+++',$sideevent->ticket_offers);
                                         for($count=0;$count<count($toffers);++$count){
-                                        $sched = explode('<==>',$toffers[0]);
+                                        $sched = explode('<==>',$toffers[$count]);
                                         $schedule = date('d-M-Y H:i', strtotime($sched[0]))." to ".date('d-M-Y H:i', strtotime($sched[1]));
                                         echo $schedule; echo '</br>.......</br>';
                                         $schedules[] = $schedule;

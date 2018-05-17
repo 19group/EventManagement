@@ -54,22 +54,22 @@ Workshops for {{$event->title}}
                     <thead>
                         <tr>
                             <th>
-                               Workshop Title
+                                Workshop Title
                             </th>
                             <th>
-                               Workshop Description
+                                Workshop Description
                             </th>
                             <th>
-                               Attendance Price
+                                Attendance Price
                             </th>
                             <th>
                                 Tickets Sold
                             </th>
                             <th>
-                               Schedules
+                                Sessions
                             </th>
                             <th>
-                               Tickets purchased
+                                Tickets purchased
                             </th>
                             <th>
                                 Manage
@@ -98,13 +98,13 @@ Workshops for {{$event->title}}
                                     if(isset($workshop->ticket_offers)){
                                         $toffers = explode('+++',$workshop->ticket_offers);
                                         for($count=0;$count<count($toffers);++$count){
-                                        $sched = explode('<==>',$toffers[0]);
+                                        $sched = explode('<==>',$toffers[$count]);
                                         $schedule = date('d-M-Y H:i', strtotime($sched[0]))." to ".date('d-M-Y H:i', strtotime($sched[1]));
                                         echo $schedule; echo '</br>.......</br>';
                                         $schedules[] = $schedule;
                                         }
                                     }else{
-                                        echo 'No schedule set.';
+                                        echo 'No session set.';
                                     }
                                 ?>
                                 
