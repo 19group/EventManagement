@@ -13,7 +13,7 @@ Add an Experience at {{$event->title}}
    @include('Public.ViewEvent.Partials.OrderSummary')
 
    <div class="">
-         <a href="{{ route('OrderAccommodation', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">Next</a>
+         <a href="{{ route('completeOrderSideEvents', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">Next</a>
    </div>
 
    </div>

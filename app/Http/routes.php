@@ -189,6 +189,10 @@ Route::group(['prefix' => 'e'], function () {
         'as'   => 'postBookSideEvent',
         'uses' => 'EventCheckoutController@postBookSideEvent',
     ]);
+    Route::get('{event_id}/order/sideevents/complete', [
+        'as'   => 'completeOrderSideEvents',
+        'uses' => 'SideEventCheckoutController@completeOrderSideEvents',
+    ]);
 
 
     Route::get('{event_id}/order/accommodation/', [

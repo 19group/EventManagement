@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Http\Controllers;//3,683,690//event/2/pesament/skip
+namespace App\Http\Controllers;
 
-//use App\Events\DonationCompletedEvent;
 use App\Events\OrderCompletedEvent;
 use App\Models\Affiliate;
 use App\Models\Attendee;
@@ -55,14 +54,19 @@ class EventTransactionsController extends Controller
     {
         $transactionsOrder=['tickets','workshops','sideevents','accommodation'];
         $process=session()->get('transaction_'.$event_id);
-        if($process<count($transactionsOrder))
+        if(in_array($process,$transactionsOrder))
         {
-            switch ($transactionsOrder[$process]) {
+            $finished=array_search($process, $transactionsOrder);
+            $next=$transactionsOrder[++$finished];
+            switch ($next) {
                 case 'workshops':
                     return redirect(route('OrderWorkshops',['event_id'=>$event_id]));
                 break;    
                 case 'sideevents':
                     return redirect(route('OrderSideEvents',['event_id'=>$event_id]));
+                break;   
+                case 'accommodation':
+                    return redirect(route('OrderAccommodation',['event_id'=>$event_id]));
                 break;               
                 default:
                     # code...

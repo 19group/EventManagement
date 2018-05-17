@@ -329,7 +329,7 @@ class EventCheckoutController extends Controller
             'payment_gateway'         => count($event->account->active_payment_gateway) ? $event->account->active_payment_gateway->payment_gateway : false,
         ]);
 
-        session()->set('transaction_'.$event_id,1);
+        session()->set('transaction_'.$event_id,'tickets');
 
         /*
          * If we're this far assume everything is OK and redirect them
@@ -400,6 +400,7 @@ class EventCheckoutController extends Controller
 
         if (!$order_session || $order_session['expires'] < Carbon::now()) {
             $route_name = $this->is_embedded ? 'showEmbeddedEventPage' : 'showEventPage';
+            session()->forget('ticket_order_' . $event_id);
             return redirect()->route($route_name, ['event_id' => $event_id]);
         }
 
@@ -465,6 +466,7 @@ class EventCheckoutController extends Controller
 
         if (!$order_session || $order_session['expires'] < Carbon::now()) {
             $route_name = $this->is_embedded ? 'showEmbeddedEventPage' : 'showEventPage';
+            session()->forget('ticket_order_' . $event_id);
             return redirect()->route($route_name, ['event_id' => $event_id]);
         }
 
@@ -528,6 +530,7 @@ class EventCheckoutController extends Controller
 
         if (!$order_session || $order_session['expires'] < Carbon::now()) {
             $route_name = $this->is_embedded ? 'showEmbeddedEventPage' : 'showEventPage';
+            session()->forget('ticket_order_' . $event_id);
             return redirect()->route($route_name, ['event_id' => $order_session]);
         }
 
@@ -1066,6 +1069,7 @@ class EventCheckoutController extends Controller
 
         if (!$order_session || $order_session['expires'] < Carbon::now()) {
             $route_name = $this->is_embedded ? 'showEmbeddedEventPage' : 'showEventPage';
+            session()->forget('ticket_order_' . $event_id);
             return redirect()->route($route_name, ['event_id' => $event_id]);
         }
         //for skipping payment
@@ -1619,6 +1623,10 @@ class EventCheckoutController extends Controller
            return response()->redirectToRoute('OrderAccommodation', [
                'event_id'          => $event_id
            ]);
+     }elseif ($page == "workshops") {
+      return response()->redirectToRoute('OrderWorkshops', [
+          'event_id'          => $event_id
+      ]);
      }elseif ($page == "sideevents") {
       return response()->redirectToRoute('OrderSideEvents', [
           'event_id'          => $event_id

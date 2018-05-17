@@ -28,7 +28,7 @@ use PhpSpec\Exception\Exception;
 use Validator;
 use Utils;
 
-class WorkshopCheckoutController extends Controller
+class SideEventCheckoutController extends Controller
 {
     /**
      * Is the checkout in an embedded Iframe?
@@ -341,17 +341,9 @@ class WorkshopCheckoutController extends Controller
         return $this->javascriptError($event_id);
     }
 
-    public function completeOrderWorkshops($event_id)
+    public function completeOrderSideEvents($event_id)
     {
-        /*if(session()->get('transaction_'.$event_id)){
-            $tempo = session()->get('transaction_'.$event_id);
-            ++$tempo;
-            session()->forget('transaction_'.$event_id);
-            session()->set('transaction_'.$event_id,$tempo);
-        }else{
-            session()->set('transaction_'.$event_id,1);
-        }*/
-        session()->set('transaction_'.$event_id,'workshops');
+        session()->set('transaction_'.$event_id,'sideevents');
         return redirect(route('handleTransactions',['event_id'=>$event_id]));
     }
 
