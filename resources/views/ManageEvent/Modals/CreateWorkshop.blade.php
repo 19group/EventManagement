@@ -85,6 +85,14 @@
                                         ))  !!}
                         </div>
 
+                        <div class="form-group">
+                            {!! Form::label('ticket_extras', 'Workshop Presenter', array('class'=>'control-label')) !!}
+                            {!!  Form::text('ticket_extras', Input::old('presenter'),
+                                        array(
+                                        'class'=>'form-control'
+                                        ))  !!}
+                        </div>
+
                         <!--added by DonaldApril10-->
                         <div class="form-group">
                             {!! Form::label('workshop_image', 'Workshop Image (Flyer or Graphic etc.)', array('class'=>'control-label ')) !!}

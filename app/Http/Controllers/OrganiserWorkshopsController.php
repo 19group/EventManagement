@@ -115,6 +115,7 @@ class OrganiserWorkshopsController extends MyBaseController
         $ticket->min_per_person = $request->get('min_per_person');
         $ticket->max_per_person = $request->get('max_per_person');
         $ticket->description = $request->get('description');
+        $ticket->ticket_extras = $request->get('ticket_extras');
         $ticket->ticket_offers = empty($scheduleopts) ? null : implode("+++", $scheduleopts);
         $ticket->is_hidden = 0;
 
@@ -206,6 +207,7 @@ class OrganiserWorkshopsController extends MyBaseController
         $ticket->min_per_person = $request->get('min_per_person');
         $ticket->max_per_person = $request->get('max_per_person');
         $ticket->description = $request->get('description');
+        $ticket->ticket_extras = $request->get('ticket_extras');
         $ticket->ticket_offers = empty($scheduleopts) ? null : implode("+++", $scheduleopts);
         $ticket->is_hidden = 0;
 

@@ -62,6 +62,12 @@
                     {!!  Form::text('description', null,['class'=>'form-control']) !!}
                 </div>
 
+                <div class="form-group">
+                    {!! Form::label('ticket_extras', 'Workshop Presenter',
+                     ['class'=>'control-label']) !!}
+                    {!!  Form::text('ticket_extras', null,['class'=>'form-control']) !!}
+                </div>
+
                 <!--added by Donald-->
             <div class="row">
                 <div class="form-group">
