@@ -75,7 +75,7 @@ Attend a Workshop at {{$event->title}}
                            </div>
                            <div class="col-xs-12">
                             <div class="col-xs-8 no-left-padding">
-                             <!--button  data-toggle="modal" data-target="#more_details_{{$minevent->id}}" class="btn btn-primary" style="width:150px"> More Details</button>-->
+                             <button  data-toggle="modal" data-target="#more_details_{{$minevent->id}}" class="btn btn-primary" style="width:150px"> More Details</button>
                             </div>
                             <div class="col-xs-2">
                              <span>{{money($minevent->price, $event->currency)}} </span>
