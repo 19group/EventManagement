@@ -5,6 +5,7 @@
   </h1>
  </div>
  <div class="container">
+  <!-- Order Summary Page -->
   <div class="col-md-4 col-md-push-8">
    @include('Public.ViewEvent.Partials.OrderSummary')
 
@@ -17,8 +18,6 @@
     <!--    {!! Form::open(['url' => route('postCreateOrder', ['event_id' => $event->id]),'class' => ($order_requires_payment && @$payment_gateway->is_on_site) ? 'ajax payment-form' : 'ajax','data-stripe-pub-key' => isset($account_payment_gateway->config['publishableKey']) ? $account_payment_gateway->config['publishableKey'] : '']) !!} -->
     {!! Form::open(['url' => route('postPayment', ['event_id' => $event->id]),'data-stripe-pub-key' => isset($account_payment_gateway->config['publishableKey']) ? $account_payment_gateway->config['publishableKey'] : '']) !!}
     {!! Form::hidden('event_id', $event->id) !!}
-
-
 
     <div class="row" style="display: none;">
      <div class="col-xs-6">

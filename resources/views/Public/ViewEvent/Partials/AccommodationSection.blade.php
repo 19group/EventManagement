@@ -8,7 +8,7 @@
   </h1>
   </div>
 
-    <div class="col-md-4 pull-right">
+    <div class="col-sm-12 col-lg-4 pull-right col-event-order">
      @include('Public.ViewEvent.Partials.OrderSummary')
 
      <div class="">
@@ -24,7 +24,7 @@
     </div>
      </div>
 
-     <div class="col-md-8">
+     <div class="col-sm-12 col-lg-8 col-event-details">
 
        @foreach($accomodations as $accomodation)
 

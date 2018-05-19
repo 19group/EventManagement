@@ -132,6 +132,64 @@ html,body{height:100%}body{font-family:'Open Sans',sans-serif}table{margin:0}lab
  padding-top: 5px;
  background-color: #f8f8f8;
 }
+.workshop-event-container{
+ border: 1px solid #ddd;
+ border-radius: 2px;
+ padding:0;
+ background-color: #f8f8f8;
+ height:290px;
+ margin-bottom:5px;
+
+}
+.workshop-content
+{
+     padding-top: 15px;
+     height:140px;
+     display: flow-root;
+}
+.workshop-footer{
+height: 50px;
+position: relative;
+}
+.workshop-book {
+    position: absolute;
+    right: 0;
+    bottom: 10px;
+}
+.workshop-price {
+    position: absolute;
+    left: 10px;
+     bottom: 15px;
+     font-size: 16px;
+}
+.workshop-book-button
+{
+ width:100%;
+}
+.workshop-date {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    text-align: right;
+}
+.workshop-presenter{
+ padding-top:10px;
+ padding-left:0;
+ font-size:12px;
+}
+
+
+.workshop-image-container{
+  background-color: rgba(35, 121, 113, 0.85);
+  padding:0;
+  height: 100px;
+}
+img.workshop-image {
+    width: 100%;
+    /* max-width: 100%; */
+    /* max-height: 100%; */
+    height: 100%;
+}
 .workshop-day
 {
     margin-bottom: 10px;
@@ -168,6 +226,7 @@ html,body{height:100%}body{font-family:'Open Sans',sans-serif}table{margin:0}lab
 }
 .col-event-details{
  position:inherit !important;
+     display: flow-root;
 }
 .col-event-order{
  margin-bottom: 10px;
