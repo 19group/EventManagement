@@ -39,7 +39,7 @@
 
 @php $ticketcount=0; $othercount=0; $ticketsales=0; $othersales=0; $totaldonation=0;@endphp
 @foreach($event->tickets as $ticket)
-    @if(!in_array($ticket->type, ['SIDEEVENT','extra','extras']))
+    @if(!in_array($ticket->type, ['SIDEEVENT','extra','extras','WORKSHOP']))
         @php $ticketcount += $ticket->quantity_sold; $ticketsales+=($ticket->price*$ticket->quantity_sold); @endphp
     @else
         @php $othercount += $ticket->quantity_sold; $othersales+=($ticket->price*$ticket->quantity_sold); @endphp
