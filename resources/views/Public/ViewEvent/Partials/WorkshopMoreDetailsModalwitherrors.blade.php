@@ -1,6 +1,6 @@
-  <!-- Beginning of Modal -->
-    <div class="modal fade" id="more_details_{{$minevent->id}}" >
-     <div class="modal-dialog">
+<!-- Beginning of Modal -->
+<div class="modal fade" id="more_details_{{$minevent->id}}" >
+<div class="modal-dialog">
       <div class="modal-content">
        <div class="modal-head text-light text-center" style="background-color: #5fa9da">
         <h2> {{ $minevent->title}} </h2>
@@ -13,44 +13,11 @@
         <div class="modal-body">
          <div class="col-md-12 container-fluid">
 
-          <div class="form-group col-md-12" id='datetimepicker4'>
+      <div class="form-group col-md-12" id='datetimepicker4'>
            <div class="col-sm-12">
             <div class="col-sm-12 field-label">
              <span>
               {{$minevent->description}}
-
-              @php
-              $days = explode ("[+]",$minevent->ticket_extras);
-              @endphp
-
-              @foreach ($days as $day)
-
-              @php
-              $contents = explode("{#}",$day,3);
-              $count = 0;
-              @endphp
-
-              @foreach ($contents as $content)
-
-              @if($count == 0)
-              <h4><b>{{$contents[0]}}</b></h4>
-              @endif
-
-              @if($count == 1)
-              <p>{{$content}}</p>
-              @endif
-
-              @php
-              $count = $count + 1;
-              @endphp
-              @endforeach
-
-              @endforeach
-
-
-             <span>
-
-             </span>
              </span>
             </div>
             <div class="col-sm-9">
@@ -58,100 +25,56 @@
             </div>
            </div>
            <div class="col-sm-12">
-            <div class="col-sm-8 field-label">
-<!--------------------ticket_main_photo----------------------------//-->
-@if($minevent->ticket_main_photo)
-  @php $mainphotopath=$minevent->ticket_main_photo; @endphp
-@elseif($minevent->ticket_photos)
-  @php $mainphotopath=explode(config('attendize.sideevent_photos_eximploders'),$minevent->ticket_photos)[0]; @endphp
-@endif
-@if(isset($mainphotopath))
-  <!--display script here using <img src = "{{asset($mainphotopath)}}"> -->
-@endif
-<!--------------------end-ticket_main_photo------------------------//-->
-
-<!--------------------side-event-more-photos----------------------//-->
-@if($minevent->ticket_photos)
-   @php $morephotospaths=explode(config('attendize.sideevent_photos_eximploders'),$minevent->ticket_photos); @endphp
-  @foreach($morephotospaths as $morephoto)
-    <!--display each photo script using <img src="{{asset($morephoto)}}"-->
-  @endforeach
-@endif
-<!------------------end-side-event-more-photos---------------------//-->
+            <div class="col-sm-12 field-label">
              <span>
-              @if($minevent->ticket_offers!=NULL)
-                       @php $ticket_offers = explode('+++',$minevent->ticket_offers); @endphp
-
-                       <p><b> Ticket Schedules for this side event </b></p>
-                       @for($i=0;$i<count($ticket_offers);++$i)
-                           @php $sched = explode('<==>',$ticket_offers[$i]);
-                           $count = $i+1; @endphp
-                           <div class="row">
-                           <p>
-                           {{date('d-M-Y H:i', strtotime($sched[0]))}}to{{date('d-M-Y H:i', strtotime($sched[1]))}}&nbsp
-                           </p>
-                           </div>
-                       @endfor
-             @endif
+               Presented By:
              </span>
             </div>
+            <div class="col-sm-12 field-label">
+             <span>
+              {{$minevent->ticket_extras}}
+             </span>
+            </div>
+           </div>
+          <br>
+          <br>
+        <div class="col-sm-12">
+          <div class="row" style="text-align: center;">
+            <!--div class="col-xs-4 side-event-image"-->
+              <?php if($minevent->ticket_main_photo){ ?>
+               <img height=180 width=150 style="margin: 5px 1px 10px 100px; align:justify" src="{{asset($minevent->ticket_main_photo)}}" />
+              <?php }else{ ?>
+              <img height=180 width=150 style="margin: 5px 1px 10px 100px; align:justify" src="{{asset('assets/images/default/trip.jpg')}}" />
+              <?php } ?>
+            <!--/div-->
+          </div>
+      	</div>
+          <br>
+          <br>
+           <div class="col-sm-12">
+            <div class="col-sm-12 field-label">
+             <span>
 
-<!---------------------------side-event-pages-------------------------------//-->
-@if($minevent->ticket_extras)
-  @php $sideeventpages=explode(config('attendize.sideevent_pages_eximploders'), $minevent->ticket_extras); @endphp
-  @foreach($sideeventpages as $sidepage)
-    @php list($pagetitle,$pagediscription,$pagephotosstring)=explode(config('attendize.sideevent_singlepage_eximploders'),$sidepage);
-    $pagephotospaths=explode(config('attendize.sideevent_photos_eximploders'),$pagephotosstring);
-    $discripts=explode('#', $pagediscription);
-    @endphp
-    <h4><!--{{$pagetitle}}--></h4>
-    <!--/*
-     * $pagetitle is a title for a page
-     * $pagediscription is a formulatable disription: can be paragraph only, list only or intro
-     * paragraph plus a list... depends on the hash character usages
-     * $pagephotospaths is an array of page-photos-paths where for each( $pagephotospaths as $srcpath) can
-     * be displayed using <img src = "{|{asset($srcpath)}}"
-     */-->
-    @php $discriptcount=count($discripts);@endphp
-    @if($discriptcount==1)
-      <!--display discription as a single paragraph-->
-      <p><!--{{$pagediscription}}--></p>
-    @elseif(strlen(trim($discripts[0]))==0)
-      <!--display discription as a list of discripts-->
-      <ul>
-        @foreach($discripts as $discript)
-        <li><!--{{$discript}}--></li>
-        @endforeach
-      </ul>
-    @else
-      <!--display $discripts[0] as an intro paragraph and the rest as a list of items-->
-      <p><!--{{$discript[0]}}--></p>
-      @for($dis=1;$dis<$discriptcount;++$dis)
-      <li><!--{{$discripts[$dis]}}--></li>
-      @endfor
-    @endif
-  @endforeach
-@endif
-<!-------------------------end-side-event-pages-----------------------------//-->
+              <?php if($minevent->ticket_offers!=NULL){
+                       $ticket_offers = explode('+++',$minevent->ticket_offers);
 
-            <div class="col-sm-4 field-label">
-             <div>
+                       echo "<p><b> List of available sessions </b></p>";
+                       for($i=0;$i<count($ticket_offers);++$i){
+                           $sched = explode('<==>',$ticket_offers[$i]);
+                           $count = $i+1;
+                           echo '<div class="row">';
+                           echo '<p>';
+                           echo date('d-M-Y H:i', strtotime($sched[0])).' to '.date('d-M-Y H:i', strtotime($sched[1])).'';
+                           echo '</p>';
+                           echo '</div>';
+                       } ?>
+             <?php } ?>
+
+             </span>
+            </div>
+            <div class="col-sm-12 field-label">
+            	<b>Ticket Price</b><br>
               <span><b>{{money($minevent->price, $event->currency)}}</b></span>
-              <br/>
-              <p>No of Tickets</p>
-
-              <select name="ticket_{{$minevent->id}}" class="form-control"
-                      style="text-align: center">
-                  @if ($tickets->count() > 1)
-                      <option value="0">0</option>
-                  @endif
-                  @for($i=$minevent->min_per_person; $i<=$minevent->max_per_person; $i++)
-                      <option value="{{$i}}">{{$i}}</option>
-                  @endfor
-              </select><br>
-
-
-             </div>
             </div>
             <div class="col-sm-9">
              <!--<input type="date" name="mydates[]" class="form-control" required>-->
@@ -172,6 +95,7 @@
         </div>
         <div class="modal-footer">
          <button class="btn btn-danger" data-dismiss="modal">Close</button>
+         <!--button class="btn btn-success" type="submit" value="submit">Save</button-->
         </div>
        </form>
        <script>
@@ -203,4 +127,4 @@
       </div>
      </div>
     </div>
-    <!-- End of Modal -->
+<!-- End of Modal -->
