@@ -12,7 +12,6 @@
         {!! Form::hidden('ticket_id', $minevent->id) !!}
         <div class="modal-body">
          <div class="col-md-12 container-fluid">
-
           <div class="form-group col-md-12" id='datetimepicker4'>
            <div class="col-sm-12">
             <div class="col-sm-12 field-label">

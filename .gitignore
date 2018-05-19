@@ -25,3 +25,4 @@ app/Http/Controllers/EventCheckoutControllerstash.php
 resources/views/Public/ViewEvent/Partials/EventTicketsSection2Stash.blade.php
 *.swp
 /public/user_content
+public/assets/stylesheet/frontend.js

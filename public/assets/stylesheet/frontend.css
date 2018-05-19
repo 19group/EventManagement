@@ -132,6 +132,26 @@ html,body{height:100%}body{font-family:'Open Sans',sans-serif}table{margin:0}lab
  padding-top: 5px;
  background-color: #f8f8f8;
 }
+.workshop-event-container{
+ border: 1px solid #ddd;
+ border-radius: 2px;
+ padding:0;
+ background-color: #f8f8f8;
+ height:290px;
+ margin-bottom:5px;
+
+}
+.workshop-content
+{
+     padding-top: 15px;
+     height:100px;
+}
+.workshop-footer{
+
+}
+.workshop-image-container{
+  background-color: rgba(35, 121, 113, 0.85);
+}
 .workshop-day
 {
     margin-bottom: 10px;
@@ -168,6 +188,7 @@ html,body{height:100%}body{font-family:'Open Sans',sans-serif}table{margin:0}lab
 }
 .col-event-details{
  position:inherit !important;
+     display: flow-root;
 }
 .col-event-order{
  margin-bottom: 10px;
