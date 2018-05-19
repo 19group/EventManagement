@@ -104,6 +104,25 @@ class Utils
         return false;
     }
 
+    public static function isSuperUSer()
+    {
+        if (!Auth::check()) {
+            return false;
+        }
+
+        try {
+
+            if (Auth::user()->user_group === "super_user") {
+                return true;
+            }
+
+        } catch (Exception $e) {
+            return false;
+        }
+
+        return false;
+    }
+
     /**
      * Determine max upload size
      *

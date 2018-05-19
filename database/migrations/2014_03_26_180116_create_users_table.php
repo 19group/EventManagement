@@ -135,6 +135,7 @@ class CreateUsersTable extends Migration
             $t->boolean('is_confirmed')->default(false);
             $t->boolean('is_parent')->default(false);
             $t->string('remember_token', 100)->nullable();
+            $t->string('user_group')->nullable();
 
             $t->foreign('account_id')->references('id')->on('accounts')->onDelete('cascade');
         });
