@@ -47,6 +47,23 @@
 
 @section('content')
 <body>
+ @php $ticketcount=0; $othercount=0; $ticketsales=0; $othersales=0; $totaldonation=0;@endphp
+@foreach($organiser->events as $event)
+ @foreach($event->tickets as $ticket)
+     @if(!in_array($ticket->type, ['SIDEEVENT','extra','extras','WORKSHOP']))
+         @php $ticketcount += $ticket->quantity_sold; $ticketsales+=($ticket->price*$ticket->quantity_sold); @endphp
+     @else
+         @php $othercount += $ticket->quantity_sold; $othersales+=($ticket->price*$ticket->quantity_sold); @endphp
+     @endif
+ @endforeach
+ @foreach ($event->orders as $donorder)
+     @php $orderwithdonation= \App\Models\OrderItem::where(['order_id'=>$donorder->id, 'title'=>'Donation'])->first(); @endphp
+     @if(count($orderwithdonation) != 0)
+         @php $totaldonation += $orderwithdonation->unit_price; @endphp
+     @endif
+ @endforeach
+ @endforeach
+
     <div class="row">
         <div class="col-sm-4">
             <div class="stat-box">
@@ -61,7 +78,7 @@
         <div class="col-sm-4 ">
             <div class="stat-box">
                 <h3>
-                    {{$organiser->attendees->count()}}
+                    {{$ticketcount + $othercount}}
                 </h3>
             <span>
                 Tickets Sold
@@ -71,7 +88,7 @@
         <div class="col-sm-4">
             <div class="stat-box">
                 <h3>
-                    {{ money($organiser->events->sum('sales_volume') + $organiser->events->sum('organiser_fees_volume'), $organiser->account->currency) }}
+                    {{ money($ticketsales + $othersales + $totaldonation, $organiser->account->currency) }}
                 </h3>
             <span>
                 Sales Volume
