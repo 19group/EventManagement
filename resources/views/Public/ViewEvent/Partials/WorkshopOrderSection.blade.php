@@ -37,13 +37,11 @@ Attend a Workshop at {{$event->title}}
                           @foreach ($tickets as $minevent)
                           <div class="workshop-event-container col-sm-12 col-md-6 col-lg-6">
                            <div class="col-xs-12 workshop-image-container">
-                            <div class="col-xs-2 side-event-image">
                               <?php if($minevent->ticket_main_photo){ ?>
-                               <img height=70 src="{{asset($minevent->ticket_main_photo)}}" />
+                               <img class="workshop-image" src="{{asset($minevent->ticket_main_photo)}}" />
                               <?php }else{ ?>
-                              <img height=70 src="{{asset('assets/images/default/trip.jpg')}}" />
+                              <img class="workshop-image" src="{{asset('assets/images/default/trip.jpg')}}" />
                               <?php } ?>
-                            </div>
                             <div class="col-xs-10">
                              <p class="ticket-descripton mb0 side-event-description " property="description">
                              <!-- {{$minevent->description}}-->
@@ -56,7 +54,10 @@ Attend a Workshop at {{$event->title}}
                              {{$minevent->title}}
                             </span>
                            </div>
-                           <div class="col-xs-12">
+                           <div class="col-xs-12 workshop-presenter">
+                              Presented By: {{$minevent->ticket_extras}}
+                           </div>
+                           <div class="col-xs-12 workshop-date">
 
                            <?php if($minevent->ticket_offers!=NULL){
                                     $ticket_offers = explode('+++',$minevent->ticket_offers);
@@ -64,11 +65,9 @@ Attend a Workshop at {{$event->title}}
                                     for($i=0;$i<count($ticket_offers);++$i){
                                         $sched = explode('<==>',$ticket_offers[$i]);
                                         $count = $i+1;
-                                        echo '<div class="row">';
                                         echo '<p>';
                                         echo'<b>'.date('l, d-M-Y', strtotime($sched[0])).'</b>';
                                         echo '</p>';
-                                        echo '</div>';
                                     } ?>
                           <?php } ?>
 
@@ -77,17 +76,11 @@ Attend a Workshop at {{$event->title}}
                            </div>
 
                            <div class="col-xs-12 workshop-footer">
-                            <!--
-
-                            <div class="col-xs-2 no-left-padding">
-                             <!--button  data-toggle="modal" data-target="#more_details_{{$minevent->id}}" class="btn btn-primary" style="width:150px"> More Details</button>
-                            </div>
-                            -->
-                            <div class="col-xs-6">
+                            <div class="col-xs-6 workshop-price">
                              <span>{{money($minevent->price, $event->currency)}} </span>
                             </div>
-                            <div class="col-xs-6">
-                             <button data-toggle="modal" data-target="#{{$minevent->id}}" class="btn btn-primary">
+                            <div class="col-xs-6 workshop-book">
+                             <button data-toggle="modal" data-target="#{{$minevent->id}}" class="btn btn-primary workshop-book-button">
                              <i class="ico-ticket"></i> Book
                              </button>
                             </div>
