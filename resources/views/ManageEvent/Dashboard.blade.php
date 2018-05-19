@@ -53,6 +53,14 @@
 @endforeach
 
     <div class="row">
+
+         <div class="col-sm-3">
+             <div class="stat-box">
+                 <!--h3>{{ money($event->sales_volume + $event->organiser_fees_volume, $event->currency) }}</h3-->
+                 <h3>{{ money($ticketsales + $event->organiser_fees_volume + $othersales + $event->organiser_fees_volume +$totaldonation, $event->currency) }} </h3>
+                 <span>Total Sales Volume</span>
+             </div>
+         </div>
         <div class="col-sm-3">
             <div class="stat-box">
                 <!--h3>{{ money($event->sales_volume + $event->organiser_fees_volume, $event->currency) }}</h3-->
