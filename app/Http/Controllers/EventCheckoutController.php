@@ -1366,7 +1366,9 @@ class EventCheckoutController extends Controller
                     if(isset($request_data["ticket_holder_schedule"][$i][$attendee_details['ticket']['id']])){
                         $attendee->period = $request_data["ticket_holder_schedule"][$i][$attendee_details['ticket']['id']];
                     }elseif(isset($request_data["ticket_holder_bookdays"][$i][$attendee_details['ticket']['id']])){
-                        $attendee->period = $request_data["ticket_holder_bookdays"][$i][$attendee_details['ticket']['id']];
+                        $booked_days_holder = $request_data["ticket_holder_bookdays"][$i][$attendee_details['ticket']['id']];
+                        $single_days=explode(',', $booked_days_holder);
+                        $attendee->period = $single_days[$i];
                     }else{
                         $attendee->period = null;
                     }
