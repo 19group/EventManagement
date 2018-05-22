@@ -96,7 +96,7 @@ use App\Models\OrderItem;
 	<?php if(count($attendees)<1){ goto donationstart;}
  $ticketsinpage = 2; $spacefixer = $ticketsinpage; $target = count($attendees);?>
 	<!--end of addition by DonaldFeb28  pageheight found 1325px-->
-        <div class="row" style="height: 1330px !important; margin-top: 0; margin-bottom: 0; border: 1px solid white;" >
+        <div class="row" style="height: 1044px !important; margin-top: 0; margin-bottom: 0; border: 1px solid white;" >
             @foreach($attendees as $attendee)
                 @if(!$attendee->is_cancelled)
                 <!--div id="heihtsetter" style="height: 650px;"-->
@@ -125,10 +125,7 @@ use App\Models\OrderItem;
                     		 	<h5><b>Venue</b></h5><h6>{{$event->venue_name}}</h6>
                     		</td>
                     		<td>
-                    		 	<h5><b>Ticket type</b></h5><h6>{{$attendee->ticket->title}}</h6>
-                    		 	<?php if(isset($attendee->period)){ ?> 
-                    		 	<h6>{{$attendee->period}}</h6>
-                    		 	<?php } ?>
+                      <h5><b>Ticket type</b></h5><h6>{{$attendee->ticket->title}}</h6>
                     		</td>
 
                     	</tr>
@@ -145,7 +142,7 @@ use App\Models\OrderItem;
                     		</td>
                     	</tr>
 
-                    	<tr style="border-top: solid 0.5px #dbdbdb; border-style: dashed">
+                    	<tr style="border-top: solid 0.5px #dbdbdb; border-left:0; border-right:0; border-style: dashed">
                     		<td>
                     			<h5><b>Ticket Holder</b></h5><h6>{{$attendee->first_name.' '.$attendee->last_name}}</h6>
                     		</td>
@@ -157,12 +154,15 @@ use App\Models\OrderItem;
                     		</td>
 
                     	</tr>
-                    	<tr style="padding: 5px;">
-                    		<td>
+                    	<tr style="padding: 5px; min-height:110px !important">
+                    		<td colspan="2">
+                       <h5><b>Ticket type</b></h5><h6>{{$attendee->ticket->title}}</h6>
+                       <?php if(isset($attendee->period)){ ?>
+                       <h6>{{$attendee->period}}</h6>
+                       <?php } ?>
                     		</td>
-                    		<td>
-                    		</td>
-                    		<td style="border-left: solid 0.5px #dbdbdb; border-style: dashed"><br>
+
+                    		<td style="border-left: solid 0.5px #dbdbdb; "><br>
 		                            {!! DNS2D::getBarcodeSVG($attendee->private_reference_number, "QRCODE", 4, 4) !!}
 
 		                        @if($event->is_1d_barcode_enabled)
@@ -179,8 +179,8 @@ use App\Models\OrderItem;
                     </div>
                 <!--/div-->
                     <!--added/edited by DonaldFeb28 trying limiting number of tickets in page-->
-                    <?php --$spacefixer; 
-                    	  if($spacefixer==0 && $target>0){ $spacefixer=$ticketsinpage; $blankspace='80px'; echo "</div> <div class='row' style='height: 1330px !important; margin-top: 0; margin-bottom: 0 ; border: 1px solid white;'>"; }
+                    <?php --$spacefixer;
+                    	  if($spacefixer==0 && $target>0){ $spacefixer=$ticketsinpage; $blankspace='80px'; echo "</div> <div class='row' style='height: 1044px !important; margin-top: 0; margin-bottom: 0 ; border: 1px solid white;'>"; }
                     	?>
                 @endif
                 <?php --$target; ?>
@@ -189,7 +189,7 @@ use App\Models\OrderItem;
 
 
             <!--added by DonaldFeb26 edited by DonaldFeb28-->
-            	<?php  
+            	<?php
              // TODO prevent quering the database to just figure out if there is donation or not
         	 donationstart:
              $order_donation = OrderItem::where(['order_id'=>$order->id, 'title'=>'Donation']);
@@ -214,9 +214,10 @@ use App\Models\OrderItem;
                     	<tr style="background: #303030; color: #dbdbdb;">
                     		<td colspan="2" class="text-left" style="padding-left: 2%" >
                     			<h3><b>{{$event->title}}</b></h3>
+                       <h5 class="text-white">Donation</h5>
                     		</td>
                     		<td class="text-right" style="padding-right: 2%" >
-                    			<h5 class="text-white">Donation</h5>
+                    			<img alt="{{$event->organiser->full_logo_path}}" height="50" src="data:image/png;base64, {{$image}}" />
                     		</td>
                     	</tr>
                     	<tr>
