@@ -94,9 +94,9 @@ use App\Models\OrderItem;
     <body style="background-color: #FFFFFF; font-family: Arial, Helvetica, sans-serif;">
 	<!--added by DonaldFeb28 to set control variables for limiting number of tickets in a page-->
 	<?php if(count($attendees)<1){ goto donationstart;}
- $ticketsinpage = 2; $spacefixer = $ticketsinpage; $target = count($attendees);?>
+ $ticketsinpage = 3; $spacefixer = $ticketsinpage; $target = count($attendees);?>
 	<!--end of addition by DonaldFeb28  pageheight found 1325px-->
-        <div class="row" style="height: 1330px !important; margin-top: 0; margin-bottom: 0; border: 1px solid white;" >
+        <div class="row" style="height: 1330px !important;  max-height: 1330px !important; margin-top: 0; margin-bottom: 0; border: 1px solid white;" >
             @foreach($attendees as $attendee)
                 @if(!$attendee->is_cancelled)
                 <!--div id="heihtsetter" style="height: 650px;"-->
@@ -180,7 +180,7 @@ use App\Models\OrderItem;
                 <!--/div-->
                     <!--added/edited by DonaldFeb28 trying limiting number of tickets in page-->
                     <?php --$spacefixer; 
-                    	  if($spacefixer==0 && $target>0){ $spacefixer=$ticketsinpage; $blankspace='80px'; echo "</div> <div class='row' style='height: 1330px !important; margin-top: 0; margin-bottom: 0 ; border: 1px solid white;'>"; }
+                    	  if($spacefixer==0 && $target>0){ $spacefixer=$ticketsinpage; $blankspace='80px'; echo "</div> <div class='row' style='height: 1330px !important; max-height: 1330px !important; margin-top: 0; margin-bottom: 0 ; border: 1px solid white;'>"; }
                     	?>
                 @endif
                 <?php --$target; ?>
