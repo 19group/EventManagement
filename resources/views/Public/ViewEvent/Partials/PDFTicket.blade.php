@@ -96,10 +96,10 @@ use App\Models\OrderItem;
 	<?php if(count($attendees)<1){ goto donationstart;}
  $ticketsinpage = 2; $spacefixer = $ticketsinpage; $target = count($attendees);?>
 	<!--end of addition by DonaldFeb28  pageheight found 1325px-->
-        <div class="row">
+        <div class="row" style="height: 1330px !important; margin-top: 0; margin-bottom: 0; border: 1px solid red;" >
             @foreach($attendees as $attendee)
                 @if(!$attendee->is_cancelled)
-                <div id="heihtsetter" style="height: 650px;">
+                <!--div id="heihtsetter" style="height: 650px;"-->
                     <div class="ticket">
 
                     <table class="text-center">
@@ -177,13 +177,13 @@ use App\Models\OrderItem;
                     </table>
 
                     </div>
-                </div>
+                <!--/div-->
                     <!--added/edited by DonaldFeb28 trying limiting number of tickets in page-->
-                    <?php //--$spacefixer; 
-                    	//  if($spacefixer==0 && $target>0){ $spacefixer=$ticketsinpage; $blankspace='80px'; echo "</div><div style='height:".$blankspace."'></div> <div class='row'>"; }
+                    <?php --$spacefixer; 
+                    	  if($spacefixer==0 && $target>0){ $spacefixer=$ticketsinpage; $blankspace='80px'; echo "</div> <div class='row' style='height: 1330px !important; margin-top: 0; margin-bottom: 0 ; border: 1px solid red;'>"; }
                     	?>
                 @endif
-                <?php //--$target; ?>
+                <?php --$target; ?>
                 <!--end of adding/editing by DonaldFeb28-->
             @endforeach
 
