@@ -97,7 +97,7 @@ use App\Models\OrderItem;
  $ticketsinpage = 2; $spacefixer = $ticketsinpage; $target = count($attendees);?>
 	<!--end of addition by DonaldFeb28  pageheight found 1325px-->
         <div class="row" style="height: 1044px !important; margin-top: 0; margin-bottom: 0; border: 1px solid white;" >
-            @foreach($attendees as $attendee)
+           @foreach($attendees as $attendee)
                 @if(!$attendee->is_cancelled)
                 <!--div id="heihtsetter" style="height: 650px;"-->
                     <div class="ticket">
