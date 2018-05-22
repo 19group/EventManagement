@@ -89,7 +89,29 @@
                         </div>
                         <hr>
 
-                        <!--Tickets and Side Events Details -->
+<!-- //////////////////////////// Edit - Order - Section /////////////////////-->
+<button id='editorder'>Edit My Past Order</button>
+<div id='editordersection' style="display: none;">
+  <h1 class='section_head'>Put the Order Reference You want to Add</h1>
+  <div class="row">
+   <div class="col-md-4">
+       <div class="form-group">
+           {!! Form::label('order_ref', 'Remind us your Order Reference', array('class'=>'font-weight-bold control-label required')) !!}
+           {!!  Form::text('order_ref', Input::old('order_ref'),
+       array(
+       'class'=>'form-control',''
+       ))  !!}
+       </div>
+   </div>
+ </div>
+</div>
+<script type="text/javascript">
+  
+</script>
+
+<!-- //////////////////////////// End Edit - Order - Section /////////////////////-->
+
+                        <!--Tickets Details -->
                         <div class="row">
 
                          <div class="col-sm-12">
