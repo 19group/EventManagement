@@ -98,7 +98,7 @@
                     <div class="col-md-12">
                         <div class="ticket_holders_details" >
                             <h3>Ticket Holder Information</h3>
-                            <?php //dd($tickets);
+                            <?php $booked_days_splitter=0;//dd($tickets);
                                 $total_attendee_increment = 0; //$preferedschedule=[];
                             ?>
                             @foreach($tickets as $ticket)
@@ -171,15 +171,16 @@
                                                 //echo '</div>';
                                             }elseif(isset($ticket['dates'])){ //dd($ticket);
                                                 echo '<div class=\'row\'><div class=\'col-md-12\'><div class=\'form-group\'>';
-                                                echo Form::label(' ','Booked Days:'); echo '</div></div></div>';
+                                                echo Form::label(' ','Booked Day:'); echo '</div></div></div>';
                                                 $days = $ticket['dates']; //$dates = [];
                                                 echo '<div class=\'row\'>';
-                                                    for($daycounter=0; $daycounter<count($days); ++$daycounter){
-                                                         echo '&nbsp;&nbsp;<i class=\'glyphicon glyphicon-calendar\'>'.$days[$daycounter].'</i>';
-                                                        if($daycounter % 6 == 0){ //limit days to 6 in a row
-                                                            echo '</div><div class = \'row\'>';
-                                                        }
-                                                    }
+                                                    //for($daycounter=0; $daycounter<count($days); ++$daycounter){
+                                                         echo '&nbsp;&nbsp;<i class=\'glyphicon glyphicon-calendar\'>'.$days[$booked_days_splitter].'</i>';
+                                                         ++$booked_days_splitter;
+                                                        //if($daycounter % 6 == 0){ //limit days to 6 in a row
+                                                            //echo '</div><div class = \'row\'>';
+                                                        //}
+                                                    //}
                                                 echo '</div><div class=\'row\'>&nbsp;</div>';
                                                 $dateString = implode(',',$days);
                                                 echo Form::hidden("ticket_holder_bookdays[{$i}][{$ticket['ticket']['id']}]",$dateString);
