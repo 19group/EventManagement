@@ -90,11 +90,17 @@
                         <hr>
 
 <!-- //////////////////////////// Edit - Order - Section /////////////////////-->
-<button id='editorder'>Edit My Past Order</button>
-<div id='editordersection' style="display: none;">
-  <h1 class='section_head'>Put the Order Reference You want to Add</h1>
+<div class="row">
+    <div class="col-md-12">
+        <div class="form-group">
+        {!! Form::button('I want to add items to my past order', ['class'=>"btn btn-success", 'id'=>"control_entry", 'onclick'=>"myFunction();"]) !!}
+        </div>
+    </div>
+</div>
+<div id='editorder' style="display: none;">
+  <h1 class='section_head'>Adding items to Past Order</h1>
   <div class="row">
-   <div class="col-md-4">
+   <div class="col-md-12">
        <div class="form-group">
            {!! Form::label('order_ref', 'Remind us your Order Reference', array('class'=>'font-weight-bold control-label required')) !!}
            {!!  Form::text('order_ref', Input::old('order_ref'),
@@ -104,15 +110,29 @@
        </div>
    </div>
  </div>
+ <p>Please make sure you have filled in the form your details just as they appear in your last order</p>
 </div>
-<script type="text/javascript">
-  
+<script>
+  function myFunction(){
+      var button = document.getElementById('control_entry');
+      var edit = document.getElementById('editorder');
+      var ticketord = document.getElementById('createorder');
+      if(button.value == 'I want create new order'){
+        edit.setAttribute('style','display:none');
+        ticketord.setAttribute('style','display:block');
+        button.value = 'I want to add items to my past order';
+      }else{
+        edit.setAttribute('style','display:block');
+        ticketord.setAttribute('style','display:none');
+        button.value = 'I want create new order';
+      }
+  }
 </script>
 
 <!-- //////////////////////////// End Edit - Order - Section /////////////////////-->
 
                         <!--Tickets Details -->
-                        <div class="row">
+                        <div class="row" id='createorder'>
 
                          <div class="col-sm-12">
                              <h1 class='section_head'>
@@ -230,21 +250,21 @@
                               </tr>
                                </table>
                             </div>
-                                                   <div class="row col-sm-12">
-                                                      <div class="form-group">
-                                                     {!!Form::checkbox('subscription','1','')!!} &nbsp Please email me about future FOSS4G events
-                                                      </div>
-                                                   </div>
-                                                   <div class="row col-sm-12 alert-danger">
-                                                      <div class="form-group">
-                                                     {!!Form::checkbox('validated','1','',['id'=>'validatereg', 'onchange'=>'controlRegister(this)'])!!} &nbsp I understand that by registering here I will receive emails relating to the planning and logistics of FOSS4G2018
-                                                      </div>
-                                                   </div>
                           <!---</div>  -->
-                          <div class="col-sm-12">
-                          {!!Form::submit('Register', ['class' => 'btn btn-lg btn-primary pull-right', 'id'=>'regbutton', 'disabled'=>'true'])!!}
-                         </div>
                         </div>
+                         <div class="row col-sm-12">
+                            <div class="form-group">
+                           {!!Form::checkbox('subscription','1','')!!} &nbsp Please email me about future FOSS4G events
+                            </div>
+                         </div>
+                         <div class="row col-sm-12 alert-danger">
+                            <div class="form-group">
+                           {!!Form::checkbox('validated','1','',['id'=>'validatereg', 'onchange'=>'controlRegister(this)'])!!} &nbsp I understand that by registering here I will receive emails relating to the planning and logistics of FOSS4G2018
+                            </div>
+                         </div>
+                        <div class="col-sm-12">
+                        {!!Form::submit('Register', ['class' => 'btn btn-lg btn-primary pull-right', 'id'=>'regbutton', 'disabled'=>'true'])!!}
+                       </div>
 
                     </div> <!-- End Content -->
 

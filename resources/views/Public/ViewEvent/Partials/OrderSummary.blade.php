@@ -22,6 +22,7 @@
       $i=0
       @endphp
 
+    @if(count($tickets)>0)
       @foreach($tickets as $ticket)
       <tr>
        <td class="pl0">{{{$ticket['ticket']['title']}}} X <b>{{$ticket['qty']}}</b></td>
@@ -60,6 +61,7 @@
 
       </tr>
       @endforeach
+    @endif
 
      </table>
     </div>

@@ -70,6 +70,9 @@ class EventCheckoutController extends Controller
         $order_expires_time = Carbon::now()->addMinutes(config('attendize.checkout_timeout_after'));
 
         $event = Event::findOrFail($event_id);
+        if($request->has('order_ref')){
+            return $this->handlereordering($request, $event_id);
+        }
 
         if (!$request->has('tickets')) {
             return response()->json([
@@ -82,13 +85,13 @@ class EventCheckoutController extends Controller
         }
         $ticket_ids = $request->get('tickets');
 
-                $first_name = $request->get('first_name');
-                $last_name = $request->get('last_name');
-                $email = $request->get('email');
 
         /*
          * Remove any tickets the user has reserved
          */
+                $first_name = $request->get('first_name');
+                $last_name = $request->get('last_name');
+                $email = $request->get('email');
         ReservedTickets::where('session_id', '=', session()->getId())->delete();
 
         /*
@@ -287,12 +290,13 @@ class EventCheckoutController extends Controller
             $donation = $donation_ticket_price * 0.05;
         }
 
-        if (empty($tickets)) {
+    /* Redundant???    if (empty($tickets)) {
             return response()->json([
                 'status'  => 'error',
                 'message' => 'No tickets selected.',
             ]);
         }
+    */
 
         /*
          * The 'ticket_order_{event_id}' session stores everything we need to complete the transaction.
@@ -353,6 +357,81 @@ class EventCheckoutController extends Controller
         //exit('Please enable Javascript in your browser.');
 
         return $this->javascriptError($event_id);
+    }
+
+    public function handleReOrdering($request, $event_id){
+        $event=Event::findOrFail($event_id);
+        $order_reference = $request['order_ref'];
+        $edit_order = Order::where('order_reference', '=', $order_reference)->first();
+        if(!$edit_order){
+                $errordata = [
+                    'event' => $event,
+                    'callbackurl' => null,
+                    'messages' => 'Sorry, we couldn\'t find any order with that reference. Please make sure that you enter it correctly',
+                    'request_details' => null,
+                    'parameters' => ['event_id' => $event_id]
+                ];
+                return view('Public.ViewEvent.EventPageErrors', $errordata);
+            //exit ('no order with provided reference exists');
+        }
+        $first_name = $request->get('first_name');
+        $last_name = $request->get('last_name');
+        $email = $request->get('email');
+        $order_expires_time = Carbon::now()->addMinutes(config('attendize.checkout_timeout_after'));
+        if([$first_name,$last_name,$email]!==[$edit_order->first_name,$edit_order->last_name,$edit_order->email]){
+            $errordata = [
+                'event' => $event,
+                'callbackurl' => null,
+                'messages' => 'There was a mismatch in the details. Please provide correct details as those in your past order.',
+                'request_details' => null,
+                'parameters' => ['event_id' => $event_id]
+            ];
+            return view('Public.ViewEvent.EventPageErrors', $errordata);
+            //exit ('there was a mismatch in the details');
+        }
+        $past_items = OrderItem::where(['order_id'=>$edit_order->id]);
+        session()->set('ticket_order_' . $event->id, [
+            'validation_rules'        => [],
+            'first_name'              => $first_name,
+            'last_name'               => $last_name,
+            'email'                   => $email,
+            'coupon_flag'             => [],
+            'discount'                => [],
+            'discount_ticket_title'   => [],
+            'exact_amount'            => [],
+            'amount_ticket_title'     => [],
+            'validation_messages'     => [],
+            'event_id'                => $event->id,
+            'tickets'                 => [],
+            'total_ticket_quantity'   => 0,
+            'order_started'           => time(),
+            'expires'                 => $order_expires_time,
+            'reserved_tickets_id'     => [],
+            'order_total'             => 0,
+            'donation'                => 0,
+            'order_has_validdiscount' => [],
+            'order_subscription'      => 0,
+            'booking_fee'             => 0,
+            'organiser_booking_fee'   => 0,
+            'total_booking_fee'       => 0,
+            'order_requires_payment'  => 0,
+            'account_id'              => $event->account->id,
+            'affiliate_referral'      => Cookie::get('affiliate_' . $event_id),
+            'account_payment_gateway' => count($event->account->active_payment_gateway) ? $event->account->active_payment_gateway : false,
+            'payment_gateway'         => count($event->account->active_payment_gateway) ? $event->account->active_payment_gateway->payment_gateway : false,
+            'past_order_id'              => $edit_order->id,
+        ]);
+
+        session()->set('transaction_'.$event_id,'tickets');
+        if ($request->ajax()) {
+            return response()->json([
+                'status'      => 'success',
+                  'redirectUrl' => route('handleTransactions', [
+                        'event_id'    => $event_id,
+                    ])
+            ]);
+        }
+        return redirect()->route('handleTransactions', ['event_id' => $event_id]);
     }
 
     public function javascriptError($event_id){
@@ -1126,12 +1205,17 @@ class EventCheckoutController extends Controller
         }
         //dd("I am here");
         $event = Event::findOrFail($event_id);
-        $order = new Order;
         $ticket_order = session()->get('ticket_order_' . $event_id);
+        //dd($ticket_order);
+        //skip validation if its editing the order
+        if(isset($ticket_order['past_order_id'])){
+            goto done_with_validation;
+        }
+        $order = new Order;
         $validation_rules = $ticket_order['validation_rules'];
         $validation_messages = $ticket_order['validation_messages'];
-        $order->rules = $order->rules + $validation_rules;
-        $order->messages = $order->messages + $validation_messages;
+        $order->rules = array_merge($order->rules,[$validation_rules]);
+        $order->messages = array_merge($order->messages,[$validation_messages]);
         if (!$order->validate($request->all()) && !isset($ticket_order['donation'])) {
             /*return response()->json([
                 'status'   => 'error',
@@ -1146,6 +1230,7 @@ class EventCheckoutController extends Controller
             ];
             return view('Public.ViewEvent.EventPageErrors', $data);
         }
+        done_with_validation:
         /*
          * Add the request data to a session in case payment is required off-site
          */
@@ -1257,7 +1342,6 @@ class EventCheckoutController extends Controller
 
         try {
 
-            $order = new Order();
             $ticket_order = session()->get('ticket_order_' . $event_id);
             //dd($ticket_order['request_data'][0]);
             $request_data = $ticket_order['request_data'][0];
@@ -1265,10 +1349,21 @@ class EventCheckoutController extends Controller
             $attendee_increment = 1;
             $ticket_questions = isset($request_data['ticket_holder_questions']) ? $request_data['ticket_holder_questions'] : [];
 
+            //check if it is updating of the past order
+            if(isset($ticket_order['past_order_id'])){
+                $order=Order::findOrFail($ticket_order['past_order_id']);
+                $order->amount += $ticket_order['order_total'];
+                $order->notes = $ticket_order['order_subscription'] > $order->notes ? $ticket_order['order_subscription'] : $order->notes;
+                $order->booking_fee += $ticket_order['booking_fee'];
+                $order->organiser_booking_fee += $ticket_order['organiser_booking_fee'];
+                $order->save();
+                goto finished_working_on_order;
+            }
 
             /*
              * Create the order
              */
+            $order = new Order();
             if (isset($ticket_order['transaction_id'])) {
                 $order->transaction_id = $ticket_order['transaction_id'][0];
             }
@@ -1281,7 +1376,6 @@ class EventCheckoutController extends Controller
             $order->order_status_id = isset($request_data['pay_offline']) ? config('attendize.order_awaiting_payment') : config('attendize.order_complete');
             $order->amount = $ticket_order['order_total'];
             $order->notes = $ticket_order['order_subscription'];
-        /**    $order->notes = empty($ticket_order['sideeventnotes']) ? null : implode('<==>',$ticket_order['sideeventnotes']);  **///commented by DonaldMar14
             $order->booking_fee = $ticket_order['booking_fee'];
             $order->organiser_booking_fee = $ticket_order['organiser_booking_fee'];
             $order->discount = 0.00;
@@ -1290,6 +1384,7 @@ class EventCheckoutController extends Controller
             $order->is_payment_received = isset($request_data['pay_offline']) ? 0 : 1;
             $order->save();
 
+            finished_working_on_order: //important label. Skipper for editing order
             /*
              * Update the event sales volume
              */
