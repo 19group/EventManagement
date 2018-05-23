@@ -67,6 +67,7 @@
                                                    <div class="col-sm-12 col-md-6">
                                                     <p class="ticket-descripton mb0 " property="description">
                                                      {{'Your contribution will be added as part of your ticket prices.'}}
+                                                     <span>Contributions goes towards helping <a href="https://www.osgeo.org/foundation-news/foss4g-2018-travel-grant-programme/" target="_blank"> The Travel Grant Programme</a></span>
                                                     </p>
                                                    </div>
                                                    <div class="col-sm-12 col-md-6 donation-price-container">
@@ -90,10 +91,30 @@
                         <hr>
 
 <!-- //////////////////////////// Edit - Order - Section /////////////////////-->
-<div class="row">
+
+<!--
+<ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">Home</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">Profile</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false">Contact</a>
+  </li>
+</ul>
+<div class="tab-content" id="pills-tabContent">
+  <div class="tab-pane fade " id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">First Page</div>
+  <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">Second Page</div>
+  <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">Third Page</div>
+</div>
+-->
+
+<div class="row order_button">
     <div class="col-md-12">
         <div class="form-group">
-        {!! Form::button('I want to add items to my past order', ['class'=>"btn btn-success", 'id'=>"control_entry", 'onclick'=>"myFunction();"]) !!}
+        {!! Form::button('I want to add items to my past order', ['class'=>"btn btn-success pull-right", 'id'=>"control_entry", 'onclick'=>"myFunction();"]) !!}
         </div>
     </div>
 </div>
@@ -110,7 +131,7 @@
        </div>
    </div>
  </div>
- <p>Please make sure you have filled in the form your details just as they appear in your last order</p>
+ <!--<p>Please make sure you have filled in the form your details just as they appear in your last order</p>-->
 </div>
 <script>
   function myFunction(){
@@ -252,6 +273,8 @@
                             </div>
                           <!---</div>  -->
                         </div>
+
+
                          <div class="row col-sm-12">
                             <div class="form-group">
                            {!!Form::checkbox('subscription','1','')!!} &nbsp Please email me about future FOSS4G events
