@@ -1,4 +1,61 @@
 <div class="panel">
+  <!--//////////////////////////working for past order in case of adding items for past order///-->
+  @if(isset($past_order_id))
+   <div class="panel-heading">
+    <h3 class="panel-title">
+     <i class="ico-cart mr5"></i>
+     Past Order Summary
+    </h3>
+   </div>
+
+   <div class="panel-body pt0">
+    <table class="table mb0 table-condensed">
+    @if(isset($past_donation))
+      @if($past_donation > 0)
+      <tr>
+       <td class="pl0">Donation:</td>
+       <td style="text-align: right;">
+        {{  money($past_donation, $event->currency) }}
+       </td>
+      </tr>
+      @endif
+    @endif
+
+    @if(isset($past_tickets))
+      @if(count($past_tickets)>0)
+        @foreach($past_tickets as $past_ticket)
+        <tr>
+         <td class="pl0">{{{$past_ticket['ticket_title']}}} X <b>{{$past_ticket['qty']}}</b></td>
+         <td style="text-align: right;">
+          @if((int)ceil($past_ticket['full_price']) === 0)
+          FREE
+          @else
+          {{ money($past_ticket['full_price'], $event->currency) }}
+          @endif
+         </td>
+        </tr>
+        @endforeach
+      @endif
+        <tr>
+         <td class="pl0"><b>Past Order Total</b></td>
+         <td style="text-align: right;">
+          {{ money($past_order_amount + $past_donation, $event->currency) }}
+         </td>
+        </tr>
+
+     </table>
+    </div>
+   <div class="panel-heading">
+    <h3 class="panel-title">
+     <i class="ico-cart mr5"></i>
+     New Order Summary
+    </h3>
+   </div>
+
+   <div class="panel-body pt0">
+    <table class="table mb0 table-condensed">
+    @endif
+  @else
    <div class="panel-heading">
     <h3 class="panel-title">
      <i class="ico-cart mr5"></i>
@@ -8,6 +65,8 @@
 
    <div class="panel-body pt0">
     <table class="table mb0 table-condensed">
+  @endif
+  <!--////////////////////////end of working for past order/////////////////////////////////////-->
 
       @if($donation > 0)
       <tr>
@@ -74,7 +133,7 @@
     @elseif(!(count($order_has_validdiscount)>0 && ($order_total + $donation == 0)))
     <div class="panel-footer">
      <h5>
-      Your order list is empty. Please go back to ticket purchase and add some items to proceed.
+      Your current order list is empty.
      </h5>
     </div>
     @endif
