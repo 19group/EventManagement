@@ -119,7 +119,7 @@
                      </div>
                     </div>
 
-                    <div class="form-group col-md-12" id="dategenerator{{ $accomodation->id}}">
+                    <div class="form-group col-md-12" id="dategenerator{{$accomodation->id}}">
                     </div>
 
                     <div class="col-md-12">
@@ -141,26 +141,30 @@
                 </form>
                 <script>
 
-                var counter = 2;
-                var limit = 14;
+                var accommodationCounter = 2;
+                var limit = 15;
 
                 function addInput(divName){
-                 //Checkif there is a variable with the value
-                 if(typeof(window[divName+counter])==="undefined"){
-                  window[divName+counter] = counter;
-                 }
-                 var currentcounter = window[divName+counter];
 
-                 if (currentcounter == limit)  {
+                 //Checkif there is a variable with the value
+                 if(typeof(window[divName+"&"+accommodationCounter])==="undefined"){
+                  window[divName+"&"+accommodationCounter] = accommodationCounter;
+                  var currentAccomodationCounter = window[divName+"&"+accommodationCounter];
+                 }
+                 else{
+                  var currentAccomodationCounter = window[divName+"&"+accommodationCounter]
+                 }
+
+                 if (currentAccomodationCounter == limit)  {
                   alert("You have reached the limit of adding extra days");
                  }
                  else {
                   var newdiv = document.createElement('div');
                   newdiv.classList.add("row");
                   newdiv.classList.add("day-row");
-                  newdiv.innerHTML = "<div class='col-sm-3 field-label'><label> Day " + (currentcounter) + " </label></div><div class='col-sm-9'><input type='text' class='form-control' min='2018-08-15' max='2018-09-15' name='mydates[]' list='thesedates' ></div>";
+                  newdiv.innerHTML = "<div class='col-sm-3 field-label'><label> Day " + (currentAccomodationCounter) + " </label></div><div class='col-sm-9'><input type='text' class='form-control' min='2018-08-15' max='2018-09-15' name='mydates[]' list='thesedates' ></div>";
                   document.getElementById(divName).appendChild(newdiv);
-                  window[divName+counter]++;
+                  window[divName+"&"+accommodationCounter]++;
                  }
                 }
 

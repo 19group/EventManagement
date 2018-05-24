@@ -482,7 +482,7 @@ class EventCheckoutController extends Controller
             'callbackurl' => 'createorder',
             'messages' => "Your session has expired. Please restart the process.",
             'parameters' => ['event_id' => $event_id],
-            'route'   => $route, 
+            'route'   => $route,
             'routeparameters'   => ['event_id' => $event_id],
             'routedisplay' => 'Please click here to restart the process'
         ];
@@ -1557,8 +1557,21 @@ class EventCheckoutController extends Controller
     if($ticket_order['donation']>0){
         if(isset($ticket_order['past_order_id'])){
             $orderItem = OrderItem::where(['order_id'=>$ticket_order['past_order_id'],'title'=>'Donation'])->first();
+
+            if($orderItem){
             $orderItem->unit_price += $ticket_order['donation'];
             $orderItem->save();
+            }
+            else {
+             $orderItem = new OrderItem();
+             $orderItem->title = 'Donation';
+             $orderItem->quantity = 1;
+             $orderItem->order_id = $order->id;
+             $orderItem->unit_price = $ticket_order['donation'];
+             $orderItem->unit_booking_fee = 0;
+             $orderItem->save();
+            }
+
         }else{
             $orderItem = new OrderItem();
             $orderItem->title = 'Donation';
