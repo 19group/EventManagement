@@ -342,12 +342,9 @@ class EventCheckoutController extends Controller
         if ($request->ajax()) {
             return response()->json([
                 'status'      => 'success',
-            //    'redirectUrl' => route('showEventCheckout', [])
-        //          'redirectUrl' => route('OrderSideEvents', [
                   'redirectUrl' => route('handleTransactions', [
                         'event_id'    => $event_id,
-                    //    'is_embedded' => $this->is_embedded,
-                    ])// . '#order_form',
+                    ])
             ]);
         }
 
@@ -378,7 +375,7 @@ class EventCheckoutController extends Controller
         $last_name = $request->get('last_name');
         $email = $request->get('email');
         $order_expires_time = Carbon::now()->addMinutes(config('attendize.checkout_timeout_after'));
-        if([$first_name,$last_name,$email]!==[$edit_order->first_name,$edit_order->last_name,$edit_order->email]){
+    /*    if([$first_name,$last_name,$email]!==[$edit_order->first_name,$edit_order->last_name,$edit_order->email]){
             $errordata = [
                 'event' => $event,
                 'callbackurl' => null,
@@ -389,7 +386,39 @@ class EventCheckoutController extends Controller
             return view('Public.ViewEvent.EventPageErrors', $errordata);
             //exit ('there was a mismatch in the details');
         }
-        $past_items = OrderItem::where(['order_id'=>$edit_order->id]);
+    */
+
+        $past_items = $edit_order->orderItems;
+        $donation_ticket_price=0;
+        $past_tickets=[];
+        $past_donation=0;
+        $past_order_amount=$edit_order->amount;
+        //dd($edit_order->amount);
+        foreach($past_items as $past_item){
+            if($past_item['title']=='Donation'){
+                $past_donation=$past_item['unit_price'];
+            }else{
+                if($past_item['unit_price']>$donation_ticket_price){
+                $donation_ticket_price = $past_item['unit_price'];
+                }
+                $past_tickets[] = [
+                    'ticket_title'          => $past_item->title,
+                    'qty'                   => $past_item->quantity,
+                    'price'                 => ($past_item->quantity * $past_item->unit_price),
+                    'booking_fee'           => ($past_item->quantity * $past_item->unit_booking_fee),
+                    'organiser_booking_fee' => ($past_item->quantity * $edit_order->organiser_booking_fee),
+                    'full_price'            => $past_item->unit_price + $edit_order->organiser_booking_fee + $edit_order->booking_fee,
+                ];
+            }
+        }
+        //Check if the checkbox is clicked and determine the corresponding donation amount
+        if ($request->has('donation')) {
+           $donation = $request->get('donation');
+        }elseif($request->has('defaultdonation')){
+            $donation = $donation_ticket_price * 0.05;
+        }else{
+            $donation = 0;
+        }
         session()->set('ticket_order_' . $event->id, [
             'validation_rules'        => [],
             'first_name'              => $first_name,
@@ -408,7 +437,7 @@ class EventCheckoutController extends Controller
             'expires'                 => $order_expires_time,
             'reserved_tickets_id'     => [],
             'order_total'             => 0,
-            'donation'                => 0,
+            'donation'                => $donation,
             'order_has_validdiscount' => [],
             'order_subscription'      => 0,
             'booking_fee'             => 0,
@@ -420,6 +449,9 @@ class EventCheckoutController extends Controller
             'account_payment_gateway' => count($event->account->active_payment_gateway) ? $event->account->active_payment_gateway : false,
             'payment_gateway'         => count($event->account->active_payment_gateway) ? $event->account->active_payment_gateway->payment_gateway : false,
             'past_order_id'              => $edit_order->id,
+            'past_tickets'            => $past_tickets,
+            'past_donation'           => $past_donation,
+            'past_order_amount'       => $past_order_amount,
         ]);
 
         session()->set('transaction_'.$event_id,'tickets');
@@ -440,6 +472,19 @@ class EventCheckoutController extends Controller
             'callbackurl' => 'createorder',
             'messages' => "Javascript is not enabled in your browser. Please enable it first before you continue",
             'parameters' => ['event_id' => $event_id]
+        ];
+        return view('Public.ViewEvent.EventPageErrors', $errordata);
+    }
+
+    public function sessionExpiredError($event_id,$route){
+        $errordata = [
+            'event' => Event::findOrFail($event_id),
+            'callbackurl' => 'createorder',
+            'messages' => "Your session has expired. Please restart the process.",
+            'parameters' => ['event_id' => $event_id],
+            'route'   => $route, 
+            'routeparameters'   => ['event_id' => $event_id],
+            'routedisplay' => 'Please click here to restart the process'
         ];
         return view('Public.ViewEvent.EventPageErrors', $errordata);
     }
@@ -1195,13 +1240,14 @@ class EventCheckoutController extends Controller
          * If there's no session kill the request and redirect back to the event homepage.
          */
         if (!session()->get('ticket_order_' . $event_id)) {
-            return response()->json([
+            /*return response()->json([
                 'status'      => 'error',
                 'message'     => 'Your session has expired.',
                 'redirectUrl' => route('showEventPage', [
                     'event_id' => $event_id,
                 ])
-            ]);
+            ]);*/
+            return $this->sessionExpiredError($event_id,'showEventPage');
         }
         //dd("I am here");
         $event = Event::findOrFail($event_id);
@@ -1509,14 +1555,19 @@ class EventCheckoutController extends Controller
 
     //added by DonaldFeb13 DonaldApril27
     if($ticket_order['donation']>0){
-
-    $orderItem = new OrderItem();
-    $orderItem->title = 'Donation';
-    $orderItem->quantity = 1;
-    $orderItem->order_id = $order->id;
-    $orderItem->unit_price = $ticket_order['donation'];
-    $orderItem->unit_booking_fee = 0;
-    $orderItem->save();
+        if(isset($ticket_order['past_order_id'])){
+            $orderItem = OrderItem::where(['order_id'=>$ticket_order['past_order_id'],'title'=>'Donation'])->first();
+            $orderItem->unit_price += $ticket_order['donation'];
+            $orderItem->save();
+        }else{
+            $orderItem = new OrderItem();
+            $orderItem->title = 'Donation';
+            $orderItem->quantity = 1;
+            $orderItem->order_id = $order->id;
+            $orderItem->unit_price = $ticket_order['donation'];
+            $orderItem->unit_booking_fee = 0;
+            $orderItem->save();
+        }
     }
     if(count($ticket_order['order_has_validdiscount'])>0){
         foreach($ticket_order['order_has_validdiscount'] as $assoctickeid=>$usedcouponcode){
