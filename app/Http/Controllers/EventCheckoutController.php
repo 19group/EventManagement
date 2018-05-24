@@ -371,9 +371,9 @@ class EventCheckoutController extends Controller
                 return view('Public.ViewEvent.EventPageErrors', $errordata);
             //exit ('no order with provided reference exists');
         }
-        $first_name = $request->get('first_name');
-        $last_name = $request->get('last_name');
-        $email = $request->get('email');
+        $first_name = $edit_order->first_name;
+        $last_name = $edit_order->last_name;
+        $email = $edit_order->email;
         $order_expires_time = Carbon::now()->addMinutes(config('attendize.checkout_timeout_after'));
     /*    if([$first_name,$last_name,$email]!==[$edit_order->first_name,$edit_order->last_name,$edit_order->email]){
             $errordata = [
@@ -443,7 +443,7 @@ class EventCheckoutController extends Controller
             'booking_fee'             => 0,
             'organiser_booking_fee'   => 0,
             'total_booking_fee'       => 0,
-            'order_requires_payment'  => 0,
+            'order_requires_payment'  => true,
             'account_id'              => $event->account->id,
             'affiliate_referral'      => Cookie::get('affiliate_' . $event_id),
             'account_payment_gateway' => count($event->account->active_payment_gateway) ? $event->account->active_payment_gateway : false,
