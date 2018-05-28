@@ -11,6 +11,7 @@ use App\Models\Event;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\URL;
 use Dotenv;
+use App\Events\PaymentCompletedEvent;
 
 class PaymentsController extends Controller
 {
@@ -35,8 +36,8 @@ class PaymentsController extends Controller
  }
 
     //
-    public function payment(){//initiates payment
-        $payments = new Payment;
+public function payment(){//initiates payment
+        $payments = new Payment();
         $payments -> businessid = Auth::guard('business')->id(); //Business ID
         $payments -> transactionid = Pesapal::random_reference();
         $payments -> status = 'NEW'; //if user gets to iframe then exits, i prefer to have that as a new/lost transaction, not pending
@@ -59,6 +60,7 @@ class PaymentsController extends Controller
 
         return view('payments.business.pesapal', compact('iframe'));
     }
+
     public function paymentsuccess(Request $request)//just tells u payment has gone thru..but not confirmed
     {
         $trackingid = $request->input('tracking_id');
@@ -170,6 +172,8 @@ class PaymentsController extends Controller
         $querystring .= "cancel_return=".urlencode(stripslashes($cancel_url))."&";
         $querystring .= "return=".urlencode(stripslashes($return_url))."&";
         $querystring .= "notify_url=".urlencode($notify_url);
+
+        event(new PaymentCompletedEvent(['payment_gateway'=>'paypal','event_id'=>$event_id]));
 
         return redirect(env('PAYPAL_HOST').$querystring);
 
@@ -319,8 +323,8 @@ class PaymentsController extends Controller
      }
  }
 
- public function paypalNotification(Request $request, $event_id){
-     //dd($request);-
+public function paypalNotification(Request $request, $event_id){
+     //dd($request);
      $raw_post_data = file_get_contents('php://input');
      $raw_post_array = explode('&', $raw_post_data);
      $myPost = array();
@@ -344,7 +348,7 @@ class PaymentsController extends Controller
       $req .= "&$key=$value";
      }
 
-
+    //dd($myPost);
      // STEP 2: Post IPN data back to paypal to validate
 
      //$ch = curl_init('https://www.paypal.com/cgi-bin/webscr'); // change to [...]sandbox.paypal[...] when using sandbox to test
@@ -371,44 +375,120 @@ class PaymentsController extends Controller
 
 
      // STEP 3: Inspect IPN validation result and act accordingly
+     $custom = json_encode($myPost);
+     $item_name = $myPost['item_name'];
+     $first_name = $myPost['first_name'];
+     $last_name = $myPost['first_name'];
+     $payment_date = $myPost['payment_date'];
+     $item_number = $myPost['item_number'];
+     $payment_status = $myPost['payment_status'];
+     if ($myPost['mc_gross'] != NULL)
+     $payment_amount = $myPost['mc_gross'];
+     else
+     $payment_amount = $myPost['mc_gross1'];
+     $payment_currency = $myPost['mc_currency'];
+     $txn_id = $myPost['txn_id'];
+     $receiver_email = $myPost['receiver_email'];
+     $payer_email = $myPost['payer_email'];
 
+     if(!session()->has("ticket_order_".$event_id)){
+      //TODO Do something here
+
+      exit("You do not have a session");
+     }
+
+      $ticket_order = session()->get("ticket_order_".$event_id);
+
+     //dd($ticket_order);
+
+      $order_amount = $ticket_order["order_total"];
+
+      $order_details["first_name"] =  $ticket_order["first_name"];
+      $order_details["last_name"] =  $ticket_order["last_name"];
+      $order_details["order_total"] =  $ticket_order["order_total"];
+      $order_details["donation"] =  $ticket_order["donation"];
+      $order_details["email"] =  $ticket_order["email"];
+      $order_details["coupon_flag"] = $ticket_order["coupon_flag"];
+
+      $tickets = $ticket_order["tickets"];
+      //dd($tickets);
+
+       $i = 0;
+       foreach ($tickets as $ticket) {
+          $bought_tickets[$i]["ticket_title"]= $ticket["ticket"]['title'];
+          $bought_tickets[$i]["ticket_price"]= $ticket["full_price"];
+          $bought_tickets[$i]["ticket_quantity"]= $ticket["qty"];
+          if(isset($ticket["dates"])){
+          $bought_tickets[$i]["dates"]= $ticket["dates"];
+          }
+
+          ++$i;
+       }
+
+       $bought_tickets = json_encode($bought_tickets);
+       $order_details = json_encode($order_details);
+
+     // Verifies that the IPN is from paypal
      if (strcmp ($res, "VERIFIED") == 0) {
       //sendSuccessEmail();
-       $payment_success_status = 1;
-       $this->paymentconfirmed($event_id,$payment_success_status);
+       $paypal_verified = 1;
+       $transaction_approved = 0;
+       //$this->paymentconfirmed($event_id,$payment_success_status);
 
       //Payment Is Successful, do something here
 
-      // check whether the payment_status is Completed
-      // check that txn_id has not been previously processed
-      // check that receiver_email is your Primary PayPal email
-      // check that payment_amount/payment_currency are correct
-      // process payment
+      //[TODO] check whether the payment_status is Completed
+      //[TODO] check that txn_id has not been previously processed
+      //[TODO] check that receiver_email is your Primary PayPal email
+      //[TODO] check that payment_amount/payment_currency are correct
+      //[TODO] process payment
+      //[TODO] Save Txn-id in the session
 
-      // assign posted variables to local variables
-      $item_name = $_POST['item_name'];
-      $item_number = $_POST['item_number'];
-      $payment_status = $_POST['payment_status'];
-      if ($_POST['mc_gross'] != NULL)
-      $payment_amount = $_POST['mc_gross'];
-      else
-      $payment_amount = $_POST['mc_gross1'];
-      $payment_currency = $_POST['mc_currency'];
-      $txn_id = $_POST['txn_id'];
-      $receiver_email = $_POST['receiver_email'];
-      $payer_email = $_POST['payer_email'];
-      $custom = $_POST['custom'];
+      $payment = new Payment();
+      $payment->full_name = $first_name;
+      $payment->payer_email = $payer_email;
+      $payment->receiver_email = $receiver_email;
+      $payment->payment_status = $payment_status;
+      $payment->amount = $payment_amount;
+      $payment->currency = $payment_currency;
+      $payment->payment_date = $payment_date;
+      $payment->txn_id = $txn_id;
+      $payment->custom = $custom;
+      $payment->bought_tickets = $bought_tickets;
+      $payment->order_details = $order_details;
+      $payment->paypal_verified = $paypal_verified;
+      $payment->transaction_approved =  $transaction_approved;
+      $payment->save();
 
       // Insert your actions here
+      //dd("Payment is from paypal");
 
      } else if (strcmp ($res, "INVALID") == 0) {
       // log for manual investigation
-      dd("Payment Failed");
+      $paypal_verified = 0;
+      $transaction_approved = 0;
+
+
+      $payment = new Payment();
+      $payment->full_name = $first_name;
+      $payment->payer_email = $payer_email;
+      $payment->receiver_email = $receiver_email;
+      $payment->payment_status = $payment_status;
+      $payment->amount = $payment_amount;
+      $payment->currency = $payment_currency;
+      $payment->payment_date = $payment_date;
+      $payment->txn_id = $txn_id;
+      $payment->custom = $custom;
+      $payment->bought_tickets = $bought_tickets;
+      $payment->order_details = $order_details;
+      $payment->paypal_verified = $paypal_verified;
+      $payment->transaction_approved =  $transactoin_approved;
+      $payment->save();
+
+
+      //dd("Payment is not from Paypal");
       $payment_success_status = 0;
-      $this->paymentconfirmed($event_id,$payment_success_status);
-
-      //Payment has failed, do something here
-
+      //$this->paymentconfirmed($event_id,$payment_success_status);
      }
 
  }

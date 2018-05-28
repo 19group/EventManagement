@@ -31,7 +31,9 @@
                         <!-- tab -->
                         <ul class="nav nav-tabs">
                             <li class="active"><a href="#general_account" data-toggle="tab">General</a></li>
+                            @if(Utils::isSuperUser())
                             <li><a href="#payment_account" data-toggle="tab">Payment</a></li>
+                            @endif
                             <li><a href="#users_account" data-toggle="tab">Users</a></li>
                             <li><a href="#about" data-toggle="tab">About</a></li>
                         </ul>
@@ -86,7 +88,9 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="panel-footer">
+                                            @if(Utils::isSuperUser())
                                             {!! Form::submit('Save Account Details', ['class' => 'btn btn-success pull-right']) !!}
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
@@ -94,8 +98,9 @@
                                 {!! Form::close() !!}
                             </div>
                             <div class="tab-pane " id="payment_account">
-
+                                @if(Utils::isSuperUser())
                                @include('ManageAccount.Partials.PaymentGatewayOptions')
+                               @endif
 
                             </div>
                             <div class="tab-pane" id="users_account">
@@ -119,6 +124,7 @@
 
                                             </tr>
                                         @endforeach
+                                        @if(Utils::isSuperUser())
                                         <tr>
                                             <td colspan="3">
                                                 <div class="input-group">
@@ -131,8 +137,8 @@
                                                     Added users will receive further instruction via email.
                                                 </span>
                                             </td>
-
                                         </tr>
+                                        @endif
 
                                         </tbody>
                                     </table>

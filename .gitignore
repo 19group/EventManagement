@@ -22,6 +22,11 @@ _ide_helper.php
 /resources/views/ManageEvent/Modals/DeleteEvent.blade.php
 /resources/views/ManageEvent/Modals/DeleteTicket.blade.php
 app/Http/Controllers/EventCheckoutControllerstash.php
+app/Events/PaymentCompletedEvent.php
+app/Http/Controllers/PaypalIPN.php
+app/Http/Controllers/cert/
+app/Jobs/SaveReceivedPayments.php
+app/Listeners/PaymentCompletedListener.php
 resources/views/Public/ViewEvent/Partials/EventTicketsSection2Stash.blade.php
 *.swp
 /public/user_content
