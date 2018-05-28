@@ -11,6 +11,7 @@ use App\Models\Event;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\URL;
 use Dotenv;
+use App\Events\PaymentCompletedEvent;
 
 class PaymentsController extends Controller
 {
@@ -171,6 +172,8 @@ public function payment(){//initiates payment
         $querystring .= "cancel_return=".urlencode(stripslashes($cancel_url))."&";
         $querystring .= "return=".urlencode(stripslashes($return_url))."&";
         $querystring .= "notify_url=".urlencode($notify_url);
+
+        event(new PaymentCompletedEvent(['payment_gateway'=>'paypal','event_id'=>$event_id]));
 
         return redirect(env('PAYPAL_HOST').$querystring);
 
