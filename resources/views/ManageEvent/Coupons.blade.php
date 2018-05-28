@@ -74,9 +74,11 @@ Coupons
 @section('page_header')
 <div class="col-md-9">
     <div class="btn-toolbar" role="toolbar">
+    @if(Utils::isSuperUser())
         <div class="btn-group btn-group-responsive">
             <button data-modal-id="InviteAttendee" href="javascript:void(0);"  data-href="{{route('showCreateCoupon', array('event_id'=>$event->id))}}" class="loadModal btn" type="button"><i class="glyphicon glyphicon-tag"></i> Generate Coupon</button>
         </div>
+    @endif
         
         <!--<div class="btn-group btn-group-responsive">
             <button data-modal-id="ImportAttendees" href="javascript:void(0);"  data-href="{{route('showImportAttendee', ['event_id'=>$event->id])}}" class="loadModal btn btn-success" type="button"><i class="ico-file"></i> Invite Attendees</button>

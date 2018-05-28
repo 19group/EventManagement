@@ -1218,7 +1218,7 @@ class EventCheckoutController extends Controller
                 'is_embedded'     => $this->is_embedded,
             ];
 
-         return view('Public.ViewEvent.EventPageCheckout', $data);
+        return view('Public.ViewEvent.EventPageCheckout', $data);
 /*
         if ($this->is_embedded) {
             return view('Public.ViewEvent.Embedded.EventPageCheckout', $data);
