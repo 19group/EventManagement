@@ -482,7 +482,7 @@ public function paypalNotification(Request $request, $event_id){
       $payment->bought_tickets = $bought_tickets;
       $payment->order_details = $order_details;
       $payment->paypal_verified = $paypal_verified;
-      $payment->transaction_approved =  $transactoin_approved;
+      $payment->transaction_approved =  $transaction_approved;
       $payment->save();
 
 
