@@ -238,7 +238,8 @@ array(
 @php $itemcount=1; $fromsession=session()->get('ticket_order_'.$event->id);@endphp
 {!!Form::hidden("cmd","_xclick")!!}
 {!!Form::hidden("no_note","1")!!}
-{!!Form::hidden("bn","PP-BuyNowBF:btn_buynow_LG.gif:NonHostedGuest")!!}
+<!--{!!Form::hidden("bn","PP-BuyNowBF:btn_buynow_LG.gif:NonHostedGuest")!!}-->
+<!--{!!Form::hidden("bn","PP-BuyNowBF:btn_paynowCC_LG.gif:NonHostedGuest")!!}-->
 {!!Form::hidden("first_name",$fromsession['first_name'])!!}
 {!!Form::hidden("last_name",$fromsession['last_name'])!!}
 {!!Form::hidden("payer_email",$fromsession['email'])!!}
