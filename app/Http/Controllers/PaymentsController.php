@@ -391,28 +391,24 @@ public function paypalNotification(Request $request, $event_id){
      $receiver_email = $myPost['receiver_email'];
      $payer_email = $myPost['payer_email'];
 
-     if(!session()->has("ticket_order_".$event_id)){
-      //TODO Do something here
-
-      exit("You do not have a session");
-     }
-
-      $ticket_order = session()->get("ticket_order_".$event_id);
+//      $ticket_order = session()->get("ticket_order_".$event_id);
 
      //dd($ticket_order);
 
-      $order_amount = $ticket_order["order_total"];
+    //[TODO] Needs to be changed, pass this information through custom field 
 
-      $order_details["first_name"] =  $ticket_order["first_name"];
-      $order_details["last_name"] =  $ticket_order["last_name"];
-      $order_details["order_total"] =  $ticket_order["order_total"];
-      $order_details["donation"] =  $ticket_order["donation"];
-      $order_details["email"] =  $ticket_order["email"];
-      $order_details["coupon_flag"] = $ticket_order["coupon_flag"];
+      $order_amount = 10000;
+      $order_details["first_name"] =  "Test";
+      $order_details["last_name"] =  "Test";
+      $order_details["order_total"] =  0;
+      $order_details["donation"] =  0;
+      $order_details["email"] =  "test@test.com";
+      $order_details["coupon_flag"] = "0";
 
-      $tickets = $ticket_order["tickets"];
+      //$tickets = $ticket_order["tickets"];
+
       //dd($tickets);
-
+/*
        $i = 0;
        foreach ($tickets as $ticket) {
           $bought_tickets[$i]["ticket_title"]= $ticket["ticket"]['title'];
@@ -424,8 +420,8 @@ public function paypalNotification(Request $request, $event_id){
 
           ++$i;
        }
-
-       $bought_tickets = json_encode($bought_tickets);
+*/
+       $bought_tickets = "tickets with paypal";
        $order_details = json_encode($order_details);
 
      // Verifies that the IPN is from paypal
@@ -489,6 +485,34 @@ public function paypalNotification(Request $request, $event_id){
       //dd("Payment is not from Paypal");
       $payment_success_status = 0;
       //$this->paymentconfirmed($event_id,$payment_success_status);
+     }else{
+
+       // log for manual investigation
+       $paypal_verified = 3;
+       $transaction_approved = 0;
+
+
+       $payment = new Payment();
+       $payment->full_name = $first_name;
+       $payment->payer_email = $payer_email;
+       $payment->receiver_email = $receiver_email;
+       $payment->payment_status = $payment_status;
+       $payment->amount = $payment_amount;
+       $payment->currency = $payment_currency;
+       $payment->payment_date = $payment_date;
+       $payment->txn_id = $txn_id;
+       $payment->custom = $custom;
+       $payment->bought_tickets = $bought_tickets;
+       $payment->order_details = $order_details;
+       $payment->paypal_verified = $paypal_verified;
+       $payment->transaction_approved =  $transaction_approved;
+       $payment->save();
+
+
+       //dd("Payment is not from Paypal");
+       $payment_success_status = 0;
+       //$this->paymentconfirmed($event_id,$payment_success_status);
+
      }
 
  }
