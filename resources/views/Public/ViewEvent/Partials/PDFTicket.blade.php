@@ -157,8 +157,13 @@ use App\Models\OrderItem;
                     	<tr style="padding: 5px; min-height:110px !important">
                     		<td colspan="2">
                        <h5><b>Ticket type</b></h5><h6>{{$attendee->ticket->title}}</h6>
-                       <?php if(isset($attendee->period)){ ?>
+                       <?php if(isset($attendee->ticket->ticket_offers)){
+                       	$firstoffer=explode('#@#',$attendee->ticket->ticket_offers)[0];
+                       	if(substr($firstoffer,0,14)=='Accommodation:'){$checkinfo = substr($firstoffer,14);}
+                       }if(isset($attendee->period)){ ?>
                        <h6>{{$attendee->period}}</h6>
+                       <?php }elseif(isset($checkinfo)){ ?>
+                       <h6>{{$checkinfo}}</h6>
                        <?php } ?>
                     		</td>
 
