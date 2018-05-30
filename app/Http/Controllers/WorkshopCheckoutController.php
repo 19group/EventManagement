@@ -61,6 +61,8 @@ class WorkshopCheckoutController extends Controller
     public function showOrderWorkshops($event_id)
     {
         $order_session = session()->get('ticket_order_' . $event_id);
+        
+        session()->set('transaction_'.$event_id,'workshops');
 
         if (!$order_session || $order_session['expires'] < Carbon::now()) {
             $route_name = $this->is_embedded ? 'showEmbeddedEventPage' : 'showEventPage';
@@ -343,14 +345,6 @@ class WorkshopCheckoutController extends Controller
 
     public function completeOrderWorkshops($event_id)
     {
-        /*if(session()->get('transaction_'.$event_id)){
-            $tempo = session()->get('transaction_'.$event_id);
-            ++$tempo;
-            session()->forget('transaction_'.$event_id);
-            session()->set('transaction_'.$event_id,$tempo);
-        }else{
-            session()->set('transaction_'.$event_id,1);
-        }*/
         session()->set('transaction_'.$event_id,'workshops');
         return redirect(route('handleTransactions',['event_id'=>$event_id]));
     }

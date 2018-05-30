@@ -1,8 +1,5 @@
 <div class="row bg-white">
-
 <section id="tickets" class="container">
-
-
 
     @if($event->start_date->isPast())
         <div class="alert alert-boring">

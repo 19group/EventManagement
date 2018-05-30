@@ -333,8 +333,6 @@ class EventCheckoutController extends Controller
             'payment_gateway'         => count($event->account->active_payment_gateway) ? $event->account->active_payment_gateway->payment_gateway : false,
         ]);
 
-        session()->set('transaction_'.$event_id,'tickets');
-
         /*
          * If we're this far assume everything is OK and redirect them
          * to the the checkout page.
@@ -454,7 +452,6 @@ class EventCheckoutController extends Controller
             'past_order_amount'       => $past_order_amount,
         ]);
 
-        session()->set('transaction_'.$event_id,'tickets');
         if ($request->ajax()) {
             return response()->json([
                 'status'      => 'success',
@@ -495,6 +492,7 @@ class EventCheckoutController extends Controller
         $order_session = session()->get('ticket_order_' . $event_id);
         $event=Event::findOrFail($event_id);
         if(Utils::userOwns($event) || $order_session['order_total'] + $order_session['donation'] == 0 && count($order_session['order_has_validdiscount'])>0){
+            session()->set('transaction_'.$event_id,'complete');
             $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
             $data = $order_session + [
                     'event'           => Event::findorFail($order_session['event_id']),
@@ -521,6 +519,8 @@ class EventCheckoutController extends Controller
     public function showOrderSideEvents($event_id)
     {
         $order_session = session()->get('ticket_order_' . $event_id);
+
+        session()->set('transaction_'.$event_id,'sideevents');
 
         if (!$order_session || $order_session['expires'] < Carbon::now()) {
             $route_name = $this->is_embedded ? 'showEmbeddedEventPage' : 'showEventPage';
@@ -587,6 +587,8 @@ class EventCheckoutController extends Controller
     public function showOrderAccommodation($event_id)
     {
         $order_session = session()->get('ticket_order_' . $event_id);
+
+        session()->set('transaction_'.$event_id,'accommodation');
 
         if (!$order_session || $order_session['expires'] < Carbon::now()) {
             $route_name = $this->is_embedded ? 'showEmbeddedEventPage' : 'showEventPage';
@@ -1190,6 +1192,8 @@ class EventCheckoutController extends Controller
     public function showEventCheckout(Request $request, $event_id)
     {
         $order_session = session()->get('ticket_order_' . $event_id);
+
+        session()->set('transaction_'.$event_id,'complete');
 
         if (!$order_session || $order_session['expires'] < Carbon::now()) {
             $route_name = $this->is_embedded ? 'showEmbeddedEventPage' : 'showEventPage';
