@@ -1,4 +1,4 @@
-<section id='order_form' class="row bg-white" style="margin-top: 5%">
+<section id='order_form' class="row bg-white"> <!--style="margin-top: 5%"-->
     <div class="container"><br><br>
         <h1 class="section_head">
             Ticket Details

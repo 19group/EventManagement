@@ -52,7 +52,7 @@ class EventTransactionsController extends Controller
 
     public function handleTransactions($event_id)
     {
-        $transactionsOrder=['tickets','workshops','sideevents','accommodation'];
+        $transactionsOrder=['tickets','workshops','sideevents','accommodation','payment','complete'];
         $process=session()->get('transaction_'.$event_id);
         if(in_array($process,$transactionsOrder))
         {

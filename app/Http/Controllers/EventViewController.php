@@ -17,6 +17,7 @@ class EventViewController extends Controller
 
     public function beforeShowEventHome($event_id){
         session()->forget('ticket_order_'.$event_id);
+        session()->forget('transaction_'.$event_id);
         return redirect(route('showEventPage', $event_id));
     }
     /**
@@ -46,6 +47,8 @@ class EventViewController extends Controller
             ];
             return view('Public.ViewEvent.EventPageErrors', $errordata);
         }
+
+        session()->set('transaction_'.$event_id,'tickets');
 
         if (!Utils::userOwns($event) && !$event->is_live) {
             return view('Public.ViewEvent.EventNotLivePage');

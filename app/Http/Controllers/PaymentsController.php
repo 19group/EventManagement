@@ -259,6 +259,8 @@ public function payment(){//initiates payment
      $event=Event::findOrFail($event_id);
      $order_session = session()->get('ticket_order_' . $event_id);
 
+     session()->set('transaction_'.$event_id,'complete');
+
      /*
       * check if payment_token is the one created from current session variables
       * problem::can still be tricked for adding items to the paid order
