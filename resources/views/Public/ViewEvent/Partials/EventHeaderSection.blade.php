@@ -35,37 +35,33 @@
             </div>
        </div>
     </div>
-<div class="row" style="text-align: min-height: 25px; center; margin-bottom: 3px" >
-    <span "text-align: center;"><strong>Transaction Progress Map</strong></span>
-    &nbsp; &nbsp; &nbsp;
-    <div class="col-xm-1" style="margin: 0 2px 0 2px; color:black; background-color:#3BB9FF;">Finished Process</div>&nbsp;
-    <div class="col-xm-1" style="margin: 0 2px 0 2px;color:black; background-color:#82CAFF;">Current Process</div>&nbsp;
-    <div class="col-xm-1" style="margin: 0 2px 0 2px;color:black; background-color:#ADDFFF;">Remaining Process</div>&nbsp;
-</div>
-<div class="row" style="color:black; min-height: 30px; ">
-    <?php if (session()->has('transaction_'.$event->id)){
-        $step = session()->get('transaction_'.$event->id); 
-        $progress=['tickets','workshops','sideevents','accommodation','payments','complete'];
-        $colordispatcher = []; $taken=false;
-        for($pass=0; $pass<count($progress);++$pass){
-            if($progress[$pass]==$step){
-                $colordispatcher[]='#82CAFF'; $taken=true;
-            }elseif(!$taken){
-                $colordispatcher[]='#3BB9FF';
-            }else{
-                $colordispatcher[]='#ADDFFF';
-            }
-        }
-        
-    }else{
-        $colordispatcher=['#82CAFF','#ADDFFF','#ADDFFF','#ADDFFF','#ADDFFF','#ADDFFF'];
-    }
-    ?>
-    <div class="col-sm-2" style="background-color:{{$colordispatcher[0]}};"><strong>Registration</strong></div>
-    <div class="col-sm-2" style="background-color:{{$colordispatcher[1]}};"><strong>Workshops</strong></div>
-    <div class="col-sm-2" style="background-color:{{$colordispatcher[2]}};"><strong>Experiences</strong></div>
-    <div class="col-sm-2" style="background-color:{{$colordispatcher[3]}};"><strong>Accommodations</strong></div>
-    <div class="col-sm-2" style="background-color:{{$colordispatcher[4]}};"><strong>Payments</strong></div>
-    <div class="col-sm-2" style="background-color:{{$colordispatcher[5]}};"><strong>Tickets Collection</strong></div>
-</div>
+</section>
+
+<section class="container" id="progress">
+ <div class="row" style="color:black; min-height: 30px;">
+     <?php if (session()->has('transaction_'.$event->id)){
+         $step = session()->get('transaction_'.$event->id);
+         $progress=['tickets','workshops','sideevents','accommodation','payments','complete'];
+         $colordispatcher = []; $taken=false;
+         for($pass=0; $pass<count($progress);++$pass){
+             if($progress[$pass]==$step){
+                 $colordispatcher[]='#82CAFF'; $taken=true;
+             }elseif(!$taken){
+                 $colordispatcher[]='#3BB9FF';
+             }else{
+                 $colordispatcher[]='#ADDFFF';
+             }
+         }
+
+     }else{
+         $colordispatcher=['#82CAFF','#ADDFFF','#ADDFFF','#ADDFFF','#ADDFFF','#ADDFFF'];
+     }
+     ?>
+     <div class="col-sm-2" style="background-color:{{$colordispatcher[0]}};padding:5px;text-align:center;"><strong>Registration</strong></div>
+     <div class="col-sm-2" style="background-color:{{$colordispatcher[1]}};padding:5px;text-align:center;"><strong>Workshops</strong></div>
+     <div class="col-sm-2" style="background-color:{{$colordispatcher[2]}};padding:5px;text-align:center;"><strong>Experiences</strong></div>
+     <div class="col-sm-2" style="background-color:{{$colordispatcher[3]}};padding:5px;text-align:center;"><strong>Accommodations</strong></div>
+     <div class="col-sm-2" style="background-color:{{$colordispatcher[4]}};padding:5px;text-align:center;"><strong>Payments</strong></div>
+     <div class="col-sm-2" style="background-color:{{$colordispatcher[5]}};padding:5px;text-align:center;"><strong>Tickets Collection</strong></div>
+ </div>
 </section>
