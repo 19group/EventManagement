@@ -1193,8 +1193,6 @@ class EventCheckoutController extends Controller
     {
         $order_session = session()->get('ticket_order_' . $event_id);
 
-        session()->set('transaction_'.$event_id,'complete');
-
         if (!$order_session || $order_session['expires'] < Carbon::now()) {
             $route_name = $this->is_embedded ? 'showEmbeddedEventPage' : 'showEventPage';
             session()->forget('ticket_order_' . $event_id);
@@ -1202,6 +1200,8 @@ class EventCheckoutController extends Controller
         }
         //for skipping payment
         if($order_session['order_total'] + $order_session['donation'] == 0 && count($order_session['order_has_validdiscount'])>0){
+
+        session()->set('transaction_'.$event_id,'complete');
         return $this->organiserSkipPayment($event_id);
         }
 
@@ -1221,6 +1221,8 @@ class EventCheckoutController extends Controller
                 'amount_ticket_title'   => $order_session['amount_ticket_title'],
                 'is_embedded'     => $this->is_embedded,
             ];
+
+        session()->set('transaction_'.$event_id,'payments');
 
         return view('Public.ViewEvent.EventPageCheckout', $data);
 /*
