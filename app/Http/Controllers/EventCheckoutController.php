@@ -1728,6 +1728,29 @@ class EventCheckoutController extends Controller
         }
         return view('Public.ViewEvent.Partials.PDFTicket', $data);
     }
+    public function showInvitationLetters(Request $request, $order_reference)
+    {
+        $order = Order::where('order_reference', '=', $order_reference)->first();
+
+        if (!$order) {
+            abort(404);
+        }
+
+        $data = [
+            'order'     => $order,
+            'event'     => $order->event,
+            'tickets'   => $order->event->tickets,
+            'attendees' => $order->attendees,
+            'css'       => file_get_contents(public_path('assets/stylesheet/ticket.css')),
+            'image'     => base64_encode(file_get_contents(public_path($order->event->organiser->full_logo_path))),
+
+        ];
+
+        if ($request->get('download') == '1') {
+            return PDF::html('Public.ViewEvent.Partials.EventInvitationLetter', $data, 'Tickets');
+        }
+        return view('Public.ViewEvent.Partials.EventInvitationLetter', $data);
+    }
 
     /**
      * Deleted tickets from the Accommodation page

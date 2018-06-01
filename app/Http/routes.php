@@ -298,6 +298,11 @@ Route::get('order/{order_reference}/tickets', [
     'uses' => 'EventCheckoutController@showOrderTickets',
 ]);
 
+Route::get('order/{order_reference}/letters', [
+    'as'   => 'showInvitationLetters',
+    'uses' => 'EventCheckoutController@showInvitationLetters',
+]);
+
 
 
 

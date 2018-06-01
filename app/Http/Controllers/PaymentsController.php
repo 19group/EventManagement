@@ -160,7 +160,7 @@ public function payment(){//initiates payment
         ++$i;
     }
 
-    $order_details = [$orderdetails,$boughttickets];
+    $order_details = ['orderdetails'=>$orderdetails,'boughttickets'=>$boughttickets];
     $custom = json_encode($order_details);
 
 
@@ -424,7 +424,12 @@ public function paypalNotification(Request $request, $event_id){
      $txn_id = $myPost['txn_id'];
      $receiver_email = $myPost['receiver_email'];
      $payer_email = $myPost['payer_email'];
+     $passed_info=json_decode($myPost['custom']);
 
+     $passed_order=$passed_info['orderdetails'];
+     $passed_tickets=$passed_info['boughttickets'];
+
+//------------------------
 //      $ticket_order = session()->get("ticket_order_".$event_id);
 
      //dd($ticket_order);
@@ -455,6 +460,8 @@ public function paypalNotification(Request $request, $event_id){
           ++$i;
        }
 */
+//--------------------------------------
+
        $bought_tickets = "tickets with paypal";
        $order_details = json_encode($order_details);
 
@@ -468,9 +475,19 @@ public function paypalNotification(Request $request, $event_id){
       //Payment Is Successful, do something here
 
       //[TODO] check whether the payment_status is Completed
+       if($payment_status!=='COMPLETED'){
+        goto verificationfailed;
+       }
       //[TODO] check that txn_id has not been previously processed
+       if(Payment::where(['txn_id'=>$txn_id])->first()){
+        goto verificationfailed;
+       }
       //[TODO] check that receiver_email is your Primary PayPal email
+       if($receiver_email!==env(PAYPAL_EMAIL)){
+        goto verificationfailed;
+       }
       //[TODO] check that payment_amount/payment_currency are correct
+       
       //[TODO] process payment
       //[TODO] Save Txn-id in the session
 
@@ -490,6 +507,7 @@ public function paypalNotification(Request $request, $event_id){
       $payment->transaction_approved =  $transaction_approved;
       $payment->save();
 
+      verificationfailed:
       // Insert your actions here
       //dd("Payment is from paypal");
 
