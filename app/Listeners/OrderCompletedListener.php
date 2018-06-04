@@ -4,8 +4,10 @@ namespace App\Listeners;
 
 use App\Events\OrderCompletedEvent;
 use App\Jobs\GenerateTicket;
+use App\Jobs\GenerateInvitationLetter;
 use App\Jobs\SendOrderNotification;
 use App\Jobs\SendOrderTickets;
+use App\Jobs\SendOrderInvitationLetters;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
@@ -38,7 +40,9 @@ class OrderCompletedListener implements ShouldQueue
          */
         Log::info('Begin Processing Order: ' . $event->order->order_reference);
         $this->dispatchNow(new GenerateTicket($event->order->order_reference));
+        //$this->dispatch(new GenerateInvitationLetter($event->order->order_reference));
         $this->dispatch(new SendOrderTickets($event->order));
+        //$this->dispatch(new SendOrderInvitationLetters($event->order));
         $this->dispatch(new SendOrderNotification($event->order));
 
     }

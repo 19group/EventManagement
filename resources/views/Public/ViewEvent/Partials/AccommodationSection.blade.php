@@ -107,9 +107,9 @@
                           <option label="4 Days Before" value="2018-08-25">2018-08-25</option>
                           <option label="3 Days Before" value="2018-08-26">2018-08-26</option>
                           <option label="2 Days Before" value="2018-08-27">2018-08-27</option>
-                          <option label="Check-in-day" value="2018-08-28">2018-08-28</option>
-                          <option label="Event Day 1" value="2018-08-29">2018-08-29</option>
-                          <option label="Event Day 2" value="2018-08-30">2018-08-30</option>
+                          <!--<option label="Check-in-day" value="2018-08-28">2018-08-28</option>-->
+                          <!--<option label="Event Day 1" value="2018-08-29">2018-08-29</option>-->
+                          <!--<option label="Event Day 2" value="2018-08-30">2018-08-30</option>-->
                           <option label="Check-out-day" value="2018-08-31">2018-08-31</option>
                           <option label="1 Day After" value="2018-09-1">2018-09-1</option>
                           <option label="2 Days After" value="2018-09-2">2018-09-2</option>

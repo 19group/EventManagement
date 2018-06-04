@@ -139,3 +139,7 @@
     @endif
 
 </div>
+
+<div class="help-block">
+    Please note you only have <span id='countdown'></span> to complete this transaction before your tickets are re-released.
+</div>

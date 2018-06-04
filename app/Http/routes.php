@@ -298,6 +298,11 @@ Route::get('order/{order_reference}/tickets', [
     'uses' => 'EventCheckoutController@showOrderTickets',
 ]);
 
+Route::get('order/{order_reference}/letters', [
+    'as'   => 'showInvitationLetters',
+    'uses' => 'EventCheckoutController@showInvitationLetters',
+]);
+
 
 
 
@@ -549,6 +554,11 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
         Route::get('{event_id}/coupon/create', [
             'as'   => 'showCreateCoupon',
             'uses' => 'EventTicketsController@showCreateCoupon',
+        ]);
+
+        Route::get('{event_id}/coupons/export/{export_as?}', [
+            'as'   => 'showExportCoupons',
+            'uses' => 'EventTicketsController@showExportCoupons',
         ]);
         Route::post('{event_id}/tickets/create', [
             'as'   => 'postCreateTicket',

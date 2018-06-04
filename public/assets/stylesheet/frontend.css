@@ -137,7 +137,7 @@ html,body{height:100%}body{font-family:'Open Sans',sans-serif}table{margin:0}lab
  border-radius: 2px;
  padding:0;
  background-color: #f8f8f8;
- height:290px;
+ height:350px;
  margin-bottom:5px;
 
 }
@@ -148,7 +148,7 @@ html,body{height:100%}body{font-family:'Open Sans',sans-serif}table{margin:0}lab
 .workshop-content
 {
      padding-top: 15px;
-     height:140px;
+     height:200px;
      display: flow-root;
 }
 .workshop-footer{

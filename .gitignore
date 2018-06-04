@@ -24,6 +24,7 @@ _ide_helper.php
 app/Http/Controllers/EventCheckoutControllerstash.php
 app/Events/PaymentCompletedEvent.php
 app/Http/Controllers/PaypalIPN.php
+app/Listeners/PaypalAdvancedIPN.php
 app/Http/Controllers/cert/
 app/Jobs/SaveReceivedPayments.php
 app/Listeners/PaymentCompletedListener.php

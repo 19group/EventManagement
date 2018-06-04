@@ -78,6 +78,17 @@ Coupons
         <div class="btn-group btn-group-responsive">
             <button data-modal-id="InviteAttendee" href="javascript:void(0);"  data-href="{{route('showCreateCoupon', array('event_id'=>$event->id))}}" class="loadModal btn" type="button"><i class="glyphicon glyphicon-tag"></i> Generate Coupon</button>
         </div>
+        <div class="btn-group btn-group-responsive">
+            <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+                <i class="ico-users"></i> Export <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li><a href="{{route('showExportCoupons', ['event_id'=>$event->id,'export_as'=>'xlsx'])}}">Excel (XLSX)</a></li>
+                <li><a href="{{route('showExportCoupons', ['event_id'=>$event->id,'export_as'=>'xls'])}}">Excel (XLS)</a></li>
+                <li><a href="{{route('showExportCoupons', ['event_id'=>$event->id,'export_as'=>'csv'])}}">CSV</a></li>
+                <li><a href="{{route('showExportCoupons', ['event_id'=>$event->id,'export_as'=>'html'])}}">HTML</a></li>
+            </ul>
+        </div>
     @endif
         
         <!--<div class="btn-group btn-group-responsive">

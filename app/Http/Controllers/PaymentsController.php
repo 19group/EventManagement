@@ -131,9 +131,38 @@ public function payment(){//initiates payment
 
 //[TO-CHECK] -- What does this do? the if statement below?
 //     if(substr(URL::previous(),-22)!=='/paypal/paymentsuccess'){
-    //$ticket_order = session()->get('ticket_order_' . $event_id);
+    $ticket_order = session()->get('ticket_order_' . $event_id);
     $payment_token=substr(session()->getId(),0,10).$ticket_order['order_started'].substr(session()->getId(), 10);
     session()->set('ticket_order_' . $event_id . '.paymenttoken',$payment_token);
+
+    $orderdetails=[]; $boughttickets=[];
+    //$order_amount = $ticket_order['order_amount'];
+    $orderdetails["first_name"] =  $ticket_order['first_name'];
+    $orderdetails["last_name"] = $ticket_order['last_name'];
+    $orderdetails["order_total"] =  $ticket_order['order_total'];
+    $orderdetails["donation"] =  $ticket_order['donation'];
+    $orderdetails["email"] =  $ticket_order['email'];
+    $orderdetails["coupon_flag"] = $ticket_order['order_has_validdiscount'];
+    if(isset($ticket_order['past_order_id'])){
+        $orderdetails['past_order_id']=$ticket_order['past_order_id'];
+    }
+    $ordertickets = $ticket_order["tickets"];
+      //dd($tickets);
+
+    $i = 0;
+    foreach ($ordertickets as $ticket) {
+        $boughttickets[$i]["ticket_title"]= $ticket["ticket"]['title'];
+        $boughttickets[$i]["ticket_price"]= $ticket["full_price"];
+        $boughttickets[$i]["ticket_quantity"]= $ticket["qty"];
+        if(isset($ticket["dates"])){
+            $boughttickets[$i]["dates"]= $ticket["dates"];
+        }
+        ++$i;
+    }
+
+    $order_details = ['orderdetails'=>$orderdetails,'boughttickets'=>$boughttickets];
+    $custom = json_encode($order_details);
+
 
     // PayPal settings
 
@@ -167,6 +196,9 @@ public function payment(){//initiates payment
             $value = urlencode(stripslashes($value));
             $querystring .= "$key=$value&";
         }
+
+        //append custom field
+        $querystring .= "custom=$custom&";
 
         // Append paypal return addresses
         $querystring .= "cancel_return=".urlencode(stripslashes($cancel_url))."&";
@@ -392,7 +424,12 @@ public function paypalNotification(Request $request, $event_id){
      $txn_id = $myPost['txn_id'];
      $receiver_email = $myPost['receiver_email'];
      $payer_email = $myPost['payer_email'];
+     $passed_info=json_decode($myPost['custom']);
 
+     $passed_order=$passed_info['orderdetails'];
+     $passed_tickets=$passed_info['boughttickets'];
+
+//------------------------
 //      $ticket_order = session()->get("ticket_order_".$event_id);
 
      //dd($ticket_order);
@@ -423,6 +460,8 @@ public function paypalNotification(Request $request, $event_id){
           ++$i;
        }
 */
+//--------------------------------------
+
        $bought_tickets = "tickets with paypal";
        $order_details = json_encode($order_details);
 
@@ -436,9 +475,19 @@ public function paypalNotification(Request $request, $event_id){
       //Payment Is Successful, do something here
 
       //[TODO] check whether the payment_status is Completed
+       if($payment_status!=='COMPLETED'){
+        goto verificationfailed;
+       }
       //[TODO] check that txn_id has not been previously processed
+       if(Payment::where(['txn_id'=>$txn_id])->first()){
+        goto verificationfailed;
+       }
       //[TODO] check that receiver_email is your Primary PayPal email
+       if($receiver_email!==env(PAYPAL_EMAIL)){
+        goto verificationfailed;
+       }
       //[TODO] check that payment_amount/payment_currency are correct
+       
       //[TODO] process payment
       //[TODO] Save Txn-id in the session
 
@@ -458,6 +507,7 @@ public function paypalNotification(Request $request, $event_id){
       $payment->transaction_approved =  $transaction_approved;
       $payment->save();
 
+      verificationfailed:
       // Insert your actions here
       //dd("Payment is from paypal");
 
