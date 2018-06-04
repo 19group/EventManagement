@@ -17,6 +17,12 @@
                     <span class="text">Dashboard</span>
                 </a>
             </li>
+            <li class="{{ Request::is('*event*') ? 'active' : '' }}">
+                <a href="{{route('showPayments', array('event_id' => $event->id))}}">
+                    <span class="figure"><i class="glyphicon glyphicon-briefcase"></i></span>
+                    <span class="text">Payments</span>
+                </a>
+            </li>
             <li class="{{ Request::is('*tickets*') ? 'active' : '' }}">
                 <a href="{{route('showEventTickets', array('event_id' => $event->id))}}">
                     <span class="figure"><i class="ico-ticket"></i></span>

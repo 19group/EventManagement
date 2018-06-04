@@ -19,7 +19,7 @@ Event Orders
 <i class='ico-cart mr5'></i>
 Side Events for {{$event->title}}
 <span class="page_title_sub_title hide">
-    Showing 30 orders out of <b></b> Total
+    <!--Showing 30 orders out of <b></b> Total-->
 </span>
 @stop
 

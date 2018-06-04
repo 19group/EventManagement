@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\Ticket;
+use App\Models\Payment;
 use App\Models\Organiser;
 use Illuminate\Http\Request;
 use Image;
@@ -569,5 +570,29 @@ class OrganiserEventsController extends MyBaseController
             $storagepaths[] = config('attendize.sideevent_images_path') . '/' . $filename;
         }
         return $storagepaths;
+    }
+
+    public function showPayments(Request $request, $event_id){
+        $event = Event::scope()->findOrfail($event_id);
+        $allowed_sorts = ['full_name', 'txn_id', 'payment_date','amount'];
+        $searchQuery = $request->get('q');
+        $sort_by = (in_array($request->get('sort_by'), $allowed_sorts) ? $request->get('sort_by') : 'payment_date');
+        if($searchQuery){
+            $payments = Payment::where('full_name', 'like', '%' . $searchQuery . '%')
+            ->orWhere('txn_id', 'like', '%' . $searchQuery . '%')
+            ->orderBy($sort_by,
+                'desc')->where('event_id', '=', $event_id)->paginate(12);
+        }else{
+            $payments = Payment::where('event_id', '=', $event_id)->orderBy($sort_by, 'desc')->paginate(12);
+        }
+        $data = [ 
+            'payments'    => $payments,
+            'event'         => $event,
+            'search'    => [
+                'q'        => $searchQuery ? $searchQuery : '',
+                'sort_by'  => $request->get('sort_by') ? $request->get('sort_by') : '',
+            ],
+        ];
+        return view('ManageEvent.Payments', $data);
     }
 }
