@@ -198,7 +198,7 @@ public function payment(){//initiates payment
         }
 
         //append custom field
-        $querystring .= "custom=$custom&";
+        //$querystring .= "custom=$custom&";
 
         // Append paypal return addresses
         $querystring .= "cancel_return=".urlencode(stripslashes($cancel_url))."&";
@@ -434,7 +434,7 @@ public function paypalNotification(Request $request, $event_id){
 
      //dd($ticket_order);
 
-    //[TODO] Needs to be changed, pass this information through custom field 
+    //[TODO] Needs to be changed, pass this information through custom field
 
       $order_amount = 10000;
       $order_details["first_name"] =  "Test";
@@ -487,7 +487,7 @@ public function paypalNotification(Request $request, $event_id){
         goto verificationfailed;
        }
       //[TODO] check that payment_amount/payment_currency are correct
-       
+
       //[TODO] process payment
       //[TODO] Save Txn-id in the session
 
