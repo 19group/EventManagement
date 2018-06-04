@@ -434,6 +434,11 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
             'as'   => 'postDeleteSideEvent',
             'uses' => 'OrganiserEventsController@postDeleteSideEvent',
         ]);
+
+        Route::get('{event_id}/payments/view', [
+            'as'   => 'showPayments',
+            'uses' => 'OrganiserEventsController@showPayments',
+        ]);
         //end of addition
 
         Route::get('{organiser_id}/customize', [
