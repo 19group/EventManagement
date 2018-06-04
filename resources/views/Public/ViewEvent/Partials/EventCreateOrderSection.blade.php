@@ -217,7 +217,8 @@ array(
 </ul>
 <div class="tab-content" id="myTabContent">
  <div class="tab-pane fade show active" id="paypalcontainer" role="tabpanel" aria-labelledby="home-tab">
-  <p>After payment via PayPal's secure checkout,You will be provided with tickets for your payments</p>
+  <p>After payment via PayPal's secure checkout, Please click the <b>"Return to Merchant"</b> button, so that you are able to generate tickets.</p>
+  <ul><li><p> Failure to return back, you will not be able to get your tickets </p></li><ul>
 <br />
   <div>
    <p>Paypal Accepts</p>
