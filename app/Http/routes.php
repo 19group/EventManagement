@@ -555,6 +555,11 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
             'as'   => 'showCreateCoupon',
             'uses' => 'EventTicketsController@showCreateCoupon',
         ]);
+
+        Route::get('{event_id}/coupons/export/{export_as?}', [
+            'as'   => 'showExportCoupons',
+            'uses' => 'EventTicketsController@showExportCoupons',
+        ]);
         Route::post('{event_id}/tickets/create', [
             'as'   => 'postCreateTicket',
             'uses' => 'EventTicketsController@postCreateTicket',

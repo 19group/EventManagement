@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Log;
 use DB;
+use Excel;
 use Illuminate\Support\Facades\Input;
 
 /*
@@ -116,6 +117,48 @@ class EventTicketsController extends MyBaseController
         ]);
     }
 
+
+    public function showExportCoupons($event_id, $export_as = 'xls')
+    {
+
+        Excel::create('attendees-as-of-' . date('d-m-Y-g.i.a'), function ($excel) use ($event_id) {
+
+            $excel->setTitle('Coupons List');
+
+            // Chain the setters
+            $excel->setCreator(config('attendize.app_name'))
+                ->setCompany(config('attendize.app_name'));
+
+            $excel->sheet('attendees_sheet_1', function ($sheet) use ($event_id) {
+
+                DB::connection()->setFetchMode(\PDO::FETCH_ASSOC);
+                $data = DB::table('coupons')
+                    ->where('coupons.event_id', '=', $event_id)
+                    ->where('coupons.state', '=', 'Valid')
+                    ->join('events', 'events.id', '=', 'coupons.event_id')
+                    ->join('tickets', 'tickets.id', '=', 'coupons.ticket_id')
+                    ->select([
+                        'coupons.coupon_code',
+                        'coupons.discount',
+                    //    'events.title',
+                        'tickets.title',
+                    ])->get();
+
+                $sheet->fromArray($data);
+                $sheet->row(1, [
+                    'Coupon Code',
+                    'Discount',
+                //    'Event',
+                    'Ticket Type',
+                ]);
+
+                // Set gray background on first row
+                $sheet->row(1, function ($row) {
+                    $row->setBackground('#f5f5f5');
+                });
+            });
+        })->export($export_as);
+    }
 
 
 
