@@ -36,7 +36,7 @@
                            $count = $i+1;
                            echo '<div class="row">';
                            echo '<p>';
-                           echo'<input type="radio" name="mydates" value="'.$ticket_offers[$i].'" >'.date('d-M-Y H:i', strtotime($sched[0])).' to '.date('d-M-Y H:i', strtotime($sched[1])).'';
+                           echo'<input type="radio" name="mydates" value="'.$ticket_offers[$i].'" required>'.date('d-M-Y H:i', strtotime($sched[0])).' to '.date('d-M-Y H:i', strtotime($sched[1])).'';
                            echo '</p>';
                            echo '</div>';
                        } ?>
