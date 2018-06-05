@@ -424,10 +424,10 @@ public function paypalNotification(Request $request, $event_id){
      $txn_id = $myPost['txn_id'];
      $receiver_email = $myPost['receiver_email'];
      $payer_email = $myPost['payer_email'];
-     $passed_info=json_decode($myPost['custom']);
+     //$passed_info=json_decode($myPost['custom']);
 
-     $passed_order=$passed_info['orderdetails'];
-     $passed_tickets=$passed_info['boughttickets'];
+     //$passed_order=$passed_info['orderdetails'];
+     //$passed_tickets=$passed_info['boughttickets'];
 
 //------------------------
 //      $ticket_order = session()->get("ticket_order_".$event_id);
@@ -475,6 +475,7 @@ public function paypalNotification(Request $request, $event_id){
       //Payment Is Successful, do something here
 
       //[TODO] check whether the payment_status is Completed
+      /*
        if($payment_status!=='COMPLETED'){
         goto verificationfailed;
        }
@@ -486,6 +487,7 @@ public function paypalNotification(Request $request, $event_id){
        if($receiver_email!==env(PAYPAL_EMAIL)){
         goto verificationfailed;
        }
+       */
       //[TODO] check that payment_amount/payment_currency are correct
 
       //[TODO] process payment
@@ -507,7 +509,7 @@ public function paypalNotification(Request $request, $event_id){
       $payment->transaction_approved =  $transaction_approved;
       $payment->save();
 
-      verificationfailed:
+      //verificationfailed:
       // Insert your actions here
       //dd("Payment is from paypal");
 
