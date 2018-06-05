@@ -170,6 +170,10 @@ position: relative;
 {
  width:100%;
 }
+.container-fluid
+{
+ color:#008000;
+}
 .workshop-date {
     position: absolute;
     right: 0;
