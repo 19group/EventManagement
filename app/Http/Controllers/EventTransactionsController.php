@@ -52,7 +52,7 @@ class EventTransactionsController extends Controller
 
     public function handleTransactions($event_id)
     {
-        $transactionsOrder=['tickets','workshops','sideevents','accommodation','payment','complete'];
+        $transactionsOrder=['tickets','workshops','accommodation','payment','complete'];
         $process=session()->get('transaction_'.$event_id);
         if(in_array($process,$transactionsOrder))
         {
@@ -61,13 +61,15 @@ class EventTransactionsController extends Controller
             switch ($next) {
                 case 'workshops':
                     return redirect(route('OrderWorkshops',['event_id'=>$event_id]));
-                break;    
+                break;
+                /*
                 case 'sideevents':
                     return redirect(route('OrderSideEvents',['event_id'=>$event_id]));
-                break;   
+                break;
+                */
                 case 'accommodation':
                     return redirect(route('OrderAccommodation',['event_id'=>$event_id]));
-                break;               
+                break;
                 default:
                     # code...
                     break;
@@ -75,7 +77,7 @@ class EventTransactionsController extends Controller
         }
 
         //return redirect(route('showEventCheckout',['event_id'=>$event_id]));
-        return redirect(route('OrderSideEvents',['event_id'=>$event_id]));
+        return redirect(route('OrderWorkshops',['event_id'=>$event_id]));
     }
 
 }
