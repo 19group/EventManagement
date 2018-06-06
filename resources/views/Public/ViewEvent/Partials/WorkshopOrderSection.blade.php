@@ -36,7 +36,7 @@ Attend a Workshop at {{$event->title}}
                 $tickets_arranged=[];
                 foreach ($tempo as $key) {
                   if($key->ticket_offers){
-                    $guider = date('d-M-Y', strtotime(explode('<==>',explode('+++',$key->ticket_offers)[0])[0]));
+                    $guider = date('YmdHi', strtotime(explode('<==>',explode('+++',$key->ticket_offers)[0])[0]));
                       if(!in_array($guider,$ordered)){
                         $ordered[]=$guider;
                         $grouped[$guider][] = $key;
