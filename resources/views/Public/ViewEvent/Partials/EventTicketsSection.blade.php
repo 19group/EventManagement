@@ -134,14 +134,14 @@
   function myFunction(){
       var button = document.getElementById('control_entry');
       var edit = document.getElementById('editorder');
-      var ticketord = document.getElementById('createorder');
+    //  var ticketord = document.getElementById('createorder');
       if(button.value == 'I want create new order'){
         edit.setAttribute('style','display:none');
-        ticketord.setAttribute('style','display:block');
+    //    ticketord.setAttribute('style','display:block');
         button.value = 'I want to add items to my past order';
       }else{
         edit.setAttribute('style','display:block');
-        ticketord.setAttribute('style','display:none');
+    //    ticketord.setAttribute('style','display:none');
         button.value = 'I want create new order';
       }
   }
