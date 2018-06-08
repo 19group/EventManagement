@@ -4,6 +4,7 @@ use App\Models\Event;
 use App\Models\Ticket;
 use App\Models\Payment;
 use App\Models\Organiser;
+use App\Coupon;
 use Illuminate\Http\Request;
 use Image;
 use Carbon\Carbon;
@@ -499,6 +500,36 @@ class OrganiserEventsController extends MyBaseController
             ? Event::scope()->where('title', 'like', '%' . $searchQuery . '%')->orderBy($sort_by,
                 'desc')->where('organiser_id', '=', $organiser_id)->paginate(12)
             : Event::scope()->where('organiser_id', '=', $organiser_id)->orderBy($sort_by, 'desc')->paginate(12);
+
+        $all_discounts = [];
+        if(count($events)==0){goto nosuchevent;}
+        foreach ($events as $event) {
+            if(!$event->tickets){goto eventhasnotickets;}
+            $tickets = [];
+            foreach ($event->tickets as $ticket) {
+                $tickets[$ticket->id] = $ticket->price;
+            }
+            $discounts = Coupon::where(['event_id'=>$event->id,'state'=>'Used'])->get();
+            if(count($discounts)==0){goto nodiscounts;}
+            $discount_sums=[];
+            foreach($discounts as $discount){
+                if($discount->exact_amount){
+                    $subtracted = $tickets[$discount->ticket_id] - $discount->exact_amount;
+                }elseif($discount->discount){ //discount = percentage
+                    $subtracted = ($discount->discount * $tickets[$discount->ticket_id])/100;
+                }
+                if(array_key_exists($discount->ticket_id,$discount_sums)){
+                    $discount_sums[$discount->ticket_id] += $subtracted;
+                }else{
+                    $discount_sums[$discount->ticket_id] = $subtracted;
+                }
+            }
+            $all_discounts[$event->id] = $discount_sums;
+            nodiscounts:
+            eventhasnotickets:
+        }
+        nosuchevent:
+
         $data = [
             'events'    => $events,
             'organiser' => $organiser,
@@ -507,6 +538,7 @@ class OrganiserEventsController extends MyBaseController
                 'sort_by'  => $request->get('sort_by') ? $request->get('sort_by') : '',
                 'showPast' => $request->get('past'),
             ],
+            'event_discounts' => $all_discounts,
         ];
         return view('ManageOrganiser.Events', $data);
     }

@@ -50,11 +50,12 @@
  @php $ticketcount=0; $othercount=0; $ticketsales=0; $othersales=0; $totaldonation=0;@endphp
 @foreach($organiser->events as $event)
  @foreach($event->tickets as $ticket)
-     @if(!in_array($ticket->type, ['SIDEEVENT','extra','extras','WORKSHOP']))
-         @php $ticketcount += $ticket->quantity_sold; $ticketsales+=($ticket->price*$ticket->quantity_sold); @endphp
-     @else
-         @php $othercount += $ticket->quantity_sold; $othersales+=($ticket->price*$ticket->quantity_sold); @endphp
-     @endif
+    @php $discount = isset($event_discounts[$event->id][$ticket->id]) ?  $event_discounts[$event->id][$ticket->id] : 0; @endphp
+    @if(!in_array($ticket->type, ['SIDEEVENT','extra','extras','WORKSHOP']))
+        @php $ticketcount += $ticket->quantity_sold; $ticketsales+=($ticket->price*$ticket->quantity_sold); $ticketsales -= $discount; @endphp
+    @else
+        @php $othercount += $ticket->quantity_sold; $othersales+=($ticket->price*$ticket->quantity_sold); $othersales -= $discount; @endphp
+    @endif
  @endforeach
  @foreach ($event->orders as $donorder)
      @php $orderwithdonation= \App\Models\OrderItem::where(['order_id'=>$donorder->id, 'title'=>'Donation'])->first(); @endphp

@@ -1,9 +1,10 @@
 @php $ticketcount=0; $othercount=0; $ticketsales=0; $othersales=0; $totaldonation=0;@endphp
 @foreach($event->tickets as $ticket)
+    @php $discount = isset($event_discounts[$event->id][$ticket->id]) ?  $event_discounts[$event->id][$ticket->id] : 0; @endphp
     @if(!in_array($ticket->type, ['SIDEEVENT','extra','extras','WORKSHOP']))
-        @php $ticketcount += $ticket->quantity_sold; $ticketsales+=($ticket->price*$ticket->quantity_sold); @endphp
+        @php $ticketcount += $ticket->quantity_sold; $ticketsales+=($ticket->price*$ticket->quantity_sold); $ticketsales -= $discount; @endphp
     @else
-        @php $othercount += $ticket->quantity_sold; $othersales+=($ticket->price*$ticket->quantity_sold); @endphp
+        @php $othercount += $ticket->quantity_sold; $othersales+=($ticket->price*$ticket->quantity_sold); $othersales -= $discount; @endphp
     @endif
 @endforeach
 @foreach ($event->orders as $donorder)

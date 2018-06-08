@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\EventStats;
+use App\Coupon;
 use Carbon\Carbon;
 use DateInterval;
 use DatePeriod;
@@ -20,6 +21,27 @@ class EventDashboardController extends MyBaseController
     public function showDashboard($event_id = false)
     {
         $event = Event::scope()->findOrFail($event_id);
+
+        if(!$event->tickets){goto eventhasnotickets;}
+        $tickets = [];
+        foreach ($event->tickets as $ticket) {
+            $tickets[$ticket->id] = $ticket->price;
+        }
+        $discounts = Coupon::where(['event_id'=>$event_id,'state'=>'Used'])->get();
+        $discount_sums=[];
+        foreach($discounts as $discount){
+            if($discount->exact_amount){
+                $subtracted = $tickets[$discount->ticket_id] - $discount->exact_amount;
+            }elseif($discount->discount){ //discount = percentage
+                $subtracted = ($discount->discount * $tickets[$discount->ticket_id])/100;
+            }
+            if(array_key_exists($discount->ticket_id,$discount_sums)){
+                $discount_sums[$discount->ticket_id] += $subtracted;
+            }else{
+                $discount_sums[$discount->ticket_id] = $subtracted;
+            }
+        }
+        eventhasnotickets:
 
         $num_days = 20;
 
@@ -87,6 +109,7 @@ class EventDashboardController extends MyBaseController
             'event'      => $event,
             'chartData'  => json_encode($result),
             'ticketData' => json_encode($tickets_data),
+            'discounts' => $discount_sums,
         ];
 
         return view('ManageEvent.Dashboard', $data);
