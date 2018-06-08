@@ -24,7 +24,7 @@ class OrderMailer
     public function sendOrderTickets($order)
     {
 
-        Log::info("Sending ticket to: " . $order->email);
+        Log::info("Sending tickets and invitation letters to: " . $order->email);
 
         $data = [
             'order' => $order,
@@ -32,12 +32,15 @@ class OrderMailer
 
         Mail::send('Mailers.TicketMailer.SendOrderTickets', $data, function ($message) use ($order) {
             $message->to($order->email);
-            $message->subject('Your tickets for the event ' . $order->event->title);
+            $message->subject('Your tickets and invitation letters for the event ' . $order->event->title);
 
             $file_name = $order->order_reference;
             $file_path = public_path(config('attendize.event_pdf_tickets_path')) . '/' . $file_name . '.pdf';
 
             $message->attach($file_path);
+
+            $letter_path = public_path(config('attendize.event_pdf_tickets_path')) . '/' . $file_name . 'letters.pdf';
+            $message->attach($letter_path);
         });
 
     }

@@ -33,6 +33,7 @@ class SendOrderTickets extends Job implements ShouldQueue
     public function handle(OrderMailer $orderMailer)
     {
         $this->dispatchNow(new GenerateTicket($this->order->order_reference));
+        $this->dispatch(new GenerateInvitationLetter($this->order->order_reference));
         $orderMailer->sendOrderTickets($this->order);
     }
 }

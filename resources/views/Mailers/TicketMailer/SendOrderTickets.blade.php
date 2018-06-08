@@ -5,11 +5,11 @@ Hello {{$order->full_name}},<br><br>
 
 Welcome to {{$order->event->title}} in Dar es Salaam!<br><br>
 
-We look forward to welcoming you to our city and for you to<br><br>
+We look forward to welcoming you to our city and for you to enjoy the event<br><br>
 
 Your order for the event <b>{{$order->event->title}}</b> was successful.<br><br>
 
-Your tickets are attached to this email. You can also view you order details and download your tickets at: {{route('showOrderDetails', ['order_reference' => $order->order_reference])}}<br><br>
+Your tickets and official invitation letters are attached to this email. You can also view you order details and download your tickets at: {{route('showOrderDetails', ['order_reference' => $order->order_reference])}}<br><br>
 
 @if(!$order->is_payment_received)
 <br><br>

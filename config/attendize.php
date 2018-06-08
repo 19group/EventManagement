@@ -73,5 +73,12 @@ return [
     /*Imploders and exploders for string<->array conversions*/
     'sideevent_photos_eximploders' => '#@#',
     'sideevent_singlepage_eximploders' => '{#}',
-    'sideevent_pages_eximploders' => '[+]'
+    'sideevent_pages_eximploders' => '[+]',
+
+    //images for the invitation letter
+    'invitation_letter_foss4g_image' => 'user_content/invitation_letter_images/foss4g.png',
+    'invitation_letter_osgeo_image' => 'user_content/invitation_letter_images/osgeo.png',
+    'invitation_letter_msilikale_signature' => 'user_content/invitation_letter_images/msilikale.png',
+    'invitation_letter_mark_signature' => 'user_content/invitation_letter_images/mark.jpg'
+
 ];

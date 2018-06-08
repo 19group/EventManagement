@@ -92,21 +92,30 @@
     <body style="background-color: #FFFFFF; font-family: Arial, Helvetica, sans-serif;">
 	<!--added by DonaldFeb28 to set control variables for limiting number of tickets in a page-->
 	<!--end of addition by DonaldFeb28  pageheight found 1325px-->
-        <div class="row" style="height: 1044px !important; margin-top: 0; margin-bottom: 0;" >
-           @foreach($attendees as $attendee)
-                @if(!$attendee->is_cancelled)
+	@php $generatedfor = []; @endphp
+        @foreach($attendees as $attendee)
+        	@php $full_name = $attendee->first_name.' '.$attendee->last_name; @endphp
+            @if(!$attendee->is_cancelled && !in_array($full_name,$generatedfor))
+            	@php $generatedfor[] = $full_name; @endphp
+        		<div class="row" style="height: 1044px !important; margin-top: 0; margin-bottom: 0;" >
                 <!--div id="heihtsetter" style="height: 650px;"-->
                     <div class="letter">
                 	<div id="top_header">
-            			<img alt="{{$event->organiser->full_logo_path}}" height="50" src="data:image/png;base64, {{$image}}" />
+            			<!--img alt="{{$event->organiser->full_logo_path}}" height="50" src="data:image/png;base64, {{$image}}" />
+            			<img alt="FOSS4G" height="50" src="data:image/png;base64, {{config('attendize.invitation_letter_foss4g_image')}}" /-->
+            			<img alt="FOSS4G" style="margin-left:200;" height="50" src="data:image/png;base64, {{base64_encode(file_get_contents(public_path(config('attendize.invitation_letter_foss4g_image'))))}}" />
+            			<img alt="OSGEO" style="float: right; margin-right:200;" height="50" src="data:image/png;base64, {{base64_encode(file_get_contents(public_path(config('attendize.invitation_letter_osgeo_image'))))}}" />
                 	</div>
                 	<br>
                 	<div id="meta_header">
                 		<div class="col-md-4" style="float: left;">
-                			Projet d’Amélioration de la Gestion et de la Gouvernance Foncière au Burundi (PAGGF en sigle)
+                			<!--Projet d’Amélioration de la Gestion et de la Gouvernance Foncière au Burundi (PAGGF en sigle)-->
+                			<b>{{strtoupper($attendee->first_name.' '.$attendee->last_name)}}</b>
                 		</div>
                 		<div class="col-md-4" style="float: right;">
-                			Dar es Salaam, 24th of May 2018
+                			@php $createdate=strtotime($order->created_at); @endphp
+                			Dar es Salaam, <!--24th of May 2018--> <!--{{date('jS')}} of {{date('F')}} {{date('Y')}}-->
+                			{{date('jS',$createdate)}} of {{date('F',$createdate)}} {{date('Y',$createdate)}}
                 		</div>
                 	</div>
                 	<br>
@@ -116,7 +125,7 @@
                 	</div>
                 	<br>
                 	<div class="col-md-12">
-                		The FOSS4G conference 2018 is is pleased to invite and host Mr Monsieur GIHUGU Aimé from the PAGGF in Burundi to contribute to the conference as a speaker.
+                		The FOSS4G conference 2018 is is pleased to invite Mr/Ms {{ucfirst($attendee->first_name)}} {{ucfirst($attendee->last_name)}} to attend to the conference as a guest.
                 	</div>
                 	<br>
                 	<div class="col-md-12">
@@ -147,7 +156,7 @@
                     	<tr>
                     		<td style="padding-left: 2%"><h5><b>Hosting institution</b></h5></td>
                     		<td colspan="3" style="padding-right: 2%">
-                    			OSGeo is a non for profit organization etc weblink
+                    			OSGeo is a non profit organization (<u>https://www.osgeo.org</u>)
                     			<br>
                     		</td>
                     	</tr>
@@ -197,17 +206,22 @@
                     	Local Organising Committee
                     </div>
                     <br>
-                    <div class="col-md-12">
-                    	Signatures and names
+                    <div class="col-md-12" style="min-height: 100">
+            			<img alt="Msilikale Msilanga" style="margin-left:50;" height="50" src="data:image/png;base64, {{base64_encode(file_get_contents(public_path(config('attendize.invitation_letter_msilikale_signature'))))}}" />
+            			<img alt="Mark LLiffe" style="margin-left:150;" height="50" src="data:image/jpg;base64, {{base64_encode(file_get_contents(public_path(config('attendize.invitation_letter_mark_signature'))))}}" />
+            			<br>
+            			<span style="margin-left: 50">Msilikale Msilanga</span>
+            			<span style="margin-left: 150">Mark LLiffe</span>
                     </div>
-                    <br>
+                    <!--br-->
                     <div class="col-md-12">
                     	Conference Chairs, FOSS4G 2018	
                     </div>
                     <br>
-
-                @endif
-            @endforeach
+        			</div>
+        		</div>
+        	@endif
+    	@endforeach
 
 
             <div class="bottom_info">
@@ -215,6 +229,5 @@
                 {{--See https://www.attendize.com/licence.php for more information.--}}
                 @include('Shared.Partials.PoweredBy')
             </div>
-        </div>
     </body>
 </html>

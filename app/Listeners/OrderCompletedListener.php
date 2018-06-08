@@ -40,9 +40,9 @@ class OrderCompletedListener implements ShouldQueue
          */
         Log::info('Begin Processing Order: ' . $event->order->order_reference);
         $this->dispatchNow(new GenerateTicket($event->order->order_reference));
-        //$this->dispatch(new GenerateInvitationLetter($event->order->order_reference));
+        $this->dispatch(new GenerateInvitationLetter($event->order->order_reference));
         $this->dispatch(new SendOrderTickets($event->order));
-        //$this->dispatch(new SendOrderInvitationLetters($event->order));
+    //    $this->dispatch(new SendOrderInvitationLetters($event->order));
         $this->dispatch(new SendOrderNotification($event->order));
 
     }

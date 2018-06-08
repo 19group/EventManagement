@@ -40,7 +40,7 @@ class GenerateInvitationLetter extends Job implements ShouldQueue
     public function handle()
     {
 
-        $file_name = $this->reference;
+        $file_name = $this->reference.'letters';
         $file_path = public_path(config('attendize.event_pdf_tickets_path')) . '/' . $file_name;
         $file_with_ext = $file_path . ".pdf";
 
