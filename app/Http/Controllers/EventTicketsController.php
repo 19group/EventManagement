@@ -51,10 +51,32 @@ class EventTicketsController extends MyBaseController
             ? $event->tickets()->where('title', 'like', '%' . $q . '%')->where(['type'=>NULL])->orWhere(['type'=>'extras'])->orWhere(['type'=>'normal'])->orderBy($sort_by, 'asc')->paginate()
             : $event->tickets()->where(['type'=>NULL])->orWhere(['type'=>'normal'])->orderBy($sort_by, 'asc')->paginate();
 
-            //dd($tickets);
+        $discounts = Coupon::where(['event_id'=>$event->id,'state'=>'Used'])->get();
+        $discount_sums=[];
+        if(!$event->tickets){goto eventhasnotickets;}
+        $ticketsarr = [];
+        foreach ($event->tickets as $ticket) {
+            $ticketsarr[$ticket->id] = $ticket->price;
+        }
+        if(count($discounts)==0){goto nodiscounts;}
+        foreach($discounts as $discount){
+            if($discount->exact_amount){
+                $subtracted = $ticketsarr[$discount->ticket_id] - $discount->exact_amount;
+            }elseif($discount->discount){ //discount = percentage
+                $subtracted = ($discount->discount * $ticketsarr[$discount->ticket_id])/100;
+            }
+            if(array_key_exists($discount->ticket_id,$discount_sums)){
+                $discount_sums[$discount->ticket_id] += $subtracted;
+            }else{
+                $discount_sums[$discount->ticket_id] = $subtracted;
+            }
+        }
+        nodiscounts:
+        eventhasnotickets:
+        $discounts = $discount_sums;
 
         // Return view.
-        return view('ManageEvent.Tickets', compact('event', 'tickets', 'sort_by', 'q', 'allowed_sorts'));
+        return view('ManageEvent.Tickets', compact('event', 'tickets', 'sort_by', 'q', 'allowed_sorts','discounts'));
     }
 
     /**
