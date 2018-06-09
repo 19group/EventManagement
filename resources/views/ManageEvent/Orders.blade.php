@@ -88,9 +88,9 @@ $donation=0;
                             <th>
                                {!! Html::sortable_link('Email', $sort_by, 'email', $sort_order, ['q' => $q , 'page' => $orders->currentPage()]) !!}
                             </th>
-                            <th>
+                            <!--th>
                                {!! Html::sortable_link('Amount', $sort_by, 'amount', $sort_order, ['q' => $q , 'page' => $orders->currentPage()]) !!}
-                            </th>
+                            </th-->
                             <th>
                                {!! Html::sortable_link('Status', $sort_by, 'order_status_id', $sort_order, ['q' => $q , 'page' => $orders->currentPage()]) !!}
                             </th>
@@ -126,14 +126,14 @@ $donation=0;
                                 $donation = $order_donation->first()->unit_price;
                             }
                             ?>
-                            <td>
+                            <!--td>
                                 <a href="#" class="hint--top" data-hint="{{money($order->amount, $event->currency)}} + {{money($order->organiser_booking_fee, $event->currency)}} + {{money($donation, $event->currency)}} Organiser Booking Fee">
                                     {{money($order->amount + $donation + $order->organiser_booking_fee, $event->currency)}}
                                     @if($order->is_refunded || $order->is_partially_refunded)
 
                                     @endif
                                 </a>
-                            </td>
+                            </td-->
                             <td>
                                 <span class="label label-{{(!$order->is_payment_received || $order->is_refunded || $order->is_partially_refunded) ? 'warning' : 'success'}}">
                                     {{$order->orderStatus->name}}

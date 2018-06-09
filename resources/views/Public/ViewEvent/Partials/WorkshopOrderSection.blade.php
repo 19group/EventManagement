@@ -31,10 +31,36 @@ Attend a Workshop at {{$event->title}}
         <?php $tickets = $sideeventsar;?>
               @if(count($tickets) > 0)
 
+              <?php 
+                $tempo=$tickets; $ordered=[]; $grouped=[];
+                $tickets_arranged=[];
+                foreach ($tempo as $key) {
+                  if($key->ticket_offers){
+                    $guider = date('YmdHi', strtotime(explode('<==>',explode('+++',$key->ticket_offers)[0])[0]));
+                      if(!in_array($guider,$ordered)){
+                        $ordered[]=$guider;
+                        $grouped[$guider][] = $key;
+                      }else{
+                        $grouped[$guider][] = $key;
+                      }
+                  }else{
+                    $tickets_arranged[] = $key;
+                  }
+                }
+                //sort($ordered);
+                usort($ordered, "compareByTimeStamp");
+                foreach ($ordered as $ordereddate) {
+                  $dategroup=$grouped[$ordereddate];
+                  foreach ($dategroup as $seqdate) {
+                    $tickets_arranged[] = $seqdate;
+                  }
+                }
+                //$tickets = $tickets_arranged;
+              ?>
               <div class="col-md-12 workshop-day">
 
               </div>
-                          @foreach ($tickets as $minevent)
+                          @foreach ($tickets_arranged as $minevent)
                           <div class="workshop-event-container col-sm-12 col-md-6 col-lg-6">
                            <div class="col-xs-12 workshop-image-container">
                               <?php if($minevent->ticket_main_photo){ ?>
@@ -111,3 +137,20 @@ Attend a Workshop at {{$event->title}}
 </div>
 
 </div>
+
+<?php
+// PHP program to sort array of dates 
+ 
+// user-defined comparison function 
+// based on timestamp
+function compareByTimeStamp($time1, $time2)
+{
+    if (strtotime($time1) < strtotime($time2))
+        return -1;
+    else if (strtotime($time1) > strtotime($time2)) 
+        return 1;
+    else
+        return 0;
+}
+
+?>

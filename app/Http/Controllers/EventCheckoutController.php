@@ -60,6 +60,7 @@ class EventCheckoutController extends Controller
      */
     public function postValidateTickets(Request $request, $event_id)
     {
+        session()->set('transaction_'.$event_id,'tickets');
         /*
          * Order expires after X min
          */
@@ -71,7 +72,55 @@ class EventCheckoutController extends Controller
 
         $event = Event::findOrFail($event_id);
         if($request->has('order_ref')){
+            if (!$request->has('tickets')) {
             return $this->handlereordering($request, $event_id);
+            }
+            $ticket_ids=$request->get('tickets'); 
+            $ticketselected=false; $walker=0;          
+            while ($walker < count($ticket_ids) && !$ticketselected) {
+                $current_ticket_quantity = (int)$request->get('ticket_' . $ticket_ids[$walker]);
+                if ($current_ticket_quantity >= 1) {
+                    $ticketselected=true;
+                }
+                ++$walker;
+            }
+            if(!$ticketselected){
+                return $this->handlereordering($request, $event_id);
+            }
+            $edit_order = Order::where('order_reference', '=', $request->get('order_ref'))->first();
+            if(!$edit_order){
+                    $errordata = [
+                        'event' => $event,
+                        'callbackurl' => null,
+                        'messages' => 'Sorry, we couldn\'t find any order with that reference. Please make sure that you enter it correctly',
+                        'request_details' => null,
+                        'parameters' => ['event_id' => $event_id]
+                    ];
+                    return view('Public.ViewEvent.EventPageErrors', $errordata);
+            }
+            $past_items = $edit_order->orderItems;
+            $past_tickets=[];
+            $past_donation=0;
+            $past_order_amount=$edit_order->amount;
+            foreach($past_items as $past_item){
+                if($past_item['title']=='Donation'){
+                    $past_donation=$past_item['unit_price'];
+                }else{
+                    $past_tickets[] = [
+                        'ticket_title'          => $past_item->title,
+                        'qty'                   => $past_item->quantity,
+                        'price'                 => ($past_item->quantity * $past_item->unit_price),
+                        'booking_fee'           => ($past_item->quantity * $past_item->unit_booking_fee),
+                        'organiser_booking_fee' => ($past_item->quantity * $edit_order->organiser_booking_fee),
+                        'full_price'            => $past_item->unit_price + $edit_order->organiser_booking_fee + $edit_order->booking_fee,
+                    ];
+                }
+            }
+            $past_order_id = $edit_order->id;
+            $first_name=$edit_order->first_name;
+            $last_name=$edit_order->last_name;
+            $email=$edit_order->email;
+            goto handletickets;
         }
 
         if (!$request->has('tickets')) {
@@ -80,6 +129,12 @@ class EventCheckoutController extends Controller
                 'message' => 'No tickets selected',
             ]);
         }
+
+        $first_name = $request->get('first_name');
+        $last_name = $request->get('last_name');
+        $email = $request->get('email');
+
+        handletickets:
         if($request->has('subscription')){
           $subscription='Subscribed';
         }
@@ -89,9 +144,6 @@ class EventCheckoutController extends Controller
         /*
          * Remove any tickets the user has reserved
          */
-                $first_name = $request->get('first_name');
-                $last_name = $request->get('last_name');
-                $email = $request->get('email');
         ReservedTickets::where('session_id', '=', session()->getId())->delete();
 
         /*
@@ -109,6 +161,10 @@ class EventCheckoutController extends Controller
         $organiser_booking_fee = 0;
         $quantity_available_validation_rules = [];
         $donation_ticket_price = 0;
+        $amount_array = [];
+        $amount_title = [];
+        $discount_array = [];
+        $discount_ticket_title = [];
 
         foreach ($ticket_ids as $ticket_id) {
             $current_ticket_quantity = (int)$request->get('ticket_' . $ticket_id);
@@ -333,6 +389,12 @@ class EventCheckoutController extends Controller
             'payment_gateway'         => count($event->account->active_payment_gateway) ? $event->account->active_payment_gateway->payment_gateway : false,
         ]);
 
+        if(isset($past_order_id)){
+            session()->put('ticket_order_' . $event_id . '.past_order_id',$past_order_id);
+            session()->put('ticket_order_' . $event_id . '.past_tickets',$past_tickets);
+            session()->put('ticket_order_' . $event_id . '.past_donation', $past_donation);
+            session()->put('ticket_order_' . $event_id . '.past_order_amount', $past_order_amount);
+        }
         /*
          * If we're this far assume everything is OK and redirect them
          * to the the checkout page.
