@@ -49,10 +49,12 @@ class EventAttendeesController extends MyBaseController
             $attendees = $event->attendees()
                 ->withoutCancelled()
                 ->join('orders', 'orders.id', '=', 'attendees.order_id')
+                ->join('tickets', 'tickets.id', '=', 'attendees.ticket_id')
                 ->where(function ($query) use ($searchQuery) {
                     $query->where('orders.order_reference', 'like', $searchQuery . '%')
                         ->orWhere('attendees.first_name', 'like', $searchQuery . '%')
                         ->orWhere('attendees.email', 'like', $searchQuery . '%')
+                        ->orWhere('tickets.title', 'like', $searchQuery . '%')
                         ->orWhere('attendees.last_name', 'like', $searchQuery . '%');
                 })
                 ->orderBy(($sort_by == 'order_reference' ? 'orders.' : 'attendees.') . $sort_by, $sort_order)
