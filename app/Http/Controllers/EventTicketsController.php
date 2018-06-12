@@ -66,20 +66,30 @@ class EventTicketsController extends MyBaseController
      */
     public function showEditTicket($event_id, $ticket_id)
     {
+        $linkables = Ticket::where('type','Extra')->get()->pluck('title', 'id');
+        $linkable_tickets[null] = 'No Association';
+        foreach ($linkables as $link) {
+            $linkable_tickets[$link->id] = $link->title;
+        }
         $data = [
             'event'  => Event::scope()->find($event_id),
             'ticket' => Ticket::scope()->find($ticket_id),
-            'linkable_tickets' =>Ticket::where('type','Extra')->get()->pluck('title', 'id'),
+            'linkable_tickets' => $linkable_tickets,
         ];
 
         return view('ManageEvent.Modals.EditTicket', $data);
     }
     public function showEditAccommodation($event_id, $ticket_id)
     {
+        $linkables = Ticket::where('type','Extra')->get()->pluck('title', 'id');
+        $linkable_tickets[null] = 'No Association';
+        foreach ($linkables as $link) {
+            $linkable_tickets[$link->id] = $link->title;
+        }
         $data = [
             'event'  => Event::scope()->find($event_id),
             'ticket' => Ticket::scope()->find($ticket_id),
-            'linkable_tickets' =>Ticket::where('type','Extra')->get()->pluck('title', 'id'),
+            'linkable_tickets' => $linkable_tickets,
         ];
 
         return view('ManageEvent.Modals.EditAccommodation', $data);
