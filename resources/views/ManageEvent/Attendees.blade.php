@@ -171,6 +171,20 @@ Attendees
 
         @endif
     </div>
+    <div class="col-md-12">        
+        <div class="btn-group btn-group-responsive">
+
+            <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+                <i class="ico-users"></i> Export the filtered list <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li><a href="{{route('showFilteredExportAttendees', ['event_id'=>$event->id,'export_as'=>'xlsx'])}}">Excel (XLSX)</a></li>
+                <li><a href="{{route('showFilteredExportAttendees', ['event_id'=>$event->id,'export_as'=>'xls'])}}">Excel (XLS)</a></li>
+                <li><a href="{{route('showFilteredExportAttendees', ['event_id'=>$event->id,'export_as'=>'csv'])}}">CSV</a></li>
+                <li><a href="{{route('showFilteredExportAttendees', ['event_id'=>$event->id,'export_as'=>'html'])}}">HTML</a></li>
+            </ul>
+        </div>
+    </div>
     <div class="col-md-12">
         {!!$attendees->appends(['sort_by' => $sort_by, 'sort_order' => $sort_order, 'q' => $q])->render()!!}
     </div>

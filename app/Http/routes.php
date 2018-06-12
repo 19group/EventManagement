@@ -751,6 +751,11 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
             'uses' => 'EventAttendeesController@showExportAttendees',
         ]);
 
+        Route::get('{event_id}/attendees/filteredexport/{export_as?}', [
+            'as'   => 'showFilteredExportAttendees',
+            'uses' => 'EventAttendeesController@showFilteredExportAttendees',
+        ]);
+
         Route::get('{event_id}/attendees/{attendee_id}/edit', [
             'as'   => 'showEditAttendee',
             'uses' => 'EventAttendeesController@showEditAttendee',
