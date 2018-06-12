@@ -228,8 +228,10 @@
                                               @elseif($ticket->sale_status === config('attendize.ticket_status_after_sale_date'))
                                                   <span class="text-danger">
                                   Sales Have Ended
+                                              @if(Utils::isSuperUser()) @php goto purchasetickets; @endphp @endif 
                               </span>
                                               @else
+                                                  @php purchasetickets: @endphp
                                                   {!! Form::hidden('tickets[]', $ticket->id) !!}
                                                   <meta property="availability" content="http://schema.org/InStock">
                                                   <select name="ticket_{{$ticket->id}}" class="form-control"
