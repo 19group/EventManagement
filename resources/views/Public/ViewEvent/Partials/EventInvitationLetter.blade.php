@@ -3,7 +3,7 @@
     <!--    Keep this page lean as possible.-->
     <head>
         <title>
-            Ticket(s)
+            Letter(s)
         </title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
@@ -97,7 +97,7 @@
         	@php $full_name = $attendee->first_name.' '.$attendee->last_name; @endphp
             @if(!$attendee->is_cancelled && !in_array($full_name,$generatedfor))
             	@php $generatedfor[] = $full_name; @endphp
-        		<div class="row" style="height: 1044px !important; margin-top: 0; margin-bottom: 0;" >
+        		<div class="row" style="height: 1044px !important; margin-top: 0; margin-bottom: 0; margin-left: 50px; margin-right: 50px;" >
                 <!--div id="heihtsetter" style="height: 650px;"-->
                     <div class="letter">
                 	<div id="top_header">
@@ -107,28 +107,28 @@
             			<img alt="OSGEO" style="float: right; margin-right:200;" height="50" src="data:image/png;base64, {{base64_encode(file_get_contents(public_path(config('attendize.invitation_letter_osgeo_image'))))}}" />
                 	</div>
                 	<br>
-                	<div id="meta_header">
+                	<div id="meta_header" style=" font-weight: bold; font-size: 1.2em;">
                 		<div class="col-md-4" style="float: left;">
                 			<!--Projet d’Amélioration de la Gestion et de la Gouvernance Foncière au Burundi (PAGGF en sigle)-->
-                			<b>{{strtoupper($attendee->first_name.' '.$attendee->last_name)}}</b>
+                			{{strtoupper($attendee->first_name.' '.$attendee->last_name)}}
                 		</div>
-                		<div class="col-md-4" style="float: right;">
+                		<div class="col-md-4" style="float: right; margin-right: 50px;">
                 			@php $createdate=strtotime($order->created_at); @endphp
                 			Dar es Salaam, <!--24th of May 2018--> <!--{{date('jS')}} of {{date('F')}} {{date('Y')}}-->
                 			{{date('jS',$createdate)}} of {{date('F',$createdate)}} {{date('Y',$createdate)}}
                 		</div>
                 	</div>
                 	<br>
-                	<div class="col-md-12">
+                	<div class="col-md-12" style="font-weight: bold; font-size: 1.2em;">
                 		<br>
-                		<b>Letter of invitation - FOSS4G 2018 conference in Dar</b>
+                		Letter of invitation - FOSS4G 2018 conference in Dar
                 	</div>
                 	<br>
-                	<div class="col-md-12">
-                		The FOSS4G conference 2018 is is pleased to invite Mr/Ms {{ucfirst($attendee->first_name)}} {{ucfirst($attendee->last_name)}} to attend to the conference as a guest.
+                	<div class="col-md-12" style=" font-weight: 4px; font-size: 1.2em; font-stretch: ultra-expanded;">
+                		The FOSS4G conference 2018 is pleased to invite Mr/Ms {{ucfirst($attendee->first_name)}} {{ucfirst($attendee->last_name)}} to attend to the FOSS4G conference as a guest.
                 	</div>
                 	<br>
-                	<div class="col-md-12">
+                	<div class="col-md-12" style="font-size: 1.2em; font-stretch: ultra-expanded;">
                 		The purpose of this letter is to provide the participant with a formal invitation as well as some practical information related to payments and travel.
                 	</div>
                 	<br>
@@ -136,73 +136,79 @@
                     <table> <!--class="text-center"-->
                     	<tr><td></td><td></td><td></td><td></td></tr>
                     	<tr> <!--style="background: #303030; color: #dbdbdb;"-->
-                    		<td style="padding-left: 2%" >
-                    			<h5><b>Venue</b></h5><br><br>
+                    		<td style="padding-left: 2%; font-weight: bold; font-size: 1.2em;" >
+                    			Venue <br><br><br>
+                    			<br>
                     		</td>
-                    		<td colspan="3" style="padding-right: 2%" >
+                    		<td colspan="3" style="padding-right: 2%; font-size: 1em; font-stretch: ultra-expanded;" >
                     			Julius Nyerere Convention Centre<br>
                     			Dar es Salaam<br>
                     			Tanzania<br>
-                    		</td>
-                    	</tr>
-                    	<br>
-                    	<tr>
-                    		<td style="padding-left: 2%"><h5><b>Dates</b></h5><br></td>
-                    		<td colspan="3" style="padding-right: 2%">
-                    			The conference starts with optional workshops on the 25th of August. It concludes on the 31st of August.
-                    		</td>
-                    	</tr>
-                    	<br>
-                    	<tr>
-                    		<td style="padding-left: 2%"><h5><b>Hosting institution</b></h5></td>
-                    		<td colspan="3" style="padding-right: 2%">
-                    			OSGeo is a non profit organization (<u>https://www.osgeo.org</u>)
                     			<br>
                     		</td>
                     	</tr>
-
+                    	<!--br-->
                     	<tr>
-                    		<td style="padding-left: 2%"><h5><b>Payment</b></h5>
-                    			<br><br><br><br><br><br><br><br><br><br><br>
+                    		<td style="padding-left: 2%; font-weight: bold; font-size: 1.2em;" > Dates<br><br></td>
+                    		<td colspan="3" style="padding-right: 2%; font-size: 1em; font-stretch: ultra-expanded;">
+                    			The conference starts with optional workshops on the 25th of August.<br> It concludes on the 31st of August.
+                    			<br>
+                    		</td>
+                    	</tr>
+                    	<!--br-->
+                    	<tr>
+                    		<td style="padding-left: 2%; font-weight: bold; font-size: 1.2em;">Hosting institution<br><br></td>
+                    		<td colspan="3" style="padding-right: 2%; font-size: 1em; font-stretch: ultra-expanded;">
+                    			OSGeo is a non profit organization (<u>https://www.osgeo.org</u>)
+                    			<br><br>
+                    		</td>
+                    	</tr>
+                    	<!--br-->
+                    	<tr>
+                    		<td style="padding-left: 2%; font-weight: bold; font-size: 1.2em;">Payment
+                    			<br><br><br><br><br><br><br><br><br><br>
                     		</td>
 
-                    		<td colspan="3" style="padding-right: 2%">
+                    		<td colspan="3" style="padding-right: 2%; font-size: 1em; font-stretch: ultra-expanded;">
                     			Account Name: <b>STUDIO 19 LIMITED FOSS4G 2018</b><br>
 								Account Number: <b>0124200027929</b><br>
-								<br>
+							<!--/td></tr><tr><td></td><td colspan="3" style="padding-right: 2%; font-size: 1em; font-stretch: ultra-expanded;"--><br>
 								Bank Name: <b>ACCESSBANK TANZANIA LIMITED</b><br>
 								Branch: <b>KIJITONYAMA BRANCH</b><br>
 								SWIFT CODE: <b>ACTZTZTZ</b><br>
-								<br>
+							<!--/td></tr><tr><td></td><td colspan="3" style="padding-right: 2%; font-size: 1em; font-stretch: ultra-expanded;"--><br>
 								Intermediary Bank Swift Code: <b>IMBLKENATRD</b><br>
 								Intermediary Bank Name: <b>I&M BANK KENYA</b><br>
 								IBAN NO: <b>999 0124 638 5910</b><br>
+								<br>
                     		</td>
                     	</tr>
-
+                    	<!--br-->
                     	<tr>
-                    		<td style="padding-left: 2%"><h5><b>Contact information </b></h5>
+                    		<td style="padding-left: 2%; font-weight: bold; font-size: 1.2em;">Contact information
                     			<br><br><br><br>
                     		</td>
-                    		<td colspan="3" style="padding-right: 2%">
+                    		<td colspan="3" style="padding-right: 2%; font-size: 1em; font-stretch: ultra-expanded;">
                     			Conference email: <i>foss4gdar@gmail.com</i><br>
 								Msilikale Msilanga (conference chair): <b>+255 717 506 053</b><br>
 								Mark Iliffe (conference chair): <b>+1 718 414 3631</b><br>
 								Ragnvald Larsen (programme chair) <b>+47 92 421 540</b><br>
 								<br>
+								<!--br-->
                     		</td>
                     	</tr>
                     </table>
-
-                    <div class="col-md-12">
+                    <br>
+                    <div class="col-md-12" style="font-weight: 3px; font-size: 1.2em;">
                     	We wish the participant the best of luck with the conference preparations and the travel to Dar es Salaam in Tanzania.
+                    	<br>
                     </div>
                     <br>
-                    <div class="col-md-12">
+                    <div class="col-md-12" style="font-weight: 3px; font-size: 1.2em;">
                     	Best regards
                     </div>
-                    <br>
-                    <div class="col-md-12">
+                    <!--br-->
+                    <div class="col-md-12" style="font-weight: bold; font-size: 1.2em;">
                     	Local Organising Committee
                     </div>
                     <br>
@@ -210,14 +216,14 @@
             			<img alt="Msilikale Msilanga" style="margin-left:50;" height="50" src="data:image/png;base64, {{base64_encode(file_get_contents(public_path(config('attendize.invitation_letter_msilikale_signature'))))}}" />
             			<img alt="Mark LLiffe" style="margin-left:150;" height="50" src="data:image/jpg;base64, {{base64_encode(file_get_contents(public_path(config('attendize.invitation_letter_mark_signature'))))}}" />
             			<br>
-            			<span style="margin-left: 50">Msilikale Msilanga</span>
-            			<span style="margin-left: 150">Mark LLiffe</span>
+            			<span style="margin-left: 50; font-size: 1.3em;">Msilikale Msilanga</span>
+            			<span style="margin-left: 110; font-size: 1.3em;">Mark LLiffe</span>
                     </div>
                     <!--br-->
-                    <div class="col-md-12">
+                    <div class="col-md-12" style="font-weight: bold; font-size: 1.2em;">
                     	Conference Chairs, FOSS4G 2018	
                     </div>
-                    <br>
+                    <!--br-->
         			</div>
         		</div>
         	@endif
