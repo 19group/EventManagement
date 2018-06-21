@@ -38,13 +38,13 @@ document.getElementById("ticketoffers").appendChild(p);
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="col-md-12">Number of Coupons</label>
+                            <label>Number of Coupons</label>
                             <input id="max_coupons" class="form-control" type="number" name="max_coupons" placeholder="Enter number of coupons to generate">
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="col-md-12">Associated Ticket</label> 
+                            <label>Associated Ticket</label> 
                               <div class="form-group">
                                   <select class="form-control" name="id">
                                     @foreach($tickets as $item)
@@ -63,16 +63,18 @@ document.getElementById("ticketoffers").appendChild(p);
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="col-md-12">Coupon's Exact Amount</label>
-                            <input id="exact_amt" class="form-control" type="number" onkeyup="validate()" name="exact_amt" placeholder="Enter number of coupons to generate">
+                    <div class="col-md-12">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Coupon's Exact Amount</label>
+                                <input id="exact_amt" class="form-control" onkeyup="validate()" name="exact_amt" placeholder="Enter number of coupons to generate">
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="col-md-12">Coupon's Percentage Discount</label>
-                            <input id="perc_discount" class="form-control" type="number" onkeyup="validate()" name="discount" placeholder="Enter % discount">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Coupon's Percentage Discount</label>
+                                <input id="perc_discount" class="form-control" type="number" onkeyup="validate()" name="discount" placeholder="Enter % discount">
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -79,6 +79,19 @@ class EventTicketsController extends MyBaseController
 
         return view('ManageEvent.Modals.EditTicket', $data);
     }
+
+    public function showEditCoupon($event_id, $coupon_id)
+    {
+        $data = [
+            'event'  => Event::scope()->find($event_id),
+//            'coupon' => Coupon::scope()->find($coupon_id),
+            'coupon' => Coupon::where('id','=', $coupon_id)->first(),
+            'tickets' => DB::table('tickets')->where('event_id','=', $event_id)->get(['id', 'title']),
+        ];
+
+        return view('ManageEvent.Modals.EditCoupon', $data);
+    }
+
     public function showEditAccommodation($event_id, $ticket_id)
     {
         $linkables = Ticket::where('type','Extra')->get()->pluck('title', 'id');
@@ -534,6 +547,56 @@ class EventTicketsController extends MyBaseController
         ]);*/
     }
 
+
+
+    public function postDeleteCoupon(Request $request, $coupon_id)
+    {
+        $coupon = Coupon::where('id','=', $coupon_id)->first();
+
+        /*
+         * Don't allow deletion of tickets which have been sold already.
+         */
+        if ($coupon->state == 'Used') {
+
+            $data = [
+                'event' => Event::findOrFail($coupon->event_id),
+                'callbackurl' => null,
+                'messages' => 'Sorry, you can\'t delete this coupon as it has already been used',
+                'request_details' => null,
+                'parameters' => null
+            ];
+            return view('Public.ViewEvent.EventPageErrors', $data);
+        }
+
+        $event_id = $coupon->event_id;
+        if ($coupon->delete()) {
+            session()->flash('message', $coupon->coupon_code.' coupon Successfully Deleted.');
+            return response()->redirectToRoute('showEventCoupons', [
+                'event_id'      => $event_id,
+            ]);
+        }
+
+        Log::error('Coupon Failed to delete', [
+            'coupon' => $coupon,
+        ]);
+
+
+        $data = [
+            'event' => Event::findOrFail($coupon->event_id),
+            'callbackurl' => null,
+            'messages' => 'Sorry, something beyond our realization has gone wrong. Please try again',
+            'request_details' => null,
+            'parameters' => null
+        ];
+        return view('Public.ViewEvent.EventPageErrors', $data);
+        /*return response()->json([
+            'status'  => 'error',
+            'id'      => $ticket->id,
+            'message' => 'Whoops! Looks like something went wrong. Please try again.',
+        ]);*/
+    }
+
+
     /**
      * Edit a ticket
      *
@@ -612,6 +675,23 @@ class EventTicketsController extends MyBaseController
                 'event_id' => $event_id,
             ]),
         ]); */
+    }
+
+    public function postEditCoupon(Request $request, $event_id)
+    {
+        $coupon_id = $request->get('coupon_id');
+        $coupon = Coupon::where('id','=', $coupon_id)->first();
+        if(!$coupon){
+            exit ('Coupon does not exist');
+        }
+        $id = $request->get('id');
+        $title = DB::table('tickets')->select('title')->where('id', '=', $id)->value('title');
+        $coupon->ticket_id = $id;
+        $coupon->ticket = $title;
+        $coupon->discount = $request->get('discount');
+        $coupon->exact_amount = $request->get('exact_amt');
+        $coupon->save();
+        return redirect()->route('showEventCoupons', ['event_id' => $event_id]);
     }
 
     /**

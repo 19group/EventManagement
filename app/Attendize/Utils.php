@@ -112,7 +112,26 @@ class Utils
 
         try {
 
-            if (Auth::user()->user_group === "super_user") {
+            if (in_array(Auth::user()->user_group, ["super_user","super_admin"])) {
+                return true;
+            }
+
+        } catch (Exception $e) {
+            return false;
+        }
+
+        return false;
+    }
+
+    public static function isSuperAdmin()
+    {
+        if (!Auth::check()) {
+            return false;
+        }
+
+        try {
+
+            if (Auth::user()->user_group === "super_admin") {
                 return true;
             }
 

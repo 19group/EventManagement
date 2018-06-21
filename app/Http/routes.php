@@ -560,6 +560,14 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
             'as'   => 'showCreateCoupon',
             'uses' => 'EventTicketsController@showCreateCoupon',
         ]);
+        Route::get('{event_id}/coupons/edit/{coupon_id}', [
+            'as'   => 'showEditCoupon',
+            'uses' => 'EventTicketsController@showEditCoupon',
+        ]);
+        Route::post('{event_id}/coupons/edit/{coupon_id}', [
+            'as'   => 'postEditCoupon',
+            'uses' => 'EventTicketsController@postEditCoupon',
+        ]);
 
         Route::get('{event_id}/coupons/export/{export_as?}', [
             'as'   => 'showExportCoupons',
@@ -572,6 +580,14 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
         Route::post('{event_id}/tickets/postCreateCoupons', [
             'as'   => 'postCreateCoupons',
             'uses' => 'EventTicketsController@postCreateCoupon',
+        ]);
+        Route::post('{event_id}/coupons/postEditCoupons', [
+            'as'   => 'postEditCoupon',
+            'uses' => 'EventTicketsController@postEditCoupon',
+        ]);
+        Route::get('{ticket_id}/coupons/delete', [
+            'as'   => 'postDeleteCoupon',
+            'uses' => 'EventTicketsController@postDeleteCoupon',
         ]);
         Route::get('{ticket_id}/tickets/delete', [
             'as'   => 'postDeleteTicket',
