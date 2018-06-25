@@ -147,7 +147,8 @@
                                     <div class="section">
                                         <h4 class="nm hint--top"
                                             title="{{money($ticket->sales_volume, $event->currency)}} + {{money($ticket->organiser_fees_volume, $event->currency)}} Organiser Booking Fees">
-                                            {{money($ticket->sales_volume + $ticket->organiser_fees_volume, $event->currency)}}
+                                            @php $discount=isset($discounts[$ticket->id]) ? $discounts[$ticket->id] : 0; @endphp
+                                            {{money($ticket->sales_volume + $ticket->organiser_fees_volume - $discount, $event->currency)}}
                                             <sub title="Doesn't account for refunds.">*</sub>
                                         </h4>
                                         <p class="nm text-muted">Revenue</p>
