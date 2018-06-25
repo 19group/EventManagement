@@ -66,7 +66,7 @@ class EventTicketsController extends MyBaseController
      */
     public function showEditTicket($event_id, $ticket_id)
     {
-        $linkables = Ticket::where('type','Extra')->get()->pluck('title', 'id');
+        $linkables = Ticket::where('type','Extra')->get();//->pluck('title', 'id');
         $linkable_tickets[null] = 'No Association';
         foreach ($linkables as $link) {
             $linkable_tickets[$link->id] = $link->title;
@@ -81,7 +81,7 @@ class EventTicketsController extends MyBaseController
     }
     public function showEditAccommodation($event_id, $ticket_id)
     {
-        $linkables = Ticket::where('type','Extra')->get()->pluck('title', 'id');
+        $linkables = Ticket::where('type','Extra')->get();//->pluck('title', 'id');
         $linkable_tickets[null] = 'No Association';
         foreach ($linkables as $link) {
             $linkable_tickets[$link->id] = $link->title;
@@ -245,15 +245,16 @@ class EventTicketsController extends MyBaseController
         $ticket->save();
 
         session()->flash('message', 'Successfully Created Ticket');
-        return redirect()->route('showEventTickets', ['event_id' => $event_id]);
-        /*return response()->json([
+        
+        return response()->json([
             'status'      => 'success',
             'id'          => $ticket->id,
             'message'     => 'Refreshing...',
             'redirectUrl' => route('showEventTickets', [
                 'event_id' => $event_id,
             ]),
-        ]); */
+        ]); 
+        return redirect()->route('showEventTickets', ['event_id' => $event_id]);
     }
 
 
@@ -393,7 +394,7 @@ class EventTicketsController extends MyBaseController
 
         $ticket->save();
 
-        session()->flash('message', 'Successfully Edited Ticket');
+        session()->flash('message', 'Successfully Edited Accommodation Ticket');
 
         /*return response()->json([
             'status'      => 'success',
@@ -603,15 +604,18 @@ class EventTicketsController extends MyBaseController
 
         $ticket->save();
 
-        return redirect()->route('showEventTickets', ['event_id' => $event_id]);
-        /*return response()->json([
+        session()->flash('message', 'Successfully Edited Ticket');
+
+        return response()->json([
             'status'      => 'success',
-            'id'          => $ticket->id,
+            'title'          => $ticket->title,
             'message'     => 'Refreshing...',
             'redirectUrl' => route('showEventTickets', [
                 'event_id' => $event_id,
             ]),
-        ]); */
+        ]);
+        return redirect()->route('showEventTickets', ['event_id' => $event_id]);
+
     }
 
     /**
