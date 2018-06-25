@@ -153,6 +153,9 @@ Coupons
                             <th>
                                 Order Used
                            </th>
+                            <th>
+                                Manage
+                           </th>
                         </tr>
                     </thead>
                     <div id="snackbar">Coupon token copied..</div>
@@ -191,6 +194,14 @@ Coupons
                             </td>
                             <td>
                                 {{$coupon->user}}
+                            </td>
+                            <td>
+                                <span style="cursor: pointer;" data-modal-id='coupon-{{ $coupon->coupon_code }}'
+                                             data-href="{{ route('showEditCoupon', ['event_id' => $event->id, 'coupon_id' => $coupon->id]) }}"
+                                             class="panel-heading loadModal"><i class="ico-edit"></i>Edit </span>
+                                                <a href="{{route('postDeleteCoupon', ['coupon_id' => $coupon->id])}}" onClick="return confirm('You are about to delete this coupon?');">
+                                    <i class="ico-remove"></i> Delete
+                                </a>
                             </td>
                             
                         </tr>

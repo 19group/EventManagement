@@ -12,7 +12,7 @@
      @include('Public.ViewEvent.Partials.OrderSummary')
 
      <div class="">
-      @if(Utils::isSuperUser())
+      @if(Utils::isSuperAdmin())
         <?php if($order_total + $donation > 0){ ?>
         <a class="btn btn-lg btn-primary" href="{{ route('orgskippayment', ['event_id'=> $event_id]) }}">Skip Pay</a>  <?php } ?>
         <?php if(count($order_has_validdiscount)>0 || $order_total + $donation > 0){ ?>
