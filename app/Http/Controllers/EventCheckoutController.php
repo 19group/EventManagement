@@ -221,9 +221,23 @@ class EventCheckoutController extends Controller
             *
             */
            $coupon_code = $request->get('coupon_' . $ticket_id);
+
            if ($coupon_code!='') {
                 $coupon_single = Coupon::where('coupon_code','=', $coupon_code)->first();
-                if ($coupon_single) {
+                if(!$coupon_single){
+                    //$coupon_state = 'Invalid';
+                            $order_total = $order_total + ($current_ticket_quantity * $ticket->price);
+                            $amount_array[] =null;
+                            $amount_title[] =null;
+                            $discount_array[] = null;
+                            $discount_ticket_title[] = null;
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'The coupon used couldn\'t be matched to the ticket. Please make sure that the two correspond before continuing.',
+            ]);
+                //    session()->flash('message', 'The coupon used couldn\'t be matched to the ticket. Please make sure the two correspond before continuing.');
+                }
+                else {
                     if ($coupon_single->state=='Valid') {
                         if ($coupon_single->ticket_id==$ticket_id && $coupon_single->discount!='') {
                             $coupon_flag[] = $coupon_code;
@@ -250,6 +264,10 @@ class EventCheckoutController extends Controller
                             $amount_title[] =null;
                             $discount_array[] = null;
                             $discount_ticket_title[] = null;
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'The coupon used couldn\'t be matched to the ticket. Please make sure that the two correspond before continuing.',
+            ]);
                         }
                     }
                      else{
@@ -259,18 +277,14 @@ class EventCheckoutController extends Controller
                             $amount_title[] =null;
                             $discount_array[] = null;
                             $discount_ticket_title[] = null;
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'The coupon seems to be already used. You have to clear the field to continue.',
+            ]);
                     }
                 }
-                else{
-                    //$coupon_state = 'Invalid';
-                            $order_total = $order_total + ($current_ticket_quantity * $ticket->price);
-                            $amount_array[] =null;
-                            $amount_title[] =null;
-                            $discount_array[] = null;
-                            $discount_ticket_title[] = null;
-                }
             }
-            else{
+            else{ 
                 $order_total = $order_total + ($current_ticket_quantity * $ticket->price);
                             $amount_array[] ='';
                             $amount_title[] ='';

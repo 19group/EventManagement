@@ -51,10 +51,32 @@ class EventTicketsController extends MyBaseController
             ? $event->tickets()->where('title', 'like', '%' . $q . '%')->where(['type'=>NULL])->orWhere(['type'=>'extras'])->orWhere(['type'=>'normal'])->orderBy($sort_by, 'asc')->paginate()
             : $event->tickets()->where(['type'=>NULL])->orWhere(['type'=>'normal'])->orderBy($sort_by, 'asc')->paginate();
 
-            //dd($tickets);
+        $discounts = Coupon::where(['event_id'=>$event->id,'state'=>'Used'])->get();
+        $discount_sums=[];
+        if(!$event->tickets){goto eventhasnotickets;}
+        $ticketsarr = [];
+        foreach ($event->tickets as $ticket) {
+            $ticketsarr[$ticket->id] = $ticket->price;
+        }
+        if(count($discounts)==0){goto nodiscounts;}
+        foreach($discounts as $discount){
+            if($discount->exact_amount){
+                $subtracted = $ticketsarr[$discount->ticket_id] - $discount->exact_amount;
+            }elseif($discount->discount){ //discount = percentage
+                $subtracted = ($discount->discount * $ticketsarr[$discount->ticket_id])/100;
+            }
+            if(array_key_exists($discount->ticket_id,$discount_sums)){
+                $discount_sums[$discount->ticket_id] += $subtracted;
+            }else{
+                $discount_sums[$discount->ticket_id] = $subtracted;
+            }
+        }
+        nodiscounts:
+        eventhasnotickets:
+        $discounts = $discount_sums;
 
         // Return view.
-        return view('ManageEvent.Tickets', compact('event', 'tickets', 'sort_by', 'q', 'allowed_sorts'));
+        return view('ManageEvent.Tickets', compact('event', 'tickets', 'sort_by', 'q', 'allowed_sorts','discounts'));
     }
 
     /**
@@ -66,20 +88,30 @@ class EventTicketsController extends MyBaseController
      */
     public function showEditTicket($event_id, $ticket_id)
     {
+        $linkables = Ticket::where('type','Extra')->get();//->pluck('title', 'id');
+        $linkable_tickets[null] = 'No Association';
+        foreach ($linkables as $link) {
+            $linkable_tickets[$link->id] = $link->title;
+        }
         $data = [
             'event'  => Event::scope()->find($event_id),
             'ticket' => Ticket::scope()->find($ticket_id),
-            'linkable_tickets' =>Ticket::where('type','Extra')->get()->pluck('title', 'id'),
+            'linkable_tickets' => $linkable_tickets,
         ];
 
         return view('ManageEvent.Modals.EditTicket', $data);
     }
     public function showEditAccommodation($event_id, $ticket_id)
     {
+        $linkables = Ticket::where('type','Extra')->get();//->pluck('title', 'id');
+        $linkable_tickets[null] = 'No Association';
+        foreach ($linkables as $link) {
+            $linkable_tickets[$link->id] = $link->title;
+        }
         $data = [
             'event'  => Event::scope()->find($event_id),
             'ticket' => Ticket::scope()->find($ticket_id),
-            'linkable_tickets' =>Ticket::where('type','Extra')->get()->pluck('title', 'id'),
+            'linkable_tickets' => $linkable_tickets,
         ];
 
         return view('ManageEvent.Modals.EditAccommodation', $data);
@@ -235,15 +267,16 @@ class EventTicketsController extends MyBaseController
         $ticket->save();
 
         session()->flash('message', 'Successfully Created Ticket');
-        return redirect()->route('showEventTickets', ['event_id' => $event_id]);
-        /*return response()->json([
+        
+        return response()->json([
             'status'      => 'success',
             'id'          => $ticket->id,
             'message'     => 'Refreshing...',
             'redirectUrl' => route('showEventTickets', [
                 'event_id' => $event_id,
             ]),
-        ]); */
+        ]); 
+        return redirect()->route('showEventTickets', ['event_id' => $event_id]);
     }
 
 
@@ -383,7 +416,7 @@ class EventTicketsController extends MyBaseController
 
         $ticket->save();
 
-        session()->flash('message', 'Successfully Edited Ticket');
+        session()->flash('message', 'Successfully Edited Accommodation Ticket');
 
         /*return response()->json([
             'status'      => 'success',
@@ -593,15 +626,18 @@ class EventTicketsController extends MyBaseController
 
         $ticket->save();
 
-        return redirect()->route('showEventTickets', ['event_id' => $event_id]);
-        /*return response()->json([
+        session()->flash('message', 'Successfully Edited Ticket');
+
+        return response()->json([
             'status'      => 'success',
-            'id'          => $ticket->id,
+            'title'          => $ticket->title,
             'message'     => 'Refreshing...',
             'redirectUrl' => route('showEventTickets', [
                 'event_id' => $event_id,
             ]),
-        ]); */
+        ]);
+        return redirect()->route('showEventTickets', ['event_id' => $event_id]);
+
     }
 
     /**
