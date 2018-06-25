@@ -97,38 +97,43 @@
         	@php $full_name = $attendee->first_name.' '.$attendee->last_name; @endphp
             @if(!$attendee->is_cancelled && !in_array($full_name,$generatedfor))
             	@php $generatedfor[] = $full_name; @endphp
-        		<div class="row" style="height: 1044px !important; margin-top: 0; margin-bottom: 0; margin-left: 50px; margin-right: 50px;" >
+        		<div class="row" style="height: 1000px !important; margin-top: 0; margin-bottom: 0; margin-left: 50px; margin-right: 50px;" >
                 <!--div id="heihtsetter" style="height: 650px;"-->
                     <div class="letter">
-                	<div id="top_header">
-            			<!--img alt="{{$event->organiser->full_logo_path}}" height="50" src="data:image/png;base64, {{$image}}" />
-            			<img alt="FOSS4G" height="50" src="data:image/png;base64, {{config('attendize.invitation_letter_foss4g_image')}}" /-->
-            			<img alt="FOSS4G" style="margin-left:200;" height="50" src="data:image/png;base64, {{base64_encode(file_get_contents(public_path(config('attendize.invitation_letter_foss4g_image'))))}}" />
-            			<img alt="OSGEO" style="float: right; margin-right:200;" height="50" src="data:image/png;base64, {{base64_encode(file_get_contents(public_path(config('attendize.invitation_letter_osgeo_image'))))}}" />
-                	</div>
+                     <br>
+            <div class="row col-xs-12" style="margin-bottom:30px;">
+               <div  class="col-xs-6">
+            			 <img alt="FOSS4G" style="" height="50" src="data:image/png;base64, {{base64_encode(file_get_contents(public_path(config('attendize.invitation_letter_foss4g_image'))))}}" />
+               </div>
+               <div class="col-xs-6">
+            		 	<img alt="OSGEO" style="float: right;" height="50" src="data:image/png;base64, {{base64_encode(file_get_contents(public_path(config('attendize.invitation_letter_osgeo_image'))))}}" />
+               </div>
+            </div>
                 	<br>
-                	<div id="meta_header" style=" font-weight: bold; font-size: 1.2em;">
-                		<div class="col-md-4" style="float: left;">
+                 <br><br><br><br>
+                	<div style=" font-weight: bold; font-size: 1em;">
+                		<div class="col-xs-6">
                 			<!--Projet d’Amélioration de la Gestion et de la Gouvernance Foncière au Burundi (PAGGF en sigle)-->
                 			{{strtoupper($attendee->first_name.' '.$attendee->last_name)}}
                 		</div>
-                		<div class="col-md-4" style="float: right; margin-right: 50px;">
+                		<div class="col-xs-6">
                 			@php $createdate=strtotime($order->created_at); @endphp
                 			Dar es Salaam, <!--24th of May 2018--> <!--{{date('jS')}} of {{date('F')}} {{date('Y')}}-->
                 			{{date('jS',$createdate)}} of {{date('F',$createdate)}} {{date('Y',$createdate)}}
                 		</div>
                 	</div>
-                	<br>
-                	<div class="col-md-12" style="font-weight: bold; font-size: 1.2em;">
+                 <br>
+                 <br>
+                	<div class="col-md-12" style="font-weight: bold; font-size: 1.1em;">
                 		<br>
                 		Letter of invitation - FOSS4G 2018 conference in Dar
                 	</div>
                 	<br>
-                	<div class="col-md-12" style=" font-weight: 4px; font-size: 1.2em; font-stretch: ultra-expanded;">
-                		The FOSS4G conference 2018 is pleased to invite Mr/Ms {{ucfirst($attendee->first_name)}} {{ucfirst($attendee->last_name)}} to attend to the FOSS4G conference as a guest.
+                	<div class="col-md-12" style=" font-weight: 4px; font-size: 1em; ">
+                		The FOSS4G conference 2018 is pleased to invite {{ucfirst($attendee->first_name)}} {{ucfirst($attendee->last_name)}} to attend to the FOSS4G conference as a guest.
                 	</div>
                 	<br>
-                	<div class="col-md-12" style="font-size: 1.2em; font-stretch: ultra-expanded;">
+                	<div class="col-md-12" style="font-size: 1em; font-stretch: ultra-expanded;">
                 		The purpose of this letter is to provide the participant with a formal invitation as well as some practical information related to payments and travel.
                 	</div>
                 	<br>
@@ -136,11 +141,11 @@
                     <table> <!--class="text-center"-->
                     	<tr><td></td><td></td><td></td><td></td></tr>
                     	<tr> <!--style="background: #303030; color: #dbdbdb;"-->
-                    		<td style="padding-left: 2%; font-weight: bold; font-size: 1.2em;" >
+                    		<td style="padding-left: 2%; font-weight: bold; font-size: 0.9em;" >
                     			Venue <br><br><br>
                     			<br>
                     		</td>
-                    		<td colspan="3" style="padding-right: 2%; font-size: 1em; font-stretch: ultra-expanded;" >
+                    		<td colspan="3" style="padding-right: 2%; font-size: 0.9em; " >
                     			Julius Nyerere Convention Centre<br>
                     			Dar es Salaam<br>
                     			Tanzania<br>
@@ -149,27 +154,27 @@
                     	</tr>
                     	<!--br-->
                     	<tr>
-                    		<td style="padding-left: 2%; font-weight: bold; font-size: 1.2em;" > Dates<br><br></td>
-                    		<td colspan="3" style="padding-right: 2%; font-size: 1em; font-stretch: ultra-expanded;">
-                    			The conference starts with optional workshops on the 25th of August.<br> It concludes on the 31st of August.
-                    			<br>
+                    		<td style="padding-left: 2%; font-weight: bold; font-size: 0.9em;" > Dates<br><br></td>
+                    		<td colspan="3" style="padding-right: 2%; font-size: 0.9em; font-stretch: ultra-expanded;">
+                    			The conference starts with optional workshops on the 25th of August. It concludes on the 31st of August.
+                    			<br><br>
                     		</td>
                     	</tr>
                     	<!--br-->
                     	<tr>
-                    		<td style="padding-left: 2%; font-weight: bold; font-size: 1.2em;">Hosting institution<br><br></td>
-                    		<td colspan="3" style="padding-right: 2%; font-size: 1em; font-stretch: ultra-expanded;">
+                    		<td style="padding-left: 2%; font-weight: bold; font-size: 0.9em;">Hosting institution<br><br></td>
+                    		<td colspan="3" style="padding-right: 2%; font-size: 0.9em; font-stretch: ultra-expanded;">
                     			OSGeo is a non profit organization (<u>https://www.osgeo.org</u>)
                     			<br><br>
                     		</td>
                     	</tr>
                     	<!--br-->
                     	<tr>
-                    		<td style="padding-left: 2%; font-weight: bold; font-size: 1.2em;">Payment
+                    		<td style="padding-left: 2%; font-weight: bold; font-size: 0.9em;">Payment
                     			<br><br><br><br><br><br><br><br><br><br>
                     		</td>
 
-                    		<td colspan="3" style="padding-right: 2%; font-size: 1em; font-stretch: ultra-expanded;">
+                    		<td colspan="3" style="padding-right: 2%; font-size: 0.9em; font-stretch: ultra-expanded;">
                     			Account Name: <b>STUDIO 19 LIMITED FOSS4G 2018</b><br>
 								Account Number: <b>0124200027929</b><br>
 							<!--/td></tr><tr><td></td><td colspan="3" style="padding-right: 2%; font-size: 1em; font-stretch: ultra-expanded;"--><br>
@@ -185,10 +190,10 @@
                     	</tr>
                     	<!--br-->
                     	<tr>
-                    		<td style="padding-left: 2%; font-weight: bold; font-size: 1.2em;">Contact information
-                    			<br><br><br><br>
+                    		<td style="padding-left: 2%; font-weight: bold; font-size: 0.9em;">Contact information
+                    			<br><br><br><br><br>
                     		</td>
-                    		<td colspan="3" style="padding-right: 2%; font-size: 1em; font-stretch: ultra-expanded;">
+                    		<td colspan="3" style="padding-right: 2%; font-size: 0.9em; font-stretch: ultra-expanded;">
                     			Conference email: <i>foss4gdar@gmail.com</i><br>
 								Msilikale Msilanga (conference chair): <b>+255 717 506 053</b><br>
 								Mark Iliffe (conference chair): <b>+1 718 414 3631</b><br>
@@ -199,41 +204,34 @@
                     	</tr>
                     </table>
                     <br>
-                    <div class="col-md-12" style="font-weight: 3px; font-size: 1.2em;">
+                    <div class="col-md-12" style="font-weight: 3px; font-size: 1em;">
                     	We wish the participant the best of luck with the conference preparations and the travel to Dar es Salaam in Tanzania.
                     	<br>
                     </div>
                     <br>
-                    <div class="col-md-12" style="font-weight: 3px; font-size: 1.2em;">
+                    <div class="col-md-12" style="font-weight: 3px; font-size: 1em;">
                     	Best regards
                     </div>
                     <!--br-->
-                    <div class="col-md-12" style="font-weight: bold; font-size: 1.2em;">
+                    <div class="col-md-12" style="font-weight: bold; font-size: 1em;">
                     	Local Organising Committee
                     </div>
                     <br>
                     <div class="col-md-12" style="min-height: 100">
-            			<img alt="Msilikale Msilanga" style="margin-left:50;" height="50" src="data:image/png;base64, {{base64_encode(file_get_contents(public_path(config('attendize.invitation_letter_msilikale_signature'))))}}" />
-            			<img alt="Mark LLiffe" style="margin-left:150;" height="50" src="data:image/jpg;base64, {{base64_encode(file_get_contents(public_path(config('attendize.invitation_letter_mark_signature'))))}}" />
+            			<img alt="Msilikale Msilanga" style="" height="50" src="data:image/png;base64, {{base64_encode(file_get_contents(public_path(config('attendize.invitation_letter_msilikale_signature'))))}}" />
+            			<img alt="Mark LLiffe" style="margin-left:110;" height="50" src="data:image/jpg;base64, {{base64_encode(file_get_contents(public_path(config('attendize.invitation_letter_mark_signature'))))}}" />
             			<br>
-            			<span style="margin-left: 50; font-size: 1.3em;">Msilikale Msilanga</span>
-            			<span style="margin-left: 110; font-size: 1.3em;">Mark LLiffe</span>
+            			<span style="font-size: 1em;">Msilikale Msilanga</span>
+            			<span style="margin-left: 110; font-size: 1em;">Mark LLiffe</span>
                     </div>
                     <!--br-->
-                    <div class="col-md-12" style="font-weight: bold; font-size: 1.2em;">
-                    	Conference Chairs, FOSS4G 2018	
+                    <div class="col-md-12" style="font-weight: bold; font-size: 1em;">
+                    	Conference Chairs, FOSS4G 2018
                     </div>
                     <!--br-->
         			</div>
         		</div>
         	@endif
     	@endforeach
-
-
-            <div class="bottom_info">
-                {{--Attendize is provided free of charge on the condition the below hyperlink is left in place.--}}
-                {{--See https://www.attendize.com/licence.php for more information.--}}
-                @include('Shared.Partials.PoweredBy')
-            </div>
     </body>
 </html>
