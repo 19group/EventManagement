@@ -714,6 +714,7 @@ class EventTicketsController extends MyBaseController
         $title = DB::table('tickets')->select('title')->where('id', '=', $id)->value('title');
         $coupon->ticket_id = $id;
         $coupon->ticket = $title;
+        $coupon->state = $request->get('state');
         $coupon->discount = $request->get('discount');
         $coupon->exact_amount = $request->get('exact_amt');
         $coupon->save();
