@@ -28,7 +28,7 @@ class EventOrdersController extends MyBaseController
      */
     public function showOrders(Request $request, $event_id = '')
     {
-        $allowed_sorts = ['first_name', 'email', 'order_reference', 'order_status_id', 'created_at'];
+        $allowed_sorts = ['id','first_name', 'email', 'order_reference', 'order_status_id', 'created_at'];
 
         $searchQuery = $request->get('q');
         $sort_by = (in_array($request->get('sort_by'), $allowed_sorts) ? $request->get('sort_by') : 'created_at');
