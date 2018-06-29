@@ -41,7 +41,7 @@
  <div class="row" style="color:black; min-height: 30px;">
      <?php if (session()->has('transaction_'.$event->id)){
          $step = session()->get('transaction_'.$event->id);
-         $progress=['tickets','workshops','accommodation','tickets','payments','complete'];
+         $progress=['tickets','workshops','accommodation','pdfs','payments','complete'];
          $colordispatcher = []; $taken=false;
          for($pass=0; $pass<count($progress);++$pass){
              if($progress[$pass]==$step){

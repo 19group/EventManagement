@@ -1269,8 +1269,6 @@ class EventCheckoutController extends Controller
     {
         $order_session = session()->get('ticket_order_' . $event_id);
 
-        dd(session());
-
         if (!$order_session || $order_session['expires'] < Carbon::now()) {
             $route_name = $this->is_embedded ? 'showEmbeddedEventPage' : 'showEventPage';
             session()->forget('ticket_order_' . $event_id);
@@ -1361,7 +1359,7 @@ class EventCheckoutController extends Controller
     {
         
         if(substr(URL::previous(),-21)=='/transactions/control'){
-            session()->set('transaction_'.$event_id,'tickets');
+            session()->set('transaction_'.$event_id,'pdfs');
             if (!session()->get('ticket_order_' . $event_id)) {
                 return $this->sessionExpiredError($event_id,'showEventPage');
             }
@@ -1387,11 +1385,9 @@ class EventCheckoutController extends Controller
             }
             skip_validation:
             session()->push('ticket_order_' . $event_id . '.request_data', $request->all()/*->except(['tracking_id', 'merchant_reference'])*/);
-            session()->set('request_data'.$event_id,$request->all());
-        //    $holdertemp=$this->eventCheckoutAlternative($event_id);
         //    return redirect(route('showEventCheckout',['event_id'=>$event_id]));
-        //    return $this->showEventCheckout($request, $event_id);
-            return $this->eventCheckoutAlternative($event_id);
+            return $this->showEventCheckout($request, $event_id);
+        //    return $this->eventCheckoutAlternative($event_id);
 
         }
 

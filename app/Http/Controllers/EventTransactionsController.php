@@ -52,7 +52,7 @@ class EventTransactionsController extends Controller
 
     public function handleTransactions($event_id)
     {
-        $transactionsOrder=['tickets','workshops','accommodation','tickets','payment','complete'];
+        $transactionsOrder=['tickets','workshops','accommodation','pdfs','payments','complete'];
         $process=session()->get('transaction_'.$event_id);
         if(in_array($process,$transactionsOrder))
         {
@@ -71,8 +71,8 @@ class EventTransactionsController extends Controller
                 case 'accommodation':
                     return redirect(route('OrderAccommodation',['event_id'=>$event_id]));
                 break;
-                case 'tickets':
-                    session()->set('transaction_'.$event_id,'tickets');
+                case 'pdfs':
+                    session()->set('transaction_'.$event_id,'pdfs');
                     $order_session = session()->get('ticket_order_' . $event_id);
                     $event=Event::findOrFail($event_id);
                     $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
