@@ -54,7 +54,24 @@
                             </div>
                 
                         </div>
-                </div>
+                     </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Coupon State</label> 
+                              <div class="form-group">
+                                  <select class="form-control" name="state">
+                                      <option value="{{$coupon->state}}">{{$coupon->state}}</option>
+                                    @php $choices = ['Valid','Used','Invalid']; @endphp
+                                    @foreach($choices as $item)
+                                        @if($item!=$coupon->state)
+                                      <option value="{{$item}}">{{$item}}</option>
+                                        @endif
+                                    @endforeach
+                                  </select>
+                            </div>
+                
+                        </div>
+                     </div>
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group">
