@@ -52,11 +52,12 @@ class EventTransactionsController extends Controller
 
     public function handleTransactions($event_id)
     {
-        $transactionsOrder=['tickets','workshops','accommodation','payment','complete'];
+        $transactionsOrder=['tickets','workshops','accommodation','tickets','payment','complete'];
         $process=session()->get('transaction_'.$event_id);
         if(in_array($process,$transactionsOrder))
         {
             $finished=array_search($process, $transactionsOrder);
+            if($finished==5){$finished=2;}
             $next=$transactionsOrder[++$finished];
             switch ($next) {
                 case 'workshops':
@@ -69,6 +70,22 @@ class EventTransactionsController extends Controller
                 */
                 case 'accommodation':
                     return redirect(route('OrderAccommodation',['event_id'=>$event_id]));
+                break;
+                case 'tickets':
+                    session()->set('transaction_'.$event_id,'tickets');
+                    $order_session = session()->get('ticket_order_' . $event_id);
+                    $event=Event::findOrFail($event_id);
+                    $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
+                    $data = $order_session + [
+                        'event'           => Event::findorFail($order_session['event_id']),
+                        'secondsToExpire' => $secondsToExpire,
+                        'is_embedded'     => $this->is_embedded,
+                        'previousurl' => URL::previous(),
+                    ];
+                    if ($this->is_embedded) {
+                        return view('Public.ViewEvent.Embedded.EventPageCheckoutSuccess', $data);
+                    }
+                        return view('Public.ViewEvent.EventPageCheckoutSuccess', $data);
                 break;
                 default:
                     # code...

@@ -41,7 +41,7 @@
  <div class="row" style="color:black; min-height: 30px;">
      <?php if (session()->has('transaction_'.$event->id)){
          $step = session()->get('transaction_'.$event->id);
-         $progress=['tickets','workshops','accommodation','payments','complete'];
+         $progress=['tickets','workshops','accommodation','tickets','payments','complete'];
          $colordispatcher = []; $taken=false;
          for($pass=0; $pass<count($progress);++$pass){
              if($progress[$pass]==$step){
@@ -54,13 +54,14 @@
          }
 
      }else{
-         $colordispatcher=['#82CAFF','#ADDFFF','#ADDFFF','#ADDFFF','#ADDFFF','#ADDFFF'];
+         $colordispatcher=['#82CAFF','#ADDFFF','#ADDFFF','#ADDFFF','#ADDFFF','#ADDFFF','#ADDFFF'];
      }
      ?>
-     <div class="col-sm-3" style="background-color:{{$colordispatcher[0]}};padding:5px;text-align:center;"><strong>Registration</strong></div>
+     <div class="col-sm-2" style="background-color:{{$colordispatcher[0]}};padding:5px;text-align:center;"><strong>Registration</strong></div>
      <div class="col-sm-2" style="background-color:{{$colordispatcher[1]}};padding:5px;text-align:center;"><strong>Workshops</strong></div>
      <div class="col-sm-2" style="background-color:{{$colordispatcher[2]}};padding:5px;text-align:center;"><strong>Accommodations</strong></div>
-     <div class="col-sm-2" style="background-color:{{$colordispatcher[3]}};padding:5px;text-align:center;"><strong>Payments</strong></div>
-     <div class="col-sm-3" style="background-color:{{$colordispatcher[4]}};padding:5px;text-align:center;"><strong>Tickets Collection</strong></div>
+     <div class="col-sm-2" style="background-color:{{$colordispatcher[3]}};padding:5px;text-align:center;"><strong>Tickets</strong></div>
+     <div class="col-sm-2" style="background-color:{{$colordispatcher[4]}};padding:5px;text-align:center;"><strong>Payments</strong></div>
+     <div class="col-sm-2" style="background-color:{{$colordispatcher[5]}};padding:5px;text-align:center;"><strong>Save Tickets</strong></div>
  </div>
 </section>

@@ -299,7 +299,7 @@ public function payment(){//initiates payment
       */
     //[TODO] - Check if the token is getting set and unset for correct security
     if($payment_token==substr(session()->getId(),0,10).$order_session['order_started'].substr(session()->getId(), 10)){
-        $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
+        /*$secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
         $data = $order_session + [
                 'event'           => Event::findorFail($order_session['event_id']),
                 'secondsToExpire' => $secondsToExpire,
@@ -307,6 +307,8 @@ public function payment(){//initiates payment
                 'previousurl' => URL::previous(),
             ];
         return view('Public.ViewEvent.EventPageCheckoutSuccess', $data);
+        */
+        return redirect(route('finishCreatingOrder',['event_id'=>$event_id]));
     }else{
          $data = [
              'event' => $event,
