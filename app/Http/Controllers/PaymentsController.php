@@ -106,13 +106,14 @@ public function payment(){//initiates payment
       * Check if the user has chosen to pay offline
       * and if they are allowed
       */
-     if ($request->get('pay_offline') && $event->enable_offline_payments) {
+/*     if ($request->get('pay_offline') && $event->enable_offline_payments) {
 
       //Redirect to Creating Tickets
       return response()->redirectToRoute('postCreateOrder', [
           'event_id'             => $event_id,
       ]);
      }
+ */
      try {
         $ticket_order = session()->get('ticket_order_' . $event_id);
         //[TOCHECK] - is there a need to call events from here
@@ -120,7 +121,8 @@ public function payment(){//initiates payment
          $transaction_data = [
                  'amount'      => ($ticket_order['order_total'] + $ticket_order['organiser_booking_fee']),
                  'currency'    => $event->currency->code,
-                 'description' => 'Order for customer: ' . $request->get('order_email'),
+            //     'description' => 'Order for customer: ' . $request->get('order_email'),
+                 'description' => 'Order for customer: ' .$ticket_order['email'],
              ];
 //$forceway=2;
          switch ($ticket_order['payment_gateway']->id) {
@@ -191,8 +193,14 @@ public function payment(){//initiates payment
         $querystring .= "amount=".urlencode($item_amount)."&";
 
 
-        //loop for posted values and append to querystring
-        foreach($_POST as $key => $value){
+        //loop for posted values and append to querystring (edited for autoredirecting)
+        $POSTsubstitute["cmd"] = "_xclick";
+        $POSTsubstitute["no_note"] = "1";
+        $POSTsubstitute["first_name"] = $ticket_order['first_name'];
+        $POSTsubstitute["last_name"] = $ticket_order['last_name'];
+        $POSTsubstitute["payer_email"] = $ticket_order['email'];
+
+        foreach($POSTsubstitute as $key => $value){
             $value = urlencode(stripslashes($value));
             $querystring .= "$key=$value&";
         }
@@ -233,7 +241,8 @@ public function payment(){//initiates payment
                  $token = $request->get('stripeToken');
                  $transaction_data += [
                      'token'         => $token,
-                     'receipt_email' => $request->get('order_email'),
+                //     'receipt_email' => $request->get('order_email'),
+                     'receipt_email' => $ticket_order['email'],
                  ];
                  break;
              case config('attendize.payment_gateway_migs'):

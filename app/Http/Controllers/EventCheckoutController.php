@@ -1348,6 +1348,10 @@ class EventCheckoutController extends Controller
         return $this->completeOrder($event_id);
     }
 
+    public function testautopaypal($event_id){
+        return redirect()->route('postPayment',['event_id'=>$event_id]);
+    }
+
     /**
      * Create the order, handle payment, update stats, fire off email jobs then redirect user
      *
@@ -1386,7 +1390,8 @@ class EventCheckoutController extends Controller
             skip_validation:
             session()->push('ticket_order_' . $event_id . '.request_data', $request->all()/*->except(['tracking_id', 'merchant_reference'])*/);
         //    return redirect(route('showEventCheckout',['event_id'=>$event_id]));
-            return $this->showEventCheckout($request, $event_id);
+        //    return $this->showEventCheckout($request, $event_id);
+            return $this->testautopaypal($event_id);
         //    return $this->eventCheckoutAlternative($event_id);
 
         }

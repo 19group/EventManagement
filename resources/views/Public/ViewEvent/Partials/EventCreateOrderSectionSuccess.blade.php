@@ -402,7 +402,7 @@
 
                {!! Form::hidden('is_embedded', $is_embedded) !!}
 <div class="col-md-12">
-               {!! Form::submit('Generate Tickets', ['class' => 'btn btn-lg btn-success card-submit', 'style' => 'width:100%;', 'id'=>'generatorbutton']) !!}
+               {!! Form::submit('Proceed to Payment', ['class' => 'btn btn-lg btn-success card-submit', 'style' => 'width:100%;', 'id'=>'generatorbutton']) !!}
                <!--, 'onClick'=>"this.disabled=true; this.value='Generating Your Tickets';"-->
               </div>
 </br>
@@ -424,10 +424,10 @@
 function loadFunction(e){
     var wait = document.getElementById("generatorbutton");
     wait.disabled=true;
-    wait.value="Generating Your Tickets.";
+    wait.value="Redirecting to Paypal.";
     var dots = window.setInterval( function() {
-    if ( wait.value.length > 30 )
-        wait.value = "Generating Your Tickets.";
+    if ( wait.value.length > 28 )
+        wait.value = "Redirecting to Paypal.";
     else
         wait.value += " .";
     }, 500);
