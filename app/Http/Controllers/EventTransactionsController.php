@@ -87,6 +87,9 @@ class EventTransactionsController extends Controller
                     }
                         return view('Public.ViewEvent.EventPageCheckoutSuccess', $data);
                 break;
+            /*    case 'payments':
+                    return redirect(route('showEventCheckout',['event_id'=>$event_id]));
+                break;*/
                 default:
                     # code...
                     break;
@@ -94,7 +97,7 @@ class EventTransactionsController extends Controller
         }
 
         //return redirect(route('showEventCheckout',['event_id'=>$event_id]));
-        return redirect(route('OrderWorkshops',['event_id'=>$event_id]));
+        return redirect(route('OrderAccommodation',['event_id'=>$event_id]));
     }
 
 }

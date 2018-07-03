@@ -52,9 +52,9 @@
             </div>
         </div><!--div class="col-md-4 col-md-push-8"-->
         <div class="col-md-8 col-md-pull-4">
-         <div class="container-fluid">
+         <!--div class="container-fluid">
                  <h3>Payment Successful. Thank you</h3><br>
-         </div>
+         </div-->
 
             <div class="event_order_form">
                 {!! Form::open(['url' => route('postCreateOrder', ['event_id' => $event->id]), 'onsubmit'=>"loadFunction(this)"]) !!}
