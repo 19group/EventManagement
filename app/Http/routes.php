@@ -171,6 +171,11 @@ Route::group(['prefix' => 'e'], function () {
         'uses' => 'WorkshopCheckoutController@completeOrderWorkshops',
     ]);
 
+    Route::get('{event_id}/order/accommodations/complete', [
+        'as'   => 'completeAccommodation',
+        'uses' => 'EventCheckoutController@completeOrderAccommodation',
+    ]);
+
     Route::get('{event_id}/order/sideevents/', [
         'as'   => 'OrderSideEvents',
         'uses' => 'EventCheckoutController@showOrderSideEvents',
@@ -274,6 +279,11 @@ Route::group(['prefix' => 'e'], function () {
     Route::post('{event_id}/checkout/complete', [
         'as'   => 'postCreateOrder',
         'uses' => 'EventCheckoutController@postCreateOrder',
+    ]);
+
+    Route::get('{event_id}/order/collecttickets', [
+        'as'   => 'finishCreatingOrder',
+        'uses' => 'EventCheckoutController@completeOrder',
     ]);
 
 
