@@ -1309,6 +1309,49 @@ class EventCheckoutController extends Controller
 
     }
 
+    public function eventCheckoutAlternative($event_id)
+    {
+        $order_session = session()->get('ticket_order_' . $event_id);
+
+        $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
+
+        $data = $order_session + [
+                'event'           => Event::findorFail($order_session['event_id']),
+                'secondsToExpire' => $secondsToExpire,
+                'coupon_flag'           => $order_session['coupon_flag'],
+                'discount'              => $order_session['discount'],
+                'newSubTotal'              => '',
+                'first_name'              => $order_session['first_name'],
+                'last_name'              => $order_session['last_name'],
+                'email'              => $order_session['email'],
+                'discount_ticket_title' => $order_session['discount_ticket_title'],
+                'exact_amount'          => $order_session['exact_amount'],
+                'amount_ticket_title'   => $order_session['amount_ticket_title'],
+                'is_embedded'     => $this->is_embedded,
+            ];
+
+        session()->set('transaction_'.$event_id,'payments');
+
+        return view('Public.ViewEvent.EventPageCheckout', $data);
+    }
+
+    public function finishCreatingOrder($event_id)
+    {
+    //    return redirect(route('postCreateOrder',['event_id'=>$event_id]));
+        /*
+         * If there's no session kill the request and redirect back to the event homepage.
+         */
+        if (!session()->get('ticket_order_' . $event_id)) {
+            return $this->sessionExpiredError($event_id,'showEventPage');
+        }
+
+        return $this->completeOrder($event_id);
+    }
+
+    public function testautopaypal($event_id){
+        return redirect()->route('postPayment',['event_id'=>$event_id]);
+    }
+
     /**
      * Create the order, handle payment, update stats, fire off email jobs then redirect user
      *
@@ -1318,6 +1361,41 @@ class EventCheckoutController extends Controller
      */
      public function postCreateOrder(Request $request, $event_id)
     {
+        
+        if(substr(URL::previous(),-21)=='/transactions/control'){
+            session()->set('transaction_'.$event_id,'pdfs');
+            if (!session()->get('ticket_order_' . $event_id)) {
+                return $this->sessionExpiredError($event_id,'showEventPage');
+            }
+            $event = Event::findOrFail($event_id);
+            $ticket_order = session()->get('ticket_order_' . $event_id);
+            if(isset($ticket_order['past_order_id'])){
+                goto skip_validation;
+            }
+            $order = new Order;
+            $validation_rules = $ticket_order['validation_rules'];
+            $validation_messages = $ticket_order['validation_messages'];
+            $order->rules = array_merge($order->rules,[$validation_rules]);
+            $order->messages = array_merge($order->messages,[$validation_messages]);
+            if (!$order->validate($request->all()) && !isset($ticket_order['donation'])) {
+                $data = [
+                    'event' => $event,
+                    'callbackurl' => 'createorder',
+                    'messages' => $order->errors(),
+                    'request_details' => $request,
+                    'parameters' => ['event_id' => $event_id]
+                ];
+                return view('Public.ViewEvent.EventPageErrors', $data);
+            }
+            skip_validation:
+            session()->push('ticket_order_' . $event_id . '.request_data', $request->all()/*->except(['tracking_id', 'merchant_reference'])*/);
+        //    return redirect(route('showEventCheckout',['event_id'=>$event_id]));
+        //    return $this->showEventCheckout($request, $event_id);
+            return $this->testautopaypal($event_id);
+        //    return $this->eventCheckoutAlternative($event_id);
+
+        }
+
         /*
          * If there's no session kill the request and redirect back to the event homepage.
          */
@@ -1826,6 +1904,13 @@ class EventCheckoutController extends Controller
             return PDF::html('Public.ViewEvent.Partials.EventInvitationLetter', $data, 'Tickets');
         }
         return view('Public.ViewEvent.Partials.EventInvitationLetter', $data);
+    }
+
+
+    public function completeOrderAccommodation($event_id)
+    {
+        session()->set('transaction_'.$event_id,'accommodation');
+        return redirect(route('handleTransactions',['event_id'=>$event_id]));
     }
 
     /**
