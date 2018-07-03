@@ -20,7 +20,7 @@
        <a href="{{ route('completeAccommodation', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">Tickets</a><?php } ?>
       @else
        <?php if(count($order_has_validdiscount)>0 || $order_total + $donation > 0){ ?>
-       <a href="{{ route('showEventCheckout', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">Tickets</a><?php } ?>
+       <a href="{{ route('completeAccommodation', ['event_id'=> $event_id]) }}" class="btn btn-lg btn-primary pull-right">Tickets</a><?php } ?>
       @endif
     </div>
      </div>
