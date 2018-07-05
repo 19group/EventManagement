@@ -1389,10 +1389,18 @@ class EventCheckoutController extends Controller
             }
             skip_validation:
             session()->push('ticket_order_' . $event_id . '.request_data', $request->all()/*->except(['tracking_id', 'merchant_reference'])*/);
+        //for skipping payment
+        $order_session = session()->get('ticket_order_' . $event_id);
+        if($order_session['order_total'] + $order_session['donation'] == 0 && count($order_session['order_has_validdiscount'])>0){
+
+        session()->set('transaction_'.$event_id,'complete');
+        return $this->completeOrder($event_id);
+        }else{
         //    return redirect(route('showEventCheckout',['event_id'=>$event_id]));
         //    return $this->showEventCheckout($request, $event_id);
             return $this->testautopaypal($event_id);
         //    return $this->eventCheckoutAlternative($event_id);
+        }
 
         }
 
