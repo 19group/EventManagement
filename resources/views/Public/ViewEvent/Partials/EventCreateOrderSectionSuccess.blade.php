@@ -5,52 +5,10 @@
         </h1>
     </div>
     <div class="container" id='blurr'>
-        <div class="col-md-4 col-md-push-8">
-            <div class="panel">
-                <div class="panel-heading">
-                    <h3 class="panel-title">
-                        <i class="ico-cart mr5"></i>
-                        Order Summary
-                    </h3>
-                </div>
-<!--section edited by DonaldFeb9 -->
-                <div class="panel-body pt0">
-                    <table class="table mb0 table-condensed">
-                        <?php $donhead='Donation Amount';if($donation>0){ ?>
-                            <tr>
-                                <td class="pl0">Donation Amount:</td>
-                                <td style="text-align: right;">
-                                    {{  money($donation, $event->currency) }}
-                                </td>
-                            </tr>
-                        <?php } ?>
-                        @foreach($tickets as $ticket)
-                        <tr>
-                            <td class="pl0">{{{$ticket['ticket']['title']}}} X <b>{{$ticket['qty']}}</b></td>
-                            <td style="text-align: right;">
-                                @if((int)ceil($ticket['full_price']) === 0)
-                                FREE
-                                @else
-                                {{ money($ticket['full_price'] * $ticket['qty'], $event->currency) }}
-                                @endif
-                            </td>
-                        </tr>
-                        @endforeach
-                    </table>
-                </div>
-                @if($order_total+$donation > 0)
-                <div class="panel-footer">
-                    <h5>
-                        Total: <span style="float: right;"><b>{{ money($order_total + $total_booking_fee + $donation,$event->currency) }}</b></span>
-                    </h5>
-                </div>
-                @endif
-
-            </div><!--div class="panel"-->
-            <div class="help-block">
-                Please note you only have <span id='countdown'></span> to complete this transaction before your tickets are re-released.
-            </div>
-        </div><!--div class="col-md-4 col-md-push-8"-->
+  <!-- Order Summary Page -->
+  <div class="col-md-4 col-md-push-8">
+   @include('Public.ViewEvent.Partials.OrderSummary')
+  </div>
         <div class="col-md-8 col-md-pull-4">
          <!--div class="container-fluid">
                  <h3>Payment Successful. Thank you</h3><br>
