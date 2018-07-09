@@ -6,7 +6,7 @@ Event Attendees
 @stop
 
 <style type="text/css">
-    
+
     #snackbar {
                 visibility: hidden;
                 min-width: 150px;
@@ -30,7 +30,7 @@ Event Attendees
             }
 
             @-webkit-keyframes fadein {
-                from {bottom: 0; opacity: 0;} 
+                from {bottom: 0; opacity: 0;}
                 to {bottom: 30px; opacity: 1;}
             }
 
@@ -40,7 +40,7 @@ Event Attendees
             }
 
             @-webkit-keyframes fadeout {
-                from {bottom: 30px; opacity: 1;} 
+                from {bottom: 30px; opacity: 1;}
                 to {bottom: 0; opacity: 0;}
             }
 
@@ -90,11 +90,11 @@ Coupons
             </ul>
         </div>
     @endif
-        
+
         <!--<div class="btn-group btn-group-responsive">
             <button data-modal-id="ImportAttendees" href="javascript:void(0);"  data-href="{{route('showImportAttendee', ['event_id'=>$event->id])}}" class="loadModal btn btn-success" type="button"><i class="ico-file"></i> Invite Attendees</button>
         </div>
-        
+
         <div class="btn-group btn-group-responsive">
             <a class="btn btn-success" href="{{route('showPrintAttendees', ['event_id'=>$event->id])}}" target="_blank" ><i class="ico-print"></i> Print Attendee List</a>
         </div>
@@ -169,10 +169,10 @@ Coupons
                             </td>
                             <td>
                                <?php if($coupon->discount!='')
-                                 
+
                                  echo($coupon->discount.'%');
 
-                                 else 
+                                 else
 
                                     echo("-");
 
@@ -180,10 +180,10 @@ Coupons
                             </td>
                             <td>
                                 <?php if($coupon->exact_amount!='')
-                                 
+
                                  echo($coupon->exact_amount);
 
-                                 else 
+                                 else
 
                                     echo("-");
 
@@ -193,7 +193,9 @@ Coupons
                                 {{$coupon->state}}
                             </td>
                             <td>
-                                {{$coupon->user}}
+                                <a href='javascript:void(0);' data-modal-id='view-order-{{$coupon->user}}' data-href="{{route('showManageOrder', ['order_id'=>$coupon->user])}}" title="View Order #{{$coupon->user}}" class="loadModal">
+                                    {{$coupon->user}}
+                                </a>
                             </td>
                             <td>
                                 <span style="cursor: pointer;" data-modal-id='coupon-{{ $coupon->coupon_code }}'
@@ -203,14 +205,14 @@ Coupons
                                     <i class="ico-remove"></i> Delete
                                 </a>
                             </td>
-                            
+
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
         </div>
-        
+
 
     </div>
     <div class="col-md-12">
@@ -242,5 +244,3 @@ function copy(that){
 </script>
 
 @stop
-
-
