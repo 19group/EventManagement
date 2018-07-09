@@ -44,41 +44,54 @@ Order Email: <b>{{$order->email}}</b><br>
         <?php $total_amt_calc = 0; ?>
         <!--end of addition-->
         @foreach($order->orderItems as $order_item)
-        <tr>
-            <td>
-                {{$order_item->title}}
-            </td>
-            <td>
-                {{$order_item->quantity}}
-            </td>
-            <td>
-                @if((int)ceil($order_item->unit_price) == 0)
-                FREE
-                @else
-                {{money($order_item->unit_price, $order->event->currency)}}
-                @endif
+            <?php 
+                if($order_item->title !== 'Donation'){ 
+                    $tickets_count=0;
+                    foreach ($order->attendees as $order_attendee) {
+                        if($order_attendee->ticket->title == $order_item->title){
+                            if(!$order_attendee->is_cancelled){
+                                ++$tickets_count;
+                            }
+                        }
+                    }
+                    if($tickets_count == 0) { continue;}
+                }else{$tickets_count = 1;}
+            ?>
+            <tr>
+                <td>
+                    {{$order_item->title}}
+                </td>
+                <td>
+                    <!--{{$order_item->quantity}}--> {{$tickets_count}}
+                </td>
+                <td>
+                    @if((int)ceil($order_item->unit_price) == 0)
+                    FREE
+                    @else
+                   {{money($order_item->unit_price, $order->event->currency)}}
+                    @endif
 
-            </td>
-            <td>
-                @if((int)ceil($order_item->unit_price) == 0)
-                -
-                @else
-                {{money($order_item->unit_booking_fee, $order->event->currency)}}
-                @endif
+                </td>
+                <td>
+                    @if((int)ceil($order_item->unit_price) == 0)
+                    -
+                    @else
+                    {{money($order_item->unit_booking_fee, $order->event->currency)}}
+                    @endif
 
-            </td>
-            <td>
-                @if((int)ceil($order_item->unit_price) == 0)
-                FREE
-                @else
-                {{money(($order_item->unit_price + $order_item->unit_booking_fee) * ($order_item->quantity), $order->event->currency)}}
-                <!--added by DonaldFeb28-->
-                <?php $total_amt_calc += ($order_item->unit_price + $order_item->unit_booking_fee) * ($order_item->quantity); ?>
-                <!--end of addition DonaldFeb28-->
-                @endif
+                </td>
+                <td>
+                    @if((int)ceil($order_item->unit_price) == 0)
+                    FREE
+                    @else
+                    {{money(($order_item->unit_price + $order_item->unit_booking_fee) * ($tickets_count), $order->event->currency)}}
+                    <!--added by DonaldFeb28-->
+                    <?php $total_amt_calc += ($order_item->unit_price + $order_item->unit_booking_fee) * ($tickets_count); ?>
+                    <!--end of addition DonaldFeb28-->
+                    @endif
 
-            </td>
-        </tr>
+                </td>
+            </tr>
         @endforeach
         <tr>
             <td>

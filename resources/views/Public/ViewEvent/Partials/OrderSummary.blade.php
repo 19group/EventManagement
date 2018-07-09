@@ -24,8 +24,22 @@
     @if(isset($past_tickets))
       @if(count($past_tickets)>0)
         @foreach($past_tickets as $past_ticket)
+          <?php 
+             // if($order_item->title !== 'Donation'){ 
+                  $order_object = App\Models\Order::where(['id'=>$past_order_id])->first();
+                  $tickets_count=0; 
+                  foreach ($order_object->attendees as $order_attendee) {
+                      if($order_attendee->ticket->title == $past_ticket['ticket_title']){
+                          if(!$order_attendee->is_cancelled){
+                              ++$tickets_count;
+                          }
+                      }
+                  }
+                  if($tickets_count == 0) { continue;} 
+              //}else{$tickets_count = 1;}
+          ?>
         <tr>
-         <td class="pl0">{{{$past_ticket['ticket_title']}}} X <b>{{$past_ticket['qty']}}</b></td>
+         <td class="pl0">{{{$past_ticket['ticket_title']}}} X <b>{{$tickets_count}}</b></td>
          <td style="text-align: right;">
           @if((int)ceil($past_ticket['full_price']) === 0)
           FREE
