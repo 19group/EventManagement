@@ -28,4 +28,11 @@
             </span>
         </a>
     </li>
+    <li class="nav-button">
+        <a target="_blank" href="{{route('showDirectPay', ['event_id' => $event->id])}}">
+            <span>
+                <i class="ico-eye2"></i>&nbsp;Event DirectPay Page
+            </span>
+        </a>
+    </li>
 </ul>

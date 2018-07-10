@@ -468,6 +468,40 @@ class EventCheckoutController extends Controller
         $past_donation=0;
         $past_order_amount=$edit_order->amount;
         //dd($edit_order->amount);
+                            $art_tickets = [];
+                            foreach ($edit_order->orderItems as $orderItem) {
+                                if($orderItem->title=='Donation'){
+                                        /*$art_tickets['donation'] = [
+                                            'quantity' => 1,
+                                            'total' => $orderItem->unit_price,
+                                            'title' => $orderItem->title,
+                                            'price' => $orderItem->unit_price,
+                                            'booking_fee' => $orderItem->unit_booking_fee
+                                        ];*/
+                                        $past_donation = $orderItem->unit_price;
+                                }
+                            }
+                            foreach($edit_order->attendees as $order_attendee) {
+                                if(!$order_attendee->is_cancelled){
+                                    if(array_key_exists($order_attendee->ticket->id, $art_tickets)){
+                                        $art_tickets[$order_attendee->ticket->id]['qty']                   += 1;
+                                        $art_tickets[$order_attendee->ticket->id]['price']                 +=  $order_attendee->ticket->price;
+                                        $art_tickets[$order_attendee->ticket->id]['booking_fee']           += $order_attendee->ticket->booking_fee;
+                                        $art_tickets[$order_attendee->ticket->id]['organiser_booking_fee'] += $edit_order->organiser_booking_fee;
+                                    }else{
+                                        $art_tickets[$order_attendee->ticket->id] = [
+                                            'qty' => 1,
+                                            'ticket_title' => $order_attendee->ticket->title,
+                                            'price'                 => $order_attendee->ticket->price,
+                                            'booking_fee'           => $order_attendee->ticket->booking_fee,
+                                            'organiser_booking_fee' => $edit_order->organiser_booking_fee,
+                                            'full_price'            => $order_attendee->ticket->price + $edit_order->organiser_booking_fee + $edit_order->booking_fee
+                                        ];
+                                    }
+                                }
+                            }
+
+    /*
         foreach($past_items as $past_item){
             if($past_item['title']=='Donation'){
                 $past_donation=$past_item['unit_price'];
@@ -485,6 +519,8 @@ class EventCheckoutController extends Controller
                 ];
             }
         }
+    */    
+
         //Check if the checkbox is clicked and determine the corresponding donation amount
         if ($request->has('donation')) {
            $donation = $request->get('donation');
@@ -523,7 +559,8 @@ class EventCheckoutController extends Controller
             'account_payment_gateway' => count($event->account->active_payment_gateway) ? $event->account->active_payment_gateway : false,
             'payment_gateway'         => count($event->account->active_payment_gateway) ? $event->account->active_payment_gateway->payment_gateway : false,
             'past_order_id'              => $edit_order->id,
-            'past_tickets'            => $past_tickets,
+        //    'past_tickets'            => $past_tickets,
+            'past_tickets'            => $art_tickets,
             'past_donation'           => $past_donation,
             'past_order_amount'       => $past_order_amount,
         ]);

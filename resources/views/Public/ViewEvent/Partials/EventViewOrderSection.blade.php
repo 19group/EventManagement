@@ -150,37 +150,67 @@
                         <!--added by DonaldFeb28-->
                         <?php $total_amt_calc = 0; ?>
                         <!--end of addition-->
-                            @foreach($order->orderItems as $order_item)
+                        <?php 
+                            $art_tickets = [];
+                            foreach ($order->orderItems as $orderItem) {
+                                if($orderItem->title=='Donation'){
+                                        $art_tickets['donation'] = [
+                                            'quantity' => 1,
+                                            'total' => $orderItem->unit_price,
+                                            'title' => $orderItem->title,
+                                            'price' => $orderItem->unit_price,
+                                            'booking_fee' => $orderItem->unit_booking_fee
+                                        ];
+                                }
+                            }
+                            foreach($order->attendees as $order_attendee) {
+                                if(!$order_attendee->is_cancelled){
+                                    if(array_key_exists($order_attendee->ticket->id, $art_tickets)){
+                                       $art_tickets[$order_attendee->ticket->id]['quantity'] += 1;
+                                       $art_tickets[$order_attendee->ticket->id]['total'] += $order_attendee->ticket->price;
+                                    }else{
+                                        $art_tickets[$order_attendee->ticket->id] = [
+                                            'quantity' => 1,
+                                            'total' => $order_attendee->ticket->price,
+                                            'title' => $order_attendee->ticket->title,
+                                            'price' => $order_attendee->ticket->price,
+                                            'booking_fee' => $order_attendee->ticket->booking_fee
+                                        ];
+                                    }
+                                }
+                            }
+                        ?>
+                            @foreach($art_tickets as $order_item)
                                 <tr>
                                     <td>
-                                        {{$order_item->title}}
+                                        {{$order_item['title']}}
                                     </td>
                                     <td>
-                                        {{$order_item->quantity}}
+                                        {{$order_item['quantity']}}
                                     </td>
                                     <td>
-                                        @if((int)ceil($order_item->unit_price) == 0)
+                                        @if($order_item['price'] == 0)
                                         FREE
                                         @else
-                                       {{money($order_item->unit_price, $order->event->currency)}}
+                                       {{money($order_item['price'], $order->event->currency)}}
                                         @endif
 
                                     </td>
                                     <td>
-                                        @if((int)ceil($order_item->unit_price) == 0)
+                                        @if($order_item['price'] == 0)
                                         -
                                         @else
-                                        {{money($order_item->unit_booking_fee, $order->event->currency)}}
+                                        {{money($order_item['booking_fee'], $order->event->currency)}}
                                         @endif
 
                                     </td>
                                     <td>
-                                        @if((int)ceil($order_item->unit_price) == 0)
+                                        @if($order_item['price'] == 0)
                                         FREE
                                         @else
-                                        {{money(($order_item->unit_price + $order_item->unit_booking_fee) * ($order_item->quantity), $order->event->currency)}}
+                                        {{money(($order_item['price'] + $order_item['booking_fee']) * ($order_item['quantity']), $order->event->currency)}}
                                         <!--added by DonaldFeb28-->
-                                        <?php $total_amt_calc += ($order_item->unit_price + $order_item->unit_booking_fee) * ($order_item->quantity); ?>
+                                        <?php $total_amt_calc += ($order_item['price'] + $order_item['booking_fee']) * ($order_item['quantity']); ?>
                                         <!--end of addition DonaldFeb28-->
                                         @endif
 
