@@ -286,6 +286,16 @@ Route::group(['prefix' => 'e'], function () {
         'uses' => 'EventCheckoutController@completeOrder',
     ]);
 
+    Route::get('/direct/{event_id}/showpay', [
+        'as'   => 'showDirectPay',
+        'uses' => 'EventTransactionsController@showDirectPay',
+    ]);
+
+    Route::post('/direct/{event_id}/gopay', [
+        'as'   => 'postDirectPay',
+        'uses' => 'EventTransactionsController@postDirectPay',
+    ]);
+
 
 });
 
