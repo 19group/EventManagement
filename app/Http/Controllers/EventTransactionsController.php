@@ -100,4 +100,68 @@ class EventTransactionsController extends Controller
         return redirect(route('OrderAccommodation',['event_id'=>$event_id]));
     }
 
+    public function showDirectPay($event_id)
+    {
+        $data = [
+            'event'           => Event::findorFail($event_id)
+        ];
+        return view('Public.ViewEvent.EventDirectPayPage', $data);
+    }
+
+    public function postDirectPay(Request $request, $event_id)
+    {
+
+        if($request->has('amount')){
+            $item_amount = $request->get('amount');
+        }else{
+            exit('there was an error for the submitted amount');
+        }
+        // PayPal settings
+
+        $paypal_email = env('PAYPAL_EMAIL');//'user@domain.com';
+        $return_url = env('SERVER_ROOT').'e/'.$event_id;//.'/paypal/paymentsuccess/'.$payment_token;
+        $cancel_url = env('SERVER_ROOT').'e/direct/'.$event_id.'/showpay'; //checkout/create';
+        $notify_url = env('SERVER_ROOT').'e/'.$event_id.'/paypal/notification';
+
+        $item_name = 'FOSS4G 2018 Tickets Payment';//'Test Item';
+
+        // Check if paypal request or response
+        if (!isset($_POST["txn_id"]) && !isset($_POST["txn_type"])){
+            $querystring = '';
+
+            // Firstly Append paypal account to querystring
+            $querystring .= "?business=".urlencode($paypal_email)."&";
+
+            //The item name and amount can be brought in dynamically by querying the $_POST['item_number'] variable.
+            $querystring .= "item_name=".urlencode($item_name)."&";
+            $querystring .= "amount=".urlencode($item_amount)."&";
+
+
+            //loop for posted values and append to querystring (edited for autoredirecting)
+            $POSTsubstitute["cmd"] = "_xclick";
+            $POSTsubstitute["no_note"] = "1";
+            $POSTsubstitute["first_name"] = 'Automated';
+            $POSTsubstitute["last_name"] = 'Payment';
+            $POSTsubstitute["payer_email"] = 'payments@studio19.co.tz';
+
+            foreach($POSTsubstitute as $key => $value){
+                $value = urlencode(stripslashes($value));
+                $querystring .= "$key=$value&";
+            }
+
+            //append custom field
+            //$querystring .= "custom=$custom&";
+
+            // Append paypal return addresses
+            $querystring .= "cancel_return=".urlencode(stripslashes($cancel_url))."&";
+            $querystring .= "return=".urlencode(stripslashes($return_url))."&";
+            $querystring .= "notify_url=".urlencode($notify_url);
+
+            //event(new PaymentCompletedEvent(['payment_gateway'=>'paypal','event_id'=>$event_id]));
+
+            return redirect(env('PAYPAL_HOST').$querystring);
+
+        }
+    }
+
 }
