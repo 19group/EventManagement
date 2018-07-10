@@ -8,7 +8,7 @@
     <div class="row bg-white">
 <section id="tickets" class="container">
 
-            {!! Form::open(['url' => route('postDirectPay', ['event_id' => $event->id]), 'class' => 'ajax']) !!}
+            {!! Form::open(['url' => route('postDirectPay', ['event_id' => $event->id])]) !!}
             <div class="row">
                 <div class="col-md-12">
 
