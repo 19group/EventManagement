@@ -18,7 +18,27 @@
 
 <div class="row order_button">
 </div>
-  <h1 class='section_head'>Enter Amount to be paid</h1>
+  <h1 class='section_head'>Enter Payment Details</h1>
+                                   <div class="row">
+                                               <div class="col-md-6">
+                                                   <div class="form-group">
+                                                       {!! Form::label('first_name', 'First Name', array('class'=>'font-weight-bold control-label required')) !!}
+                                                       {!!  Form::text('first_name', Input::old('first_name'),
+                                                   array(
+                                                   'class'=>'form-control','required'=>'yes'
+                                                   ))  !!}
+                                                   </div>
+                                               </div>
+                                               <div class="col-md-6">
+                                                   <div class="form-group">
+                                                       {!! Form::label('last_name', 'Last Name', array('class'=>'font-weight-bold control-label required')) !!}
+                                                       {!!  Form::text('last_name', Input::old('last_name'),
+                                                   array(
+                                                   'class'=>'form-control ','required'
+                                                   ))  !!}
+                                                   </div>
+                                               </div>
+                                  </div>
   <div class="row">
    <div class="col-md-12">
        <div class="form-group">
