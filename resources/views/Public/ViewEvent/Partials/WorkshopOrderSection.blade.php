@@ -85,14 +85,14 @@ Attend a Workshop at {{$event->title}}
                            </div>
                            <div class="col-xs-12 workshop-date">
 
-                           <?php if($minevent->ticket_offers!=NULL){
+                           <?php if($minevent->ticket_offers!=NULL){ echo '<b>Workshop session(s)</b><br>';
                                     $ticket_offers = explode('+++',$minevent->ticket_offers);
 
                                     for($i=0;$i<count($ticket_offers);++$i){
                                         $sched = explode('<==>',$ticket_offers[$i]);
                                         $count = $i+1;
                                         echo '<p>';
-                                        echo'<b>'.date('l, d-M-Y', strtotime($sched[0])).'</b>';
+                                        echo'starting <b>'.date('D, d-M-Y H:i A', strtotime($sched[0])).'</b>';
                                         echo '</p>';
                                     } ?>
                           <?php } ?>
