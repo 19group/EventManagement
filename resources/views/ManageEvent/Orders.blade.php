@@ -42,6 +42,21 @@ Event Orders
                 <li><a href="{{route('showExportOrders', ['event_id'=>$event->id,'export_as'=>'html'])}}">HTML</a></li>
             </ul>
         </div>
+        <div class="btn-group btn-group btn-group-responsive">
+            <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+                <i class="ico-users"></i> FILTER ORDERS <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li><a href="{{route('showEventOrders', ['event_id'=>$event->id,'filter'=>'today'])}}">Today</a></li>
+                <li><a href="{{route('showEventOrders', ['event_id'=>$event->id,'filter'=>'yesterday'])}}">Yesterday</a></li>
+                <li><a href="{{route('showEventOrders', ['event_id'=>$event->id,'filter'=>'threedays'])}}">Last 3 days</a></li>
+                <li><a href="{{route('showEventOrders', ['event_id'=>$event->id,'filter'=>'week'])}}">This Week</a></li>
+                <li><a href="{{route('showEventOrders', ['event_id'=>$event->id,'filter'=>'ltweek'])}}">Last Week</a></li>
+                <li><a href="{{route('showEventOrders', ['event_id'=>$event->id,'filter'=>'month'])}}">This Month</a></li>
+                <li><a href="{{route('showEventOrders', ['event_id'=>$event->id,'filter'=>'ltmonth'])}}">Last Month</a></li>
+                <li><a href="{{route('showEventOrders', ['event_id'=>$event->id,'filter'=>'all'])}}">Show All</a></li>
+            </ul>
+        </div>
     </div>
     <!--/ Toolbar -->
 </div>
@@ -111,8 +126,8 @@ $donation=0;
                                     {{$order->order_reference}}
                                 </a>
                             </td>
-                            <td>
-                                {{ $order->created_at->toDayDateTimeString() }}
+                            <td> {{ $order->created_at }}
+                                <!--{{ $order->created_at->toDayDateTimeString() }}-->
                             </td>
                             <td>
                                 {{$order->first_name.' '.$order->last_name}}
