@@ -42,6 +42,21 @@ Event Orders
                 <li><a href="{{route('showExportOrders', ['event_id'=>$event->id,'export_as'=>'html'])}}">HTML</a></li>
             </ul>
         </div>
+        <div class="btn-group btn-group btn-group-responsive">
+            <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+                <i class="ico-users"></i> FILTER ORDERS <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li><a href="{{route('showEventOrders', ['event_id'=>$event->id,'filter'=>'today'])}}">Today</a></li>
+                <li><a href="{{route('showEventOrders', ['event_id'=>$event->id,'filter'=>'yesterday'])}}">Yesterday</a></li>
+                <li><a href="{{route('showEventOrders', ['event_id'=>$event->id,'filter'=>'threedays'])}}">Last 3 days</a></li>
+                <li><a href="{{route('showEventOrders', ['event_id'=>$event->id,'filter'=>'week'])}}">This Week</a></li>
+                <li><a href="{{route('showEventOrders', ['event_id'=>$event->id,'filter'=>'ltweek'])}}">Last Week</a></li>
+                <li><a href="{{route('showEventOrders', ['event_id'=>$event->id,'filter'=>'month'])}}">This Month</a></li>
+                <li><a href="{{route('showEventOrders', ['event_id'=>$event->id,'filter'=>'ltmonth'])}}">Last Month</a></li>
+                <li><a href="{{route('showEventOrders', ['event_id'=>$event->id,'filter'=>'all'])}}">Show All</a></li>
+            </ul>
+        </div>
     </div>
     <!--/ Toolbar -->
 </div>
@@ -91,9 +106,9 @@ $donation=0;
                             <th>
                                {!! Html::sortable_link('Email', $sort_by, 'email', $sort_order, ['q' => $q , 'page' => $orders->currentPage()]) !!}
                             </th>
-                            <!--th>
+                            <th>
                                {!! Html::sortable_link('Amount', $sort_by, 'amount', $sort_order, ['q' => $q , 'page' => $orders->currentPage()]) !!}
-                            </th-->
+                            </th>
                             <th>
                                {!! Html::sortable_link('Status', $sort_by, 'order_status_id', $sort_order, ['q' => $q , 'page' => $orders->currentPage()]) !!}
                             </th>
@@ -101,7 +116,6 @@ $donation=0;
                         </tr>
                     </thead>
                     <tbody>
-
                         @foreach($orders as $order)
                         <tr>
                          <td>
@@ -112,8 +126,8 @@ $donation=0;
                                     {{$order->order_reference}}
                                 </a>
                             </td>
-                            <td>
-                                {{ $order->created_at->toDayDateTimeString() }}
+                            <td> {{ $order->created_at }}
+                                <!--{{ $order->created_at->toDayDateTimeString() }}-->
                             </td>
                             <td>
                                 {{$order->first_name.' '.$order->last_name}}
@@ -127,19 +141,38 @@ $donation=0;
                             <?php
 
                             //Check if the order has donation, so as to add it to the ovarall order amount;
-                            $order_donation = OrderItem::where(['title'=>'Donation','order_id'=>$order->id]);
-                            if($order_donation->count() != 0){
-                                $donation = $order_donation->first()->unit_price;
+                            $order_donation = OrderItem::where(['title'=>'Donation','order_id'=>$order->id])->first();
+                            $donation=0;
+                            if($order_donation){
+                                $donation = $order_donation->unit_price + $order_donation->unit_booking_fee;
                             }
+                            $total_amt_calc = $donation;
+                            $art_tickets = [];
+                            foreach($order->attendees as $order_attendee) {
+                                if(!$order_attendee->is_cancelled){
+                                    $total_amt_calc = $total_amt_calc + $order_attendee->ticket->price + $order_attendee->ticket->unit_booking_fee;
+                                }
+                            }
+                            $order_discounts = App\Coupon::where(['state'=>'Used','user'=>$order->id])->get();
+                            $subtracted = 0;
+                            foreach($order_discounts as $discount){
+                                if($discount->exact_amount){
+                                    $subtracted += App\Models\Ticket::find($discount->ticket_id)->price - $discount->exact_amount;
+                                }elseif($discount->discount){ //discount = percentage
+                                    $subtracted += ($discount->discount * App\Models\Ticket::find($discount->ticket_id)->price)/100;
+                                }
+                            }
+                            $total_amt_calc = $total_amt_calc - $subtracted;
                             ?>
-                            <!--td>
+                            <td>
                                 <a href="#" class="hint--top" data-hint="{{money($order->amount, $event->currency)}} + {{money($order->organiser_booking_fee, $event->currency)}} + {{money($donation, $event->currency)}} Organiser Booking Fee">
-                                    {{money($order->amount + $donation + $order->organiser_booking_fee, $event->currency)}}
+                                <!--    {{money($order->amount + $donation + $order->organiser_booking_fee, $event->currency)}}  -->
+                                    {{money($total_amt_calc, $event->currency)}}
                                     @if($order->is_refunded || $order->is_partially_refunded)
 
                                     @endif
                                 </a>
-                            </td-->
+                            </td>
                             <td>
                                 <span class="label label-{{(!$order->is_payment_received || $order->is_refunded || $order->is_partially_refunded) ? 'warning' : 'success'}}">
                                     {{$order->orderStatus->name}}

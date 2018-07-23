@@ -110,20 +110,71 @@ class EventTransactionsController extends Controller
 
     public function postDirectPay(Request $request, $event_id)
     {
-
-        if($request->has('amount')){
-            $item_amount = $request->get('amount');
-        }else{
-            exit('there was an error for the submitted amount');
+        if(!$request->has('first_name')){
+            exit ('Please enter first name');
         }
+
+        if(!$request->has('last_name')){
+            exit('Please enter last name');
+        }
+
+        if(!$request->has('amount')){
+            exit('Please enter correct amount');
+        }
+
+        $first_name = $request->get('first_name');
+        $last_name  = $request->get('last_name');
+        $amount     = $request->get('amount');
+        $token = $this->encrypt_decrypt('encrypt', $first_name.'+'.$last_name.'+'.$amount);
+
+//        return view('Public.ViewEvent.EventMidDirectPayPage', $data);
+        return redirect(route('goDirectPay',['event_id'=>$event_id, 'token'=>$token]));
+    }
+
+
+    public function goDirectPay($event_id, $token)
+    {
+        $decrypt = $this->encrypt_decrypt('decrypt',$token);
+        list($first_name, $last_name, $amount) = explode('+', $decrypt);
+
+        $data = [
+            'event' => Event::findOrFail($event_id),
+            'first_name' => $first_name,
+            'last_name'  => $last_name,
+            'token'      => $token,
+            'amount'     => $amount
+        ];
+        return view('Public.ViewEvent.EventMidDirectPayPage', $data);
+    }
+
+    public function completedDirectPay($event_id, $token)
+    {
+        $decrypt = $this->encrypt_decrypt('decrypt',$token);
+        list($first_name, $last_name, $amount) = explode('+', $decrypt);
+
+        $data = [
+            'event' => Event::findOrFail($event_id),
+            'first_name' => $first_name,
+            'last_name'  => $last_name,
+            'token'      => $token,
+            'amount'     => $amount
+        ];
+        return view('Public.ViewEvent.EventSuccessDirectPayPage', $data);
+    }
+
+    public function paypalDirectPay($event_id, $token)
+    {
+        $decrypt = $this->encrypt_decrypt('decrypt',$token);
+        list($first_name, $last_name, $amount) = explode('+', $decrypt);
         // PayPal settings
 
         $paypal_email = env('PAYPAL_EMAIL');//'user@domain.com';
-        $return_url = env('SERVER_ROOT').'e/'.$event_id;//.'/paypal/paymentsuccess/'.$payment_token;
-        $cancel_url = env('SERVER_ROOT').'e/direct/'.$event_id.'/showpay'; //checkout/create';
+        $return_url = env('SERVER_ROOT').'e/paypal/'.$event_id.'/paidwithtoken/'.$token;//.'/paypal/paymentsuccess/'.$payment_token;
+        $cancel_url = env('SERVER_ROOT').'e/direct/'.$event_id.'/paywithtoken/'.$token; //checkout/create';
         $notify_url = env('SERVER_ROOT').'e/'.$event_id.'/paypal/notification';
 
         $item_name = 'FOSS4G 2018 Tickets Payment';//'Test Item';
+        $item_amount = $amount;
 
         // Check if paypal request or response
         if (!isset($_POST["txn_id"]) && !isset($_POST["txn_type"])){
@@ -162,6 +213,26 @@ class EventTransactionsController extends Controller
             return redirect(env('PAYPAL_HOST').$querystring);
 
         }
+    }
+
+
+    public function encrypt_decrypt($action, $string) {
+        $output = false;
+        $encrypt_method = "AES-256-CBC";
+        $secret_key = 'This is my secret key';
+        $secret_iv = 'This is my secret iv';
+        // hash
+        $key = hash('sha256', $secret_key);
+        
+        // iv - encrypt method AES-256-CBC expects 16 bytes - else you will get a warning
+        $iv = substr(hash('sha256', $secret_iv), 0, 16);
+        if ( $action == 'encrypt' ) {
+            $output = openssl_encrypt($string, $encrypt_method, $key, 0, $iv);
+            $output = base64_encode($output);
+        } else if( $action == 'decrypt' ) {
+            $output = openssl_decrypt(base64_decode($string), $encrypt_method, $key, 0, $iv);
+        }
+        return $output;
     }
 
 }

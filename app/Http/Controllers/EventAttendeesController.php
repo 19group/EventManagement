@@ -66,7 +66,7 @@ class EventAttendeesController extends MyBaseController
                 ->withoutCancelled()
                 ->orderBy(($sort_by == 'order_reference' ? 'orders.' : 'attendees.') . $sort_by, $sort_order)
                 ->select('attendees.*', 'orders.order_reference')
-                ->paginate();
+                ->paginate(50);
         }
 
         $data = [

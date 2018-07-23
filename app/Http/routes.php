@@ -296,6 +296,21 @@ Route::group(['prefix' => 'e'], function () {
         'uses' => 'EventTransactionsController@postDirectPay',
     ]);
 
+    Route::get('/direct/{event_id}/paywithtoken/{token}', [
+        'as'   => 'goDirectPay',
+        'uses' => 'EventTransactionsController@goDirectPay',
+    ]);
+
+    Route::get('/paypal/{event_id}/{token}', [
+        'as'   => 'paypalDirectPay',
+        'uses' => 'EventTransactionsController@paypalDirectPay',
+    ]);
+
+    Route::get('/paypal/{event_id}/paidwithtoken/{token}', [
+        'as'   => 'successDirectPay',
+        'uses' => 'EventTransactionsController@completedDirectPay',
+    ]);
+
 
 });
 

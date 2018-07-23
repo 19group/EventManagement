@@ -85,15 +85,24 @@ Attend a Workshop at {{$event->title}}
                            </div>
                            <div class="col-xs-12 workshop-date">
 
-                           <?php if($minevent->ticket_offers!=NULL){
-                                    $ticket_offers = explode('+++',$minevent->ticket_offers);
+                           <?php if($minevent->ticket_offers!=NULL){ 
+
+                                  $ticket_offers = explode('+++',$minevent->ticket_offers);
+
+                                  if(count($ticket_offers)>1){
+                                    echo 'Workshop sessions<br>';
+                                  }
 
                                     for($i=0;$i<count($ticket_offers);++$i){
                                         $sched = explode('<==>',$ticket_offers[$i]);
                                         $count = $i+1;
                                         echo '<p>';
-                                        echo'<b>'.date('l, d-M-Y', strtotime($sched[0])).'</b>';
-                                        echo '</p>';
+                                        if(date('d-M-Y',strtotime($sched[0]))==date('d-M-Y',strtotime($sched[1]))){
+                                          echo '<b>'.date('l, d-M-Y', strtotime($sched[0])).'</b><br>';
+                                          echo '<b>'.date('H:i A',strtotime($sched[0])).' - '.date('H:i A',strtotime($sched[1])).'</b>';  
+                                        }else{
+                                          echo'start: <b>'.date('D, d-M-Y H:i A', strtotime($sched[0])).'</b>';
+                                        }echo '</p>';
                                     } ?>
                           <?php } ?>
 
@@ -154,3 +163,7 @@ function compareByTimeStamp($time1, $time2)
 }
 
 ?>
+
+<script>
+  $('div.alert').delay(12000).slideUp(300);
+</script>

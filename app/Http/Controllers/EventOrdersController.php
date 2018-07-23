@@ -15,6 +15,7 @@ use Log;
 use Mail;
 use Omnipay;
 use Validator;
+use Carbon;
 
 class EventOrdersController extends MyBaseController
 {
@@ -36,6 +37,45 @@ class EventOrdersController extends MyBaseController
 
         $event = Event::scope()->find($event_id);
 
+        if($request->has('filter')){
+            $filter = $request->get('filter');
+            switch ($filter) {
+                case 'today':
+                    $orders = $event->orders()->where('created_at','>=', Carbon::today())->orderBy($sort_by, $sort_order)->paginate(50);
+                    goto getdata;
+                    break;
+                case 'yesterday':
+                    $orders = $event->orders()->where('created_at','>=',Carbon::now()->subDays(2))->where('created_at','<', Carbon::today())->orderBy($sort_by, $sort_order)->paginate(50);
+                    goto getdata;
+                    break;
+                case 'threedays':
+                    $orders = $event->orders()->whereRaw('created_at >= DATE_ADD(NOW(), INTERVAL -3 DAY)')->orderBy($sort_by, $sort_order)->paginate(50);
+                    goto getdata;
+                    break;
+                case 'week':
+                    $orders = $event->orders()->where('created_at','>=',Carbon::now()->subDay()->startOfWeek()->toDateString())->orderBy($sort_by, $sort_order)->paginate(50);
+                    goto getdata;
+                    break;
+                case 'ltweek':
+                    $orders = $event->orders()->where('created_at','>=',Carbon::now()->subWeeks(2))->where('created_at','<',Carbon::now()->subDay()->startOfWeek()->toDateString())->orderBy($sort_by, $sort_order)->paginate(50);
+                    goto getdata;
+                    break;
+                case 'month':
+                    $orders = $event->orders()->where('created_at','like',date('Y').'-'.date('m').'%')->orderBy($sort_by, $sort_order)->paginate(50);
+                    goto getdata;
+                    break;
+                case 'ltmonth':
+                    //$orders = $event->orders()->whereRaw('created_at >= DATE_ADD(NOW(), INTERVAL -1 MONTH)')->orderBy($sort_by, $sort_order)->paginate(50);
+                    $orders = $event->orders()->whereMonth('created_at', '=', Carbon::now()->subMonth()->month)->orderBy($sort_by, $sort_order)->paginate(50);
+                    goto getdata;
+                    break;
+                case 'all':    
+                    $orders = $event->orders()->orderBy($sort_by, $sort_order)->paginate(50);
+                    goto getdata;
+                    break;
+            }
+        }
+
         if ($searchQuery) {
             /*
              * Strip the hash from the start of the search term in case people search for
@@ -53,10 +93,12 @@ class EventOrdersController extends MyBaseController
                         ->orWhere('last_name', 'like', $searchQuery . '%');
                 })
                 ->orderBy($sort_by, $sort_order)
-                ->paginate();
+                ->paginate(50);
         } else {
-            $orders = $event->orders()->orderBy($sort_by, $sort_order)->paginate();
+            $orders = $event->orders()->orderBy($sort_by, $sort_order)->paginate(50);
         }
+
+        getdata:
 
         $data = [
             'orders'     => $orders,
