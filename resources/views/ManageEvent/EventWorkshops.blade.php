@@ -90,18 +90,41 @@ Workshops for {{$event->title}}
                                 {{$workshop->price}}
                             </td>
                             <td>
-                                {{$workshop->quantity_sold}}
-                            </td>
-                            <td>
                                 <?php 
-                                    $schedules =[];
+                                    $attendschedules = [];
                                     if(isset($workshop->ticket_offers)){
                                         $toffers = explode('+++',$workshop->ticket_offers);
                                         for($count=0;$count<count($toffers);++$count){
                                         $sched = explode('<==>',$toffers[$count]);
                                         $schedule = date('d-M-Y H:i', strtotime($sched[0]))." to ".date('d-M-Y H:i', strtotime($sched[1]));
-                                        echo $schedule; echo '</br>.......</br>';
-                                        $schedules[] = $schedule;
+                                        $attendschedules[$schedule] = 0;
+                                        }
+                                    }
+                                    $workcounts = \App\Models\Attendee::where(['ticket_id'=>$workshop->id, 'is_cancelled'=>0])->get();
+                                    foreach($workcounts as $workattend){
+                                        if(!$workattend->period){continue;}
+                                        if(!array_key_exists($workattend->period, $attendschedules) && !array_key_exists('Cancelled '.$workattend->period, $attendschedules)){
+                                            $attendschedules['Cancelled '.$workattend->period] = 1;
+                                        }elseif(array_key_exists($workattend->period, $attendschedules)){
+                                            $attendschedules[$workattend->period] += 1;
+                                        }else{
+                                            $attendschedules['Cancelled '.$workattend->period] += 1;
+                                        }
+                                    }
+                                    echo count($workcounts);
+                                ?>
+                            </td>
+                            <td>
+                                <?php 
+                                    if($attendschedules){
+                                        $toffers = array_keys($attendschedules);
+                                        foreach($toffers as $schedule){
+                                            if(substr($schedule,0,9)=='Cancelled'){
+                                                echo '<span style="color:red">'.substr($schedule,0,9).' </span>'.substr($schedule,10);
+                                            }else{
+                                                echo $schedule; 
+                                            }
+                                        echo '</br>.......</br>';
                                         }
                                     }else{
                                         echo 'No session set.';
@@ -111,15 +134,14 @@ Workshops for {{$event->title}}
                             </td>
                             <td>
                                 <?php
-                                    if(!empty($schedules)){
-                                        foreach($schedules as $scheduler){
-                                            $tempobj = \App\Models\Attendee::where(['period'=>$scheduler, 'ticket_id'=>$workshop->id])->get();
-                                            echo count($tempobj); echo '</br>......</br>';
+                                    if($attendschedules){
+                                        foreach($attendschedules as $schedule){
+                                        echo $schedule; echo '</br>.......</br>';
                                         }
                                     }else{
                                         echo '0';
                                     }
-                                 ?>
+                                ?>
                                 
                             </td>
                             <td>

@@ -107,7 +107,7 @@ class WorkshopCheckoutController extends Controller
                 'exact_amount'          => $order_session['exact_amount'],
                 'amount_ticket_title'   => $order_session['amount_ticket_title'],
             */
-                'is_embedded'     => $this->is_embedded,
+                'is_embedded'     => $this->is_embedded, 
             ];
 
             //dd($data);
@@ -136,6 +136,20 @@ class WorkshopCheckoutController extends Controller
         $price = $request->get('price');
         $ticket_id = $request->get('ticket_id');
         $accommodation_dates =  $request->get('mydates');
+        if(!$accommodation_dates){goto noaccommodation_dates_found;}
+        $purchasedtickets=session()->get('ticket_order_'.$event_id)['tickets'];
+        foreach($purchasedtickets as $purticket){
+            if(isset($purticket['dates'])){
+                if(!empty($purticket['dates'])){
+                    $exploded = explode('<==>', str_replace([':',' ','-'], ['','',''], $accommodation_dates));
+                    $occupied = explode('<==>', str_replace([':',' ','-'], ['','',''], $purticket['dates']));
+                    if(($exploded[0] > $occupied[0] && $exploded[0] < $occupied[1] ) || ( $exploded[1] > $occupied[0] && $exploded[1] < $occupied[1])){
+                       session()->flash('message', 'Please note that there is a time collission between the recent added workshop session and past workshop session for '.$purticket['ticket']['title']);
+                    }
+                }
+            }
+        }
+        noaccommodation_dates_found:
 
         //Retrieve information from the form
           $ticket_id = $request->get('ticket_id');

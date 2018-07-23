@@ -46,7 +46,7 @@
 
                 <div class="p20 pl0 row">
                  <div class="col-md-12">
-                    <a href="javascript:void(0);" class="btn btn-primary btn-xs" id="mirror_buyer_info">
+                    <a href="javascript:void(0);" class="btn btn-danger btn-xs" id="mirror_buyer_info">
                         Click here to Copy buyers details to all tickets below
                     </a>
                  </div>

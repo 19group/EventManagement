@@ -102,11 +102,12 @@ class EventCheckoutController extends Controller
             $past_tickets=[];
             $past_donation=0;
             $past_order_amount=$edit_order->amount;
-            foreach($past_items as $past_item){
+            /*foreach($past_items as $past_item){
                 if($past_item['title']=='Donation'){
                     $past_donation=$past_item['unit_price'];
                 }else{
                     $past_tickets[] = [
+                        'ticket'                => Ticket::find($ticket_id),
                         'ticket_title'          => $past_item->title,
                         'qty'                   => $past_item->quantity,
                         'price'                 => ($past_item->quantity * $past_item->unit_price),
@@ -115,7 +116,41 @@ class EventCheckoutController extends Controller
                         'full_price'            => $past_item->unit_price + $edit_order->organiser_booking_fee + $edit_order->booking_fee,
                     ];
                 }
-            }
+            }*/
+                            $art_tickets = [];
+                            foreach ($edit_order->orderItems as $orderItem) {
+                                if($orderItem->title=='Donation'){
+                                        /*$art_tickets['donation'] = [
+                                            'quantity' => 1,
+                                            'total' => $orderItem->unit_price,
+                                            'title' => $orderItem->title,
+                                            'price' => $orderItem->unit_price,
+                                            'booking_fee' => $orderItem->unit_booking_fee
+                                        ];*/
+                                        $past_donation = $orderItem->unit_price;
+                                }
+                            }
+                            foreach($edit_order->attendees as $order_attendee) {
+                                if(!$order_attendee->is_cancelled){
+                                    if(array_key_exists($order_attendee->ticket->id, $art_tickets)){
+                                        $art_tickets[$order_attendee->ticket->id]['qty']                   += 1;
+                                        $art_tickets[$order_attendee->ticket->id]['price']                 +=  $order_attendee->ticket->price;
+                                        $art_tickets[$order_attendee->ticket->id]['booking_fee']           += $order_attendee->ticket->booking_fee;
+                                        $art_tickets[$order_attendee->ticket->id]['organiser_booking_fee'] += $edit_order->organiser_booking_fee;
+                                    }else{
+                                        $art_tickets[$order_attendee->ticket->id] = [
+                                            'ticket' => Ticket::find($order_attendee->ticket->id),
+                                            'qty' => 1,
+                                            'ticket_title' => $order_attendee->ticket->title,
+                                            'price'                 => $order_attendee->ticket->price,
+                                            'booking_fee'           => $order_attendee->ticket->booking_fee,
+                                            'organiser_booking_fee' => $edit_order->organiser_booking_fee,
+                                            'full_price'            => $order_attendee->ticket->price + $edit_order->organiser_booking_fee + $edit_order->booking_fee,
+                                            'dates'                 => str_replace(['to','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], ['<==>','01','02','03','04','05','06','07','08','09','10','11','12'], $order_attendee->period)
+                                        ];
+                                    }
+                                }
+                            }
             $past_order_id = $edit_order->id;
             $first_name=$edit_order->first_name;
             $last_name=$edit_order->last_name;
@@ -405,7 +440,8 @@ class EventCheckoutController extends Controller
 
         if(isset($past_order_id)){
             session()->put('ticket_order_' . $event_id . '.past_order_id',$past_order_id);
-            session()->put('ticket_order_' . $event_id . '.past_tickets',$past_tickets);
+        //    session()->put('ticket_order_' . $event_id . '.past_tickets',$past_tickets);
+            session()->put('ticket_order_' . $event_id . '.past_tickets',$art_tickets);
             session()->put('ticket_order_' . $event_id . '.past_donation', $past_donation);
             session()->put('ticket_order_' . $event_id . '.past_order_amount', $past_order_amount);
         }
@@ -490,12 +526,14 @@ class EventCheckoutController extends Controller
                                         $art_tickets[$order_attendee->ticket->id]['organiser_booking_fee'] += $edit_order->organiser_booking_fee;
                                     }else{
                                         $art_tickets[$order_attendee->ticket->id] = [
+                                            'ticket' => Ticket::find($order_attendee->ticket->id),
                                             'qty' => 1,
                                             'ticket_title' => $order_attendee->ticket->title,
                                             'price'                 => $order_attendee->ticket->price,
                                             'booking_fee'           => $order_attendee->ticket->booking_fee,
                                             'organiser_booking_fee' => $edit_order->organiser_booking_fee,
-                                            'full_price'            => $order_attendee->ticket->price + $edit_order->organiser_booking_fee + $edit_order->booking_fee
+                                            'full_price'            => $order_attendee->ticket->price + $edit_order->organiser_booking_fee + $edit_order->booking_fee,
+                                            'dates'                 => str_replace(['to','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], ['<==>','01','02','03','04','05','06','07','08','09','10','11','12'], $order_attendee->period)
                                         ];
                                     }
                                 }

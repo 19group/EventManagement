@@ -47,7 +47,8 @@
                         </div>
 
                         <div class="col-sm-6 col-xs-6">
-                            <b>Amount</b><br>{{money($order->total_amount, $order->event->currency)}}
+                            <?php $contrib_donation=0; $assoc_donation = App\Models\OrderItem::where(['title'=>'Donation','order_id'=>$order->id])->first(); if($assoc_donation){$contrib_donation = $assoc_donation->unit_price + $assoc_donation->booking_fee; } ?>
+                            <b>Amount</b><br>{{money($order->total_amount + $contrib_donation, $order->event->currency)}}
                         </div>
 
                         <div class="col-sm-6 col-xs-6">
