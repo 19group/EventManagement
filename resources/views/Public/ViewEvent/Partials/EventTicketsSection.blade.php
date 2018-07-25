@@ -168,6 +168,34 @@
                               <?php
                               $is_free_event = true;
                               ?>
+
+
+
+
+
+                                  <tr  class="ticket " property="offers" typeof="Offer">
+                                      <td class="col-xs-7 col-md-6">
+                              <span class="ticket-title semibold" property="name">
+                                  Ticket Only (Local)
+                              </span>
+                                          <p class="ticket-descripton mb0 " property="description">
+                                              To make this conference more accessible to the "Local community", we are offering a discount to the Ticket Only option making the cost of the ticket $120. To get this "Local" pricing, you can pay onsite or fill out the google form for a ticket coupon that you will afterwards use it to purchase the Ticket Only ticket in this site. To be considered local, you/your organization must be listed in the current <a target='_blank' href="http://www.oecd.org/dac/financing-sustainable-development/development-finance-standards/DAC_List_ODA_Recipients2014to2017_flows_En.pdf">DAC List of ODA Recipients</a> from the OECD and located on the continent of Africa.
+                                          </p>
+                                      <td class="col-xs-2">
+                                          <div class="ticket-pricing" style="margin-right: 20px; text-align:right">
+                                                  $120
+                                          </div>
+                                      </td>
+                                      <td class="col-xs-3 col-md-4">
+                                                  <a target='_blank' href="https://docs.google.com/forms/d/e/1FAIpQLSflPsE4EFEuIPgZPTTsZM95lkTKhSKKzCqrMNIrrEJMO2TYqg/viewform">Application Form Link</a>
+                                      </td>
+                                  </tr>
+
+
+
+
+
+
                               @foreach($tickets as $ticket)
                                   <tr  class="ticket " property="offers" typeof="Offer">
                                       <td class="col-xs-7 col-md-6">
@@ -250,6 +278,7 @@
                                       </td>
                                   </tr>
                               @endforeach
+
 
                               <tr class="checkout">
                                   <td>
