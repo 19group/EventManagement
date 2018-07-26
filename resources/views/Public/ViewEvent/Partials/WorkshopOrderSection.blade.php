@@ -76,26 +76,29 @@ Attend a Workshop at {{$event->title}}
                            </div>
                            <div class="col-sm-12 workshop-content">
                             <div class="col-xs-12 no-left-padding">
-                            <span class="ticket-title semibold" property="name">
+                            <span class="ticket-title semibold" property="name" style="font-size: 0.9em">
                              {{$minevent->title}}
                             </span>
                            </div>
-                           <div class="col-xs-12 workshop-presenter">
+                           <div class="col-xs-12 workshop-presenter" style="font-size: 0.7em">
                               Presented By: {{$minevent->ticket_extras}}
                            </div>
-                           <div class="col-xs-12 workshop-date">
+                           <div class="col-xs-12 workshop-date" style="font-size: 0.75em">
 
                            <?php if($minevent->ticket_offers!=NULL){ 
 
                                   $ticket_offers = explode('+++',$minevent->ticket_offers);
 
                                   if(count($ticket_offers)>1){
-                                    echo 'Workshop sessions<br>';
-                                  }
-
+                                    echo 'Workshop sessions';
                                     for($i=0;$i<count($ticket_offers);++$i){
                                         $sched = explode('<==>',$ticket_offers[$i]);
-                                        $count = $i+1;
+                                        $count = $i+1;{
+                                          echo '('.$count.')start: <b>'.date('D, d-M-Y H:i A', strtotime($sched[0])).'</b>';
+                                        }
+                                    } 
+                                  }else{
+                                        $sched = explode('<==>',$ticket_offers[0]);
                                         echo '<p>';
                                         if(date('d-M-Y',strtotime($sched[0]))==date('d-M-Y',strtotime($sched[1]))){
                                           echo '<b>'.date('l, d-M-Y', strtotime($sched[0])).'</b><br>';
