@@ -143,7 +143,7 @@ class WorkshopCheckoutController extends Controller
                 if(!empty($purticket['dates'])){
                     $exploded = explode('<==>', str_replace([':',' ','-'], ['','',''], $accommodation_dates));
                     $occupied = explode('<==>', str_replace([':',' ','-'], ['','',''], $purticket['dates']));
-                    if(($exploded[0] > $occupied[0] && $exploded[0] < $occupied[1] ) || ( $exploded[1] > $occupied[0] && $exploded[1] < $occupied[1])){
+                    if(($exploded[0] >= $occupied[0] && $exploded[0] < $occupied[1] ) || ( $exploded[1] >= $occupied[0] && $exploded[1] < $occupied[1])){
                        session()->flash('message', 'Please note that there is a time collission between the recent added workshop session and past workshop session for '.$purticket['ticket']['title']);
                     }
                 }
