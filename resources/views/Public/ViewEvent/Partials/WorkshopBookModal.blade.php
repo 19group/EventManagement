@@ -1,5 +1,5 @@
   <!-- Beginning of Modal -->
-    <div class="modal fade" id="{{$minevent->id}}" >
+    <div role="dialog" class="modal fade" id="{{$minevent->id}}" >
      <div class="modal-dialog">
       <div class="modal-content">
        <div class="modal-head text-light text-center" style="background-color: #5fa9da">
@@ -12,10 +12,11 @@
         {!! Form::hidden('ticket_id', $minevent->id) !!}
         <div class="modal-body">
          <div class="col-md-12 container-fluid">
+
           <div class="form-group col-md-12" id='datetimepicker4'>
            <div class="col-sm-12">
             <div class="col-sm-12 field-label">
-             <span>
+             <span style="color: #000">
               {{$minevent->description}}
              </span>
             </div>
@@ -24,7 +25,7 @@
             </div>
            </div>
            <div class="col-sm-12">
-            <div class="col-sm-8 field-label">
+            <div class="col-sm-8 field-label" style="color: #000">
              <span>
 
               <?php if($minevent->ticket_offers!=NULL){
@@ -48,7 +49,7 @@
 
              </span>
             </div>
-            <div class="col-sm-4 field-label">
+            <div class="col-sm-4 field-label"  style="color: #000">
              <div>
               <span><b>{{money($minevent->price, $event->currency)}}</b></span>
               <br/>
