@@ -117,11 +117,52 @@ Attend a Workshop at {{$event->title}}
                             <div class="col-xs-6 workshop-price">
                              <span>{{money($minevent->price, $event->currency)}} </span>
                             </div>
-                            <div class="col-xs-6 workshop-book">
+                            <!--div class="col-xs-6 workshop-book">
                              <button data-toggle="modal" data-target="#{{$minevent->id}}" class="btn btn-primary workshop-book-button">
                              <i class="ico-ticket"></i> Book
                              </button>
-                            </div>
+                            </div-->
+
+
+
+                                      <div class="col-xs-6 workshop-book">
+                                          @if($minevent->is_paused)
+
+                                              <span class="text-danger">
+                                  Currently Not On Sale
+                              </span>
+
+                                          @else
+
+                                              @if($minevent->sale_status === config('attendize.ticket_status_sold_out'))
+                                                  <span class="text-danger" property="availability"
+                                                        content="http://schema.org/SoldOut">
+                                  Sold Out
+                              </span>
+                                              @elseif($minevent->sale_status === config('attendize.ticket_status_before_sale_date'))
+                                                  <span class="text-danger">
+                                  Sales Have Not Started
+                              </span>
+                                              @elseif($minevent->sale_status === config('attendize.ticket_status_after_sale_date'))
+                                                  <span class="text-danger">
+                                  Sales Have Ended
+                                              @if(Utils::isSuperUser()) @php goto purchasetickets; @endphp @endif 
+                              </span>
+                                              @else
+                                                  @php purchasetickets: @endphp
+                                                  <meta property="availability" content="http://schema.org/InStock">
+                             <button data-toggle="modal" data-target="#{{$minevent->id}}" class="btn btn-primary workshop-book-button">
+                             <i class="ico-ticket"></i> Book
+                             </button>
+                                              @endif
+
+                                          @endif
+                                      </div>
+
+
+
+
+
                            </div>
                           </div>
 
