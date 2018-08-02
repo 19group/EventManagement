@@ -136,7 +136,13 @@ Coupons
                     <thead>
                         <tr>
                             <th>
+                               Coupon ID
+                            </th>
+                            <th>
                                Coupon code
+                            </th>
+                            <th>
+                                Date Created
                             </th>
                             <th>
                                Associated Ticket
@@ -162,8 +168,14 @@ Coupons
                     <tbody>
                         @foreach($attendees as $coupon)
                         <tr>
+                            <td>
+                                {{$coupon->id}}
+                            </td>
                             <!--<td><input type="" class="btn btn-danger" style="width: 150px" value="{{$coupon->coupon_code}}" disabled /></td>-->
                             <td><button class="btn btn-danger" onClick="copy(this)" style="width: 110px;">{{$coupon->coupon_code}}</button></td>
+                            <td>
+                                {{$coupon->created_at}}
+                            </td>
                             <td>
                                  {{$coupon->ticket}}
                             </td>
