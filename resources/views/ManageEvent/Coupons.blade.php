@@ -215,6 +215,25 @@ Coupons
 
 
     </div>
+    <?php if ($q && count($attendees)>1 ) {?>
+    <div class="col-md-12">        
+        <div class="btn-group btn-group-responsive">
+
+            <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+                <i class="ico-users"></i> Export the filtered list <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <!--li><a href="{{route('showFilteredExportCoupons', ['event_id'=>$event->id,'export_as'=>'xlsx'])}}">Excel (XLSX)</a></li-->
+                <li><a href="{{route('showFilteredExportCoupons', ['event_id'=>$event->id,'export_as'=>'xls'])}}">Excel (XLS)</a></li>
+                <li><a href="{{route('showFilteredExportCoupons', ['event_id'=>$event->id,'export_as'=>'csv'])}}">CSV</a></li>
+                <li><a href="{{route('showFilteredExportCoupons', ['event_id'=>$event->id,'export_as'=>'html'])}}">HTML</a></li>
+            </ul>
+        </div> 
+        <div class="btn-group btn-group-responsive">
+            <button data-modal-id="InviteAttendee" href="javascript:void(0);"  data-href="{{route('showMassEditCoupons', array('event_id'=>$event->id, 'count'=>count($attendees)))}}" class="loadModal btn" type="button"><i class="glyphicon glyphicon-tag"></i> Edit All These Coupons At Once</button>
+        </div>
+    </div>
+<?php } ?>
     <div class="col-md-12">
     </div>
 </div>    <!--/End attendees table-->

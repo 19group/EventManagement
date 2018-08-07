@@ -686,9 +686,9 @@ class EventAttendeesController extends MyBaseController
      * @param $event_id
      * @param string $export_as (xlsx, xls, csv, html)
      */
-    public function showFilteredExportAttendees($event_id, $export_as = 'xls')
+    public function showFilteredExportAttendees($attends, $event_id, $export_as = 'xls')
     {
-
+        dd($attends);
         Excel::create('attendees-as-of-' . date('d-m-Y-g.i.a'), function ($excel) use ($event_id) {
 
             $excel->setTitle('Attendees List');
@@ -706,7 +706,9 @@ class EventAttendeesController extends MyBaseController
                     return $this->showExportAttendees($event_id, $export_as = 'xls');
                 }
 
-                $searchQuery = str_replace('+', ' ', $searchQuery);
+                $searchQuery = str_replace(
+                    ['+','%2F','%40','%3A','%3B','%2C','%27','%3F','%5C','%21','%23','%24','%25','%5E','%26','%28','%29','%7B','%7D','%5B','%5D'], 
+                    [' ','/','@',':',';',',','\'','?','\\','!','#','$','%','^','&','(',')','{','}','[',']'], $searchQuery);
 
                 $data = DB::table('attendees')
                     ->join('events', 'events.id', '=', 'attendees.event_id')
