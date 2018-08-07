@@ -182,19 +182,26 @@ class EventTicketsController extends MyBaseController
                     ->where('coupons.state', '=', 'Valid')
                     ->join('events', 'events.id', '=', 'coupons.event_id')
                     ->join('tickets', 'tickets.id', '=', 'coupons.ticket_id')
+                    ->join('orders', 'orders.id', '=', 'coupons.user')
                     ->select([
                         'coupons.coupon_code',
                         'coupons.discount',
-                    //    'events.title',
+                        'coupons.exact_amount',
                         'tickets.title',
+                        'orders.order_reference',
+                        'coupons.group',
+                        'coupons.state',
                     ])->get();
 
                 $sheet->fromArray($data);
                 $sheet->row(1, [
                     'Coupon Code',
                     'Discount',
-                //    'Event',
+                    'Exact Amount',
                     'Ticket Type',
+                    'User',
+                    'Group',
+                    'State',
                 ]);
 
                 // Set gray background on first row
@@ -453,9 +460,9 @@ class EventTicketsController extends MyBaseController
     public function postCreateCoupon(Request $request, $event_id)
     {
 
-        $id = $request->get('id');
+        $id = $request->get('id'); 
 
-      $title = DB::table('tickets')->select('title')->where('id', '=', $id)->value('title');
+        $title = DB::table('tickets')->select('title')->where('id', '=', $id)->value('title');
 
             for ($i = 0; $i < $request->get('max_coupons'); $i++) {
               Coupon::create([
@@ -463,6 +470,7 @@ class EventTicketsController extends MyBaseController
                 'discount' => $request->get('discount'),
                 'exact_amount' => $request->get('exact_amt'),
                 'state' => 'Valid',
+                'group' =>  $request->get('group'),
                 'ticket_id' =>  $request->get('id'),
                 'ticket' =>  $title,
                 'event_id' =>  $event_id,
@@ -717,6 +725,7 @@ class EventTicketsController extends MyBaseController
         $coupon->state = $request->get('state');
         $coupon->discount = $request->get('discount');
         $coupon->exact_amount = $request->get('exact_amt');
+        $coupon->group =  $request->get('group');
         $coupon->save();
         return redirect()->route('showEventCoupons', ['event_id' => $event_id]);
     }

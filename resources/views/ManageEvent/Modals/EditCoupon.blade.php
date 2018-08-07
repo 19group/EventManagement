@@ -95,6 +95,16 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Coupon's User Group</label>
+                                <input id="group" class="form-control" type="text" name="group" placeholder="Enter User Group's Name" value="{{$coupon->group}}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
             <div class="modal-footer">
                {!! Form::button('Close', ['class'=>"btn modal-close btn-danger",'data-dismiss'=>'modal']) !!}
                 {!! Form::submit('Save Coupon', ['class'=>"btn btn-success"]) !!}
