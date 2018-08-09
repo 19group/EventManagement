@@ -61,6 +61,7 @@ class EventTicketsController extends MyBaseController
         }
         if(count($discounts)==0){goto nodiscounts;}
         foreach($discounts as $discount){
+            if(!array_key_exists($discount->ticket_id, $ticketsarr)){goto noassociatedticket;}
             if($discount->exact_amount){
                 $subtracted = $ticketsarr[$discount->ticket_id] - $discount->exact_amount;
             }elseif($discount->discount){ //discount = percentage
@@ -71,6 +72,7 @@ class EventTicketsController extends MyBaseController
             }else{
                 $discount_sums[$discount->ticket_id] = $subtracted;
             }
+            noassociatedticket:
         }
         nodiscounts:
         eventhasnotickets:

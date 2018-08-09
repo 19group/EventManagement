@@ -561,6 +561,7 @@ class EventAttendeesController extends MyBaseController
      */
     public function postMessageAttendees(Request $request, $event_id)
     {
+        ini_set('max_execution_time', 1200);
         $rules = [
             'subject'    => 'required',
             'message'    => 'required',
