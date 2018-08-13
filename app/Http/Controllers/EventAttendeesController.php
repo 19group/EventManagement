@@ -91,7 +91,7 @@ class EventAttendeesController extends MyBaseController
 
         /* Commented by Frank*/
 
-        $allowed_sorts = ['created_at', 'ticket', 'discount', 'exact_amount', 'state', 'group'];
+        $allowed_sorts = ['created_at', 'ticket', 'discount', 'exact_amount', 'state', 'coupon_group'];
 
         $searchQuery = $request->get('q');
         $sort_order = $request->get('sort_order') == 'asc' ? 'asc' : 'desc';
@@ -111,7 +111,7 @@ class EventAttendeesController extends MyBaseController
                                 AND (
                                 `tickets`.`title` LIKE '%$searchQuery%' 
                                 OR `coupons`.`ticket` LIKE '%$searchQuery%' 
-                                OR `coupons`.`group` LIKE '$searchQuery' 
+                                OR `coupons`.`coupon_group` LIKE '$searchQuery' 
                                 OR `coupons`.`state` LIKE '$searchQuery' 
                                 OR `coupons`.`discount` = '$searchQuery' 
                                 OR `coupons`.`exact_amount` LIKE '$searchQuery' 

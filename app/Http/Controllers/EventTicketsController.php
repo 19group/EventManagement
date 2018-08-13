@@ -206,7 +206,7 @@ class EventTicketsController extends MyBaseController
                         'coupons.exact_amount',
                         'tickets.title',
                         'orders.order_reference',
-                        'coupons.group',
+                        'coupons.coupon_group',
                         'coupons.state',
                     ])->get();
 
@@ -273,7 +273,7 @@ class EventTicketsController extends MyBaseController
                             ->orWhere('coupons.state', 'like', $searchQuery)
                             ->orWhere('coupons.discount', 'like', $searchQuery)
                             ->orWhere('coupons.exact_amount', 'like', $searchQuery)
-                            ->orWhere('coupons.group', 'like', $searchQuery)
+                            ->orWhere('coupons.coupon_group', 'like', $searchQuery)
                             ->orWhere('tickets.title', 'like', $searchQuery . '%')
                             ->orWhere('coupons.created_at', 'like', $searchQuery . '%');
                     })
@@ -283,7 +283,7 @@ class EventTicketsController extends MyBaseController
                         'coupons.exact_amount',
                         'tickets.title',
                         'orders.order_reference',
-                        'coupons.group',
+                        'coupons.coupon_group',
                         'coupons.state',
                     ])
                     ->orderBy($sort_by, $sort_order)
@@ -565,7 +565,7 @@ class EventTicketsController extends MyBaseController
                 'discount' => $request->get('discount'),
                 'exact_amount' => $request->get('exact_amt'),
                 'state' => 'Valid',
-                'group' =>  $request->get('group'),
+                'coupon_group' =>  $request->get('group'),
                 'ticket_id' =>  $request->get('id'),
                 'ticket' =>  $title,
                 'event_id' =>  $event_id,
@@ -820,7 +820,7 @@ class EventTicketsController extends MyBaseController
         $coupon->state = $request->get('state');
         $coupon->discount = $request->get('discount');
         $coupon->exact_amount = $request->get('exact_amt');
-        $coupon->group =  $request->get('group');
+        $coupon->coupon_group =  $request->get('group');
         $coupon->save();
         return redirect()->route('showEventCoupons', ['event_id' => $event_id]);
     }
@@ -852,7 +852,7 @@ class EventTicketsController extends MyBaseController
                     ->orWhere('coupons.state', 'like', $searchQuery)
                     ->orWhere('coupons.discount', 'like', $searchQuery)
                     ->orWhere('coupons.exact_amount', 'like', $searchQuery)
-                    ->orWhere('coupons.group', 'like', $searchQuery)
+                    ->orWhere('coupons.coupon_group', 'like', $searchQuery)
                     ->orWhere('tickets.title', 'like', $searchQuery . '%')
                     ->orWhere('coupons.created_at', 'like', $searchQuery . '%');
             })
@@ -862,7 +862,7 @@ class EventTicketsController extends MyBaseController
                 'coupons.exact_amount',
                 'tickets.title',
                 'orders.order_reference',
-                'coupons.group',
+                'coupons.coupon_group',
                 'coupons.state',*/
             ])
         //    ->orderBy($sort_by, $sort_order)
@@ -878,7 +878,7 @@ class EventTicketsController extends MyBaseController
             if($request->get('state')){ $edit_coupon->state = $request->get('state'); }
             if($request->get('discount')) { $edit_coupon->discount = $request->get('discount'); }
             if($request->get('exact_amount')){ $edit_coupon->exact_amount = $request->get('exact_amt'); }
-            if($request->get('group')){ $edit_coupon->group =  $request->get('group'); }
+            if($request->get('group')){ $edit_coupon->coupon_group =  $request->get('group'); }
             $edit_coupon->save();
         }
         

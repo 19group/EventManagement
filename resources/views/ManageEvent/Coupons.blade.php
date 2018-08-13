@@ -139,7 +139,7 @@ Coupons
                                 {!!Html::sortable_link('State', $sort_by, 'state', $sort_order, ['q' => $q])!!}
                             </th>
                             <th>
-                                {!!Html::sortable_link('User Group', $sort_by, 'group', $sort_order, ['q' => $q])!!}
+                                {!!Html::sortable_link('User Group', $sort_by, 'coupon_group', $sort_order, ['q' => $q])!!}
                             </th>
                             <th>
                                 Order Used
@@ -190,7 +190,7 @@ Coupons
                                 {{$coupon->state}}
                             </td>
                             <td>
-                                {{$coupon->group}}
+                                {{$coupon->coupon_group}}
                             </td>
                             <td>
                                 <a href='javascript:void(0);' data-modal-id='view-order-{{$coupon->user}}' data-href="{{route('showManageOrder', ['order_id'=>$coupon->user])}}" title="View Order #{{$coupon->user}}" class="loadModal">
