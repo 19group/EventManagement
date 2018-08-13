@@ -83,7 +83,7 @@
                                             @foreach($event->messages as $message)
                                                 <tr>
                                                     <td class="meta">
-                                                        <p class="date">{{$message->sent_at->format('M j, Y, g:i a')}}</p>
+                                                        <p class="date"><?$message->sent_at->format(date('M j, Y, g:i a'))?></p>
                                                     </td>
                                                     <td class="message">
                                                         <h5 class="sender">To: <b>{{$message->recipients_label}}</b></h5>

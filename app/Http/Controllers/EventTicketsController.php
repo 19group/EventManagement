@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Log;
 use DB;
 use Excel;
+use URL;
 use Illuminate\Support\Facades\Input;
 
 /*
@@ -60,6 +61,7 @@ class EventTicketsController extends MyBaseController
         }
         if(count($discounts)==0){goto nodiscounts;}
         foreach($discounts as $discount){
+            if(!array_key_exists($discount->ticket_id, $ticketsarr)){goto noassociatedticket;}
             if($discount->exact_amount){
                 $subtracted = $ticketsarr[$discount->ticket_id] - $discount->exact_amount;
             }elseif($discount->discount){ //discount = percentage
@@ -70,6 +72,7 @@ class EventTicketsController extends MyBaseController
             }else{
                 $discount_sums[$discount->ticket_id] = $subtracted;
             }
+            noassociatedticket:
         }
         nodiscounts:
         eventhasnotickets:
@@ -112,6 +115,20 @@ class EventTicketsController extends MyBaseController
         ];
 
         return view('ManageEvent.Modals.EditCoupon', $data);
+    }
+
+    public function showMassEditCoupons($event_id, $count)
+    {
+        $data = [
+            'event'  => Event::scope()->find($event_id),
+            'count'  => $count,
+
+//            'coupon' => Coupon::scope()->find($coupon_id),
+        //    'coupon' => Coupon::where('id','=', $coupon_id)->first(),
+            'tickets' => DB::table('tickets')->where('event_id','=', $event_id)->get(['id', 'title']),
+        ];
+
+        return view('ManageEvent.Modals.MassEditCoupon', $data);
     }
 
     public function showEditAccommodation($event_id, $ticket_id)
@@ -182,19 +199,104 @@ class EventTicketsController extends MyBaseController
                     ->where('coupons.state', '=', 'Valid')
                     ->join('events', 'events.id', '=', 'coupons.event_id')
                     ->join('tickets', 'tickets.id', '=', 'coupons.ticket_id')
+                    ->join('orders', 'orders.id', '=', 'coupons.user')
                     ->select([
                         'coupons.coupon_code',
                         'coupons.discount',
-                    //    'events.title',
+                        'coupons.exact_amount',
                         'tickets.title',
+                        'orders.order_reference',
+                        'coupons.coupon_group',
+                        'coupons.state',
                     ])->get();
 
                 $sheet->fromArray($data);
                 $sheet->row(1, [
                     'Coupon Code',
                     'Discount',
-                //    'Event',
+                    'Exact Amount',
                     'Ticket Type',
+                    'User',
+                    'Group',
+                    'State',
+                ]);
+
+                // Set gray background on first row
+                $sheet->row(1, function ($row) {
+                    $row->setBackground('#f5f5f5');
+                });
+            });
+        })->export($export_as);
+    }
+
+    /**
+     * Filters, downloads and then export coupons
+     *
+     * @param $event_id
+     * @param string $export_as (xlsx, xls, csv, html)
+     */
+    public function showFilteredExportCoupons($event_id, $export_as = 'xls')
+    {
+
+        Excel::create('filtered-coupons-as-of-' . date('d-m-Y-g.i.a'), function ($excel) use ($event_id) {
+
+            $excel->setTitle('Filtered Coupons');
+
+            // Chain the setters
+            $excel->setCreator(config('attendize.app_name'))
+                ->setCompany(config('attendize.app_name'));
+
+            $excel->sheet('attendees_sheet_1', function ($sheet) use ($event_id) {
+
+                DB::connection()->setFetchMode(\PDO::FETCH_ASSOC);
+                $sort_by_position = strpos(URL::previous(),'sort_by=');
+                $sort_order_position = strpos(URL::previous(),'&sort_order=');                
+                $searchquery_position = strpos(URL::previous(),'&q=');
+                $sort_by = $sort_by_position > 0 ? substr(URL::previous(), $sort_by_position + 8, $sort_order_position - $sort_by_position - 8) : 'created_at';
+                $sort_order = $sort_order_position > 0 ? substr(URL::previous(), $sort_order_position + 12, $searchquery_position - $sort_order_position - 12) : 'desc';
+                $searchQuery = $searchquery_position > 0 ? substr(URL::previous(), $searchquery_position + 3) : substr(URL::previous(),strpos(URL::previous(),'coupons?q=')+10);
+                if(!$searchQuery){
+                    return $this->showExportCoupons($event_id, $export_as = 'xls');
+                }
+
+                $searchQuery = str_replace(
+                    ['+','%2F','%40','%3A','%3B','%2C','%27','%3F','%5C','%21','%23','%24','%25','%5E','%26','%28','%29','%7B','%7D','%5B','%5D'], 
+                    [' ','/','@',':',';',',','\'','?','\\','!','#','$','%','^','&','(',')','{','}','[',']'], $searchQuery);
+
+                $data = DB::table('coupons')
+                    ->where('coupons.event_id', '=', $event_id)
+                    ->leftJoin('tickets', 'tickets.id', '=', 'coupons.ticket_id')
+                    ->leftJoin('orders', 'orders.id', '=', 'coupons.user')
+                    ->where(function ($query) use ($searchQuery) {
+                        $query->where('orders.order_reference', 'like', $searchQuery)
+                            ->orWhere('coupons.ticket', 'like', '%'.$searchQuery . '%')
+                            ->orWhere('coupons.state', 'like', $searchQuery)
+                            ->orWhere('coupons.discount', 'like', $searchQuery)
+                            ->orWhere('coupons.exact_amount', 'like', $searchQuery)
+                            ->orWhere('coupons.coupon_group', 'like', $searchQuery)
+                            ->orWhere('tickets.title', 'like', $searchQuery . '%')
+                            ->orWhere('coupons.created_at', 'like', $searchQuery . '%');
+                    })
+                    ->select([
+                        'coupons.coupon_code',
+                        'coupons.discount',
+                        'coupons.exact_amount',
+                        'tickets.title',
+                        'orders.order_reference',
+                        'coupons.coupon_group',
+                        'coupons.state',
+                    ])
+                    ->orderBy($sort_by, $sort_order)
+                    ->get();
+                $sheet->fromArray($data);
+                $sheet->row(1, [
+                    'Coupon Code',
+                    'Discount',
+                    'Exact Amount',
+                    'Ticket Type',
+                    'User',
+                    'Group',
+                    'State',
                 ]);
 
                 // Set gray background on first row
@@ -453,9 +555,9 @@ class EventTicketsController extends MyBaseController
     public function postCreateCoupon(Request $request, $event_id)
     {
 
-        $id = $request->get('id');
+        $id = $request->get('id'); 
 
-      $title = DB::table('tickets')->select('title')->where('id', '=', $id)->value('title');
+        $title = DB::table('tickets')->select('title')->where('id', '=', $id)->value('title');
 
             for ($i = 0; $i < $request->get('max_coupons'); $i++) {
               Coupon::create([
@@ -463,6 +565,7 @@ class EventTicketsController extends MyBaseController
                 'discount' => $request->get('discount'),
                 'exact_amount' => $request->get('exact_amt'),
                 'state' => 'Valid',
+                'coupon_group' =>  $request->get('group'),
                 'ticket_id' =>  $request->get('id'),
                 'ticket' =>  $title,
                 'event_id' =>  $event_id,
@@ -717,7 +820,68 @@ class EventTicketsController extends MyBaseController
         $coupon->state = $request->get('state');
         $coupon->discount = $request->get('discount');
         $coupon->exact_amount = $request->get('exact_amt');
+        $coupon->coupon_group =  $request->get('group');
         $coupon->save();
+        return redirect()->route('showEventCoupons', ['event_id' => $event_id]);
+    }
+
+    public function postMassEditCoupons(Request $request, $event_id)
+    {
+        DB::connection()->setFetchMode(\PDO::FETCH_ASSOC);
+        $sort_by_position = strpos(URL::previous(),'sort_by=');
+        $sort_order_position = strpos(URL::previous(),'&sort_order=');                
+        $searchquery_position = strpos(URL::previous(),'&q=');
+        $sort_by = $sort_by_position > 0 ? substr(URL::previous(), $sort_by_position + 8, $sort_order_position - $sort_by_position - 8) : 'created_at';
+        $sort_order = $sort_order_position > 0 ? substr(URL::previous(), $sort_order_position + 12, $searchquery_position - $sort_order_position - 12) : 'desc';
+        $searchQuery = $searchquery_position > 0 ? substr(URL::previous(), $searchquery_position + 3) : substr(URL::previous(),strpos(URL::previous(),'coupons?q=')+10);
+        if(!$searchQuery){
+            return $this->showExportCoupons($event_id, $export_as = 'xls');
+        }
+
+        $searchQuery = str_replace(
+            ['+','%2F','%40','%3A','%3B','%2C','%27','%3F','%5C','%21','%23','%24','%25','%5E','%26','%28','%29','%7B','%7D','%5B','%5D'], 
+            [' ','/','@',':',';',',','\'','?','\\','!','#','$','%','^','&','(',')','{','}','[',']'], $searchQuery);
+
+        $data = DB::table('coupons')
+            ->where('coupons.event_id', '=', $event_id)
+            ->leftJoin('tickets', 'tickets.id', '=', 'coupons.ticket_id')
+            ->leftJoin('orders', 'orders.id', '=', 'coupons.user')
+            ->where(function ($query) use ($searchQuery) {
+                $query->where('orders.order_reference', 'like', $searchQuery)
+                    ->orWhere('coupons.ticket', 'like', '%'.$searchQuery . '%')
+                    ->orWhere('coupons.state', 'like', $searchQuery)
+                    ->orWhere('coupons.discount', 'like', $searchQuery)
+                    ->orWhere('coupons.exact_amount', 'like', $searchQuery)
+                    ->orWhere('coupons.coupon_group', 'like', $searchQuery)
+                    ->orWhere('tickets.title', 'like', $searchQuery . '%')
+                    ->orWhere('coupons.created_at', 'like', $searchQuery . '%');
+            })
+            ->select([ 'coupons.*'
+                /*'coupons.coupon_code',
+                'coupons.discount',
+                'coupons.exact_amount',
+                'tickets.title',
+                'orders.order_reference',
+                'coupons.coupon_group',
+                'coupons.state',*/
+            ])
+        //    ->orderBy($sort_by, $sort_order)
+            ->get();
+        foreach ($data as $edit_coupon) {
+            $edit_coupon = Coupon::where('id','=', $edit_coupon['id'])->first();
+            if($request->get('id')){
+                $id = $request->get('id');
+                $title = DB::table('tickets')->select('title')->where('id', '=', $id)->value('title');
+                $edit_coupon->ticket_id = $id;
+                $edit_coupon->ticket = $title;
+            }
+            if($request->get('state')){ $edit_coupon->state = $request->get('state'); }
+            if($request->get('discount')) { $edit_coupon->discount = $request->get('discount'); }
+            if($request->get('exact_amount')){ $edit_coupon->exact_amount = $request->get('exact_amt'); }
+            if($request->get('group')){ $edit_coupon->coupon_group =  $request->get('group'); }
+            $edit_coupon->save();
+        }
+        
         return redirect()->route('showEventCoupons', ['event_id' => $event_id]);
     }
 

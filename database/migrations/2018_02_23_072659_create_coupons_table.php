@@ -18,6 +18,7 @@ class CreateCouponsTable extends Migration
             $table->string('state');
             $table->integer('discount')->nullable();
             $table->integer('exact_amount')->nullable();
+            $table->string('group')->nullable();
             $table->string('user');
             $table->integer('ticket_id');
             $table->string('ticket');

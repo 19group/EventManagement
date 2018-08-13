@@ -599,15 +599,29 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
             'as'   => 'showEditCoupon',
             'uses' => 'EventTicketsController@showEditCoupon',
         ]);
+        Route::get('{event_id}/FilteredCoupons/massedit/{count}', [
+            'as'   => 'showMassEditCoupons',
+            'uses' => 'EventTicketsController@showMassEditCoupons',
+        ]);
         Route::post('{event_id}/coupons/edit/{coupon_id}', [
             'as'   => 'postEditCoupon',
             'uses' => 'EventTicketsController@postEditCoupon',
+        ]);
+        Route::post('{event_id}/coupons/massedit/{count}', [
+            'as'   => 'postMassEditCoupons',
+            'uses' => 'EventTicketsController@postMassEditCoupons',
         ]);
 
         Route::get('{event_id}/coupons/export/{export_as?}', [
             'as'   => 'showExportCoupons',
             'uses' => 'EventTicketsController@showExportCoupons',
         ]);
+
+        Route::get('{event_id}/coupons/filteredexport/{export_as?}', [
+            'as'   => 'showFilteredExportCoupons',
+            'uses' => 'EventTicketsController@showFilteredExportCoupons',
+        ]);
+
         Route::post('{event_id}/tickets/create', [
             'as'   => 'postCreateTicket',
             'uses' => 'EventTicketsController@postCreateTicket',
