@@ -89,9 +89,9 @@ class EventAttendeesController extends MyBaseController
         $event = Event::scope()->find($event_id);
 
 
-        /* Commented by Frank
+        /* Commented by Frank*/
 
-        $allowed_sorts = ['discount', 'email', 'user'];
+        $allowed_sorts = ['created_at', 'ticket', 'discount', 'exact_amount', 'state', 'coupon_group'];
 
         $searchQuery = $request->get('q');
         $sort_order = $request->get('sort_order') == 'asc' ? 'asc' : 'desc';
@@ -100,37 +100,38 @@ class EventAttendeesController extends MyBaseController
         $event = Event::scope()->find($event_id);
 
         if ($searchQuery) {
-            $attendees = $event->coupon()
-                ->withoutCancelled()
-                //->join('orders', 'orders.id', '=', 'attendees.order_id')
-                ->where(function ($query) use ($searchQuery) {
-                    $query->where('discount', 'like', $searchQuery . '%');
-                        //->orWhere('attendees.first_name', 'like', $searchQuery . '%')
-                        //->orWhere('attendees.email', 'like', $searchQuery . '%')
-                        //->orWhere('attendees.last_name', 'like', $searchQuery . '%');
-                })
-                ->orderBy(($sort_by == 'discount' ? 'orders.' : 'attendees.') . $sort_by, $sort_order)
-                ->select('attendees.*', 'orders.discount')
-                ->paginate();
+            $coupon = 
+                DB::select(
+                    DB::raw(
+                        "SELECT `coupons`.`*`, `orders`.`id` AS 'order_used', `tickets`.`title` 
+                        FROM `coupons` 
+                            LEFT JOIN `tickets` ON `coupons`.`ticket_id` = `tickets`.`id` 
+                            LEFT JOIN `orders` ON `orders`.`id` = `coupons`.`user` 
+                            WHERE `coupons`.`event_id` = '$event_id' 
+                                AND (
+                                `tickets`.`title` LIKE '%$searchQuery%' 
+                                OR `coupons`.`ticket` LIKE '%$searchQuery%' 
+                                OR `coupons`.`coupon_group` LIKE '$searchQuery' 
+                                OR `coupons`.`state` LIKE '$searchQuery' 
+                                OR `coupons`.`discount` = '$searchQuery' 
+                                OR `coupons`.`exact_amount` LIKE '$searchQuery' 
+                                OR `coupons`.`created_at` LIKE '$searchQuery%') 
+                            ORDER BY `coupons`.`$sort_by` $sort_order"
+                    )
+                );
         } else {
-            $attendees = $event->attendees()
-                //->join('orders', 'orders.id', '=', 'attendees.order_id')
-                ->withoutCancelled()
-                ->orderBy(($sort_by == 'discount' ? 'orders.' : 'attendees.') . $sort_by, $sort_order)
-                ->select('attendees.*', 'discount')
-                ->paginate();
-        }*/
+            $coupon = DB::table('coupons')->where('event_id', $event_id)->orderBy($sort_by,$sort_order)->get();
+        }
 
-        $coupon = DB::table('coupons')->where('event_id', $event_id)->get();
-
+    //    $coupon = DB::table('coupons')->where('event_id', $event_id)->get();
 
         $data = [
             'attendees'  => $coupon,
             'event'      => $event,
             // Revisit on adding sorting functionality
-            //'sort_by'    => $sort_by,
-            //'sort_order' => $sort_order,
-            //'q'          => $searchQuery ? $searchQuery : '',
+            'sort_by'    => $sort_by,
+            'sort_order' => $sort_order,
+            'q'          => $searchQuery ? $searchQuery : '',
         ];
 
         //dd($data);
@@ -560,6 +561,7 @@ class EventAttendeesController extends MyBaseController
      */
     public function postMessageAttendees(Request $request, $event_id)
     {
+        ini_set('max_execution_time', 1200);
         $rules = [
             'subject'    => 'required',
             'message'    => 'required',
@@ -685,9 +687,9 @@ class EventAttendeesController extends MyBaseController
      * @param $event_id
      * @param string $export_as (xlsx, xls, csv, html)
      */
-    public function showFilteredExportAttendees($event_id, $export_as = 'xls')
+    public function showFilteredExportAttendees($attends, $event_id, $export_as = 'xls')
     {
-
+        dd($attends);
         Excel::create('attendees-as-of-' . date('d-m-Y-g.i.a'), function ($excel) use ($event_id) {
 
             $excel->setTitle('Attendees List');
@@ -705,7 +707,9 @@ class EventAttendeesController extends MyBaseController
                     return $this->showExportAttendees($event_id, $export_as = 'xls');
                 }
 
-                $searchQuery = str_replace('+', ' ', $searchQuery);
+                $searchQuery = str_replace(
+                    ['+','%2F','%40','%3A','%3B','%2C','%27','%3F','%5C','%21','%23','%24','%25','%5E','%26','%28','%29','%7B','%7D','%5B','%5D'], 
+                    [' ','/','@',':',';',',','\'','?','\\','!','#','$','%','^','&','(',')','{','}','[',']'], $searchQuery);
 
                 $data = DB::table('attendees')
                     ->join('events', 'events.id', '=', 'attendees.event_id')

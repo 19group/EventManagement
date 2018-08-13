@@ -28,27 +28,23 @@
 </style>
 
 <div role="dialog"  class="modal fade " style="display: none;">
-    {!! Form::model($coupon, ['url' => route('postEditCoupon', [ 'event_id' => $event->id, 'coupon_id' => $coupon->id])]) !!}
+    {!! Form::model('edit', ['url' => route('postMassEditCoupons', [ 'event_id' => $event->id, 'count' => $count])]) !!}
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header text-center">
                 <button type="button" class="close" data-dismiss="modal">×</button>
                 <h3 class="modal-title">
                     <i class="ico-ticket"></i>
-                    Edit Coupon: <em>{{$coupon->coupon_code}}</em></h3>
+                    Edit Massively <em>{{$count}}</em> Coupons</h3>
             </div>
-                    {!! Form::hidden('coupon_id',$coupon->id) !!}
-
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Associated Ticket</label> 
                               <div class="form-group">
                                   <select class="form-control" name="id">
-                                      <option value="{{$coupon->ticket_id}}">{{$coupon->ticket}}</option>
+                                      <option value="">Choose a ticket</option>
                                     @foreach($tickets as $item)
-                                        @if($item->id!=$coupon->ticket_id)
                                       <option value="{{$item->id}}">{{$item->title}}</option>
-                                        @endif
                                     @endforeach
                                   </select>
                             </div>
@@ -60,12 +56,10 @@
                             <label>Coupon State</label> 
                               <div class="form-group">
                                   <select class="form-control" name="state">
-                                      <option value="{{$coupon->state}}">{{$coupon->state}}</option>
+                                      <option value="">Overwrite Status</option>
                                     @php $choices = ['Valid','Used','Invalid']; @endphp
                                     @foreach($choices as $item)
-                                        @if($item!=$coupon->state)
                                       <option value="{{$item}}">{{$item}}</option>
-                                        @endif
                                     @endforeach
                                   </select>
                             </div>
@@ -84,13 +78,13 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Coupon's Exact Amount</label>
-                                <input id="exact_amt" class="form-control" type="number" onkeyup="validate()" name="exact_amt" value="{{$coupon->exact_amount}}">
+                                <input id="exact_amt" class="form-control" type="number" onkeyup="validate()" name="exact_amt">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Coupon's Percentage Discount</label>
-                                <input id="perc_discount" class="form-control" type="number" onkeyup="validate()" name="discount" value="{{$coupon->discount}}">
+                                <input id="perc_discount" class="form-control" type="number" onkeyup="validate()" name="discount">
                             </div>
                         </div>
                     </div>
@@ -100,14 +94,14 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Coupon's User Group</label>
-                                <input id="group" class="form-control" type="text" name="group" placeholder="Enter User Group's Name" value="{{$coupon->group}}">
+                                <input id="group" class="form-control" type="text" name="group" placeholder="Enter User Group's Name">
                             </div>
                         </div>
                     </div>
                 </div>
             <div class="modal-footer">
                {!! Form::button('Close', ['class'=>"btn modal-close btn-danger",'data-dismiss'=>'modal']) !!}
-                {!! Form::submit('Save Coupon', ['class'=>"btn btn-success"]) !!}
+                {!! Form::submit('Save Changes', ['class'=>"btn btn-success", 'onClick'=>"return confirm('Confirm your changes knowing that it may be irreversable');"]) !!}
             </div>
 
 
