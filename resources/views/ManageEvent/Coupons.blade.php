@@ -20,7 +20,7 @@ Event Attendees
                 z-index: 1;
                 left: 50%;
                 bottom: 30px;
-                font-size: 17px;
+                font-size: 1em;
             }
 
             #snackbar.show {
@@ -113,7 +113,7 @@ Coupons
     <div class="col-md-12">
         <div class="panel">
             <div class="table-responsive">
-                <table class="table">
+                <table class="table" style="font-size: 1em;">
                     <thead>
                         <tr>
                             <th>

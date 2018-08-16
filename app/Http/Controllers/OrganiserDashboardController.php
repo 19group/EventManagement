@@ -41,6 +41,7 @@ class OrganiserDashboardController extends MyBaseController
             if(count($discounts)==0){goto nodiscounts;}
             $discount_sums=[];
             foreach($discounts as $discount){
+                if(!array_key_exists($discount->ticket_id, $tickets)){goto correspondticketdeleted;}
                 if($discount->exact_amount){
                     $subtracted = $tickets[$discount->ticket_id] - $discount->exact_amount;
                 }elseif($discount->discount){ //discount = percentage
@@ -51,6 +52,7 @@ class OrganiserDashboardController extends MyBaseController
                 }else{
                     $discount_sums[$discount->ticket_id] = $subtracted;
                 }
+                correspondticketdeleted:
             }
             $all_discounts[$event->id] = $discount_sums;
             nodiscounts:
