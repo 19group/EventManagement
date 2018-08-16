@@ -134,7 +134,7 @@
                                                 echo '<div class=\'row\'>';
                                                     //for($daycounter=0; $daycounter<count($days); ++$daycounter){
                                                          echo '&nbsp;&nbsp;<i class=\'glyphicon glyphicon-calendar\'>'.$days[$booked_days_splitter].'</i>';
-                                                         ++$booked_days_splitter;
+                                                         /////////++$booked_days_splitter;
                                                         //if($daycounter % 6 == 0){ //limit days to 6 in a row
                                                             //echo '</div><div class = \'row\'>';
                                                         //}
