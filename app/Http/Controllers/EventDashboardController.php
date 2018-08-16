@@ -30,6 +30,7 @@ class EventDashboardController extends MyBaseController
         $discounts = Coupon::where(['event_id'=>$event_id,'state'=>'Used'])->get();
         $discount_sums=[];
         foreach($discounts as $discount){
+            if(!array_key_exists($discount->ticket_id,$tickets)){goto correspondticketdeleted;}
             if($discount->exact_amount){
                 $subtracted = $tickets[$discount->ticket_id] - $discount->exact_amount;
             }elseif($discount->discount){ //discount = percentage
@@ -40,6 +41,7 @@ class EventDashboardController extends MyBaseController
             }else{
                 $discount_sums[$discount->ticket_id] = $subtracted;
             }
+            correspondticketdeleted:
         }
         eventhasnotickets:
 

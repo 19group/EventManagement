@@ -753,7 +753,13 @@ class EventCheckoutController extends Controller
         $ticket_links= [];
 
         $i = 0;
-        foreach($order_session['tickets'] as $ticket)
+
+        $purtickets = $order_session['tickets'];
+        if(isset($order_session['past_tickets'])){
+            $purtickets = array_merge($purtickets, $order_session['past_tickets']);
+        }
+
+        foreach($purtickets as $ticket)
         {
          if($ticket['ticket']->ticket_links != ""){
          $ticket_links[$i] = (int)$ticket['ticket']->ticket_links;
@@ -766,7 +772,7 @@ class EventCheckoutController extends Controller
         $accomodations = Ticket::where('type','Extra')->get();
         }
        else {
-        $accomodations = Ticket::whereIn('id',$ticket_links)->get();
+        $accomodations = Ticket::whereIn('id',$ticket_links)->orWhere(['status'=>'','type'=>'Extra'])->orWhere(['status'=>null, 'type'=>'Extra'])->get();
        }
 
         $data = $order_session + [

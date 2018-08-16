@@ -52,7 +52,7 @@ document.getElementById("ticketoffers").appendChild(p);
                             <div class="col-md-6">
                                 <div class="form-group">
                                      {!! Form::label('status', 'Status', array('class'=>' control-label')) !!}
-                                     {!! Form::select('status', ['5'=>'5 Stars', '4'=>'4 Stars', '3'=>'3 Stars'],$ticket->status, ['class' => 'form-control']) !!}
+                                     {!! Form::select('status', ['5'=>'5 Stars', '4'=>'4 Stars', '3'=>'3 Stars',''=>'Dependent'],$ticket->status, ['class' => 'form-control']) !!}
                                 </div>
                             </div>
 
