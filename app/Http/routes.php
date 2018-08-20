@@ -796,6 +796,16 @@ Route::group(['middleware' => ['auth', 'first.run']], function () {
             'uses' => 'EventAttendeesController@postImportAttendee',
         ]);
 
+        Route::get('{event_id}/attendeesorders/import', [
+            'as'   => 'showImportAttendeesOrders',
+            'uses' => 'EventAttendeesController@showImportAttendeesOrders',
+        ]);
+
+        Route::post('{event_id}/attendeesorders/import', [
+            'as'   => 'postImportAttendeesOrders',
+            'uses' => 'EventAttendeesController@postImportAttendeesOrders',
+        ]);
+
         Route::get('{event_id}/attendees/print', [
             'as'   => 'showPrintAttendees',
             'uses' => 'EventAttendeesController@showPrintAttendees',

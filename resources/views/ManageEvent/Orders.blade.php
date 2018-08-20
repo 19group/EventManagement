@@ -156,11 +156,14 @@ $donation=0;
                             $order_discounts = App\Coupon::where(['state'=>'Used','user'=>$order->id])->get();
                             $subtracted = 0;
                             foreach($order_discounts as $discount){
+                                $correspondticket = App\Models\Ticket::find($discount->ticket_id);
+                                if(!$correspondticket){goto nocorrespondticket;}
                                 if($discount->exact_amount){
                                     $subtracted += App\Models\Ticket::find($discount->ticket_id)->price - $discount->exact_amount;
                                 }elseif($discount->discount){ //discount = percentage
                                     $subtracted += ($discount->discount * App\Models\Ticket::find($discount->ticket_id)->price)/100;
                                 }
+                                nocorrespondticket:
                             }
                             $total_amt_calc = $total_amt_calc - $subtracted;
                             ?>

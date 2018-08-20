@@ -35,6 +35,9 @@ Attendees
         <div class="btn-group btn-group-responsive">
             <button data-modal-id="ImportAttendees" href="javascript:void(0);"  data-href="{{route('showImportAttendee', ['event_id'=>$event->id])}}" class="loadModal btn btn-success" type="button"><i class="ico-file"></i> Invite Attendees</button>
         </div>
+        <!--div class="btn-group btn-group-responsive">
+            <button data-modal-id="ImportAttendeesOrders" href="javascript:void(0);"  data-href="{{route('showImportAttendeesOrders', ['event_id'=>$event->id])}}" class="loadModal btn btn-success" type="button"><i class="ico-file"></i> Mass Order </button>
+        </div-->
         
         <div class="btn-group btn-group-responsive">
             <a class="btn btn-success" href="{{route('showPrintAttendees', ['event_id'=>$event->id])}}" target="_blank" ><i class="ico-print"></i> Print Attendee List</a>

@@ -26,6 +26,8 @@ use Omnipay\Omnipay;
 use PDF;
 use Validator;
 use URL;
+use App\Events\OrderCompletedEvent;
+use PhpSpec\Exception\Exception;
 
 class EventAttendeesController extends MyBaseController
 {
@@ -433,6 +435,201 @@ class EventAttendeesController extends MyBaseController
                     }
                 }
             };
+        }
+
+        session()->flash('message', $num_added . ' Attendees Successfully Invited');
+
+        return response()->json([
+            'status'      => 'success',
+            'id'          => $attendee->id,
+            'redirectUrl' => route('showEventAttendees', [
+                'event_id' => $event_id,
+            ]),
+        ]);
+    }
+
+    /**
+     * Show the 'Import Attendees Orders' modal
+     *
+     * @param Request $request
+     * @param $event_id
+     * @return string|View
+     */
+    public function showImportAttendeesOrders(Request $request, $event_id)
+    {
+        $event = Event::scope()->find($event_id);
+
+        /*
+         * If there are no tickets then we can't create an attendee
+         * @todo This is a bit hackish
+         */
+        if ($event->tickets->count() === 0) {
+            return '<script>showMessage("You need to create a ticket before you can add an attendee.");</script>';
+        }
+
+        return view('ManageEvent.Modals.ImportAttendeesOrders', [
+            'event'   => $event,
+            'tickets' => $event->tickets()->lists('title', 'id'),
+        ]);
+    }
+
+
+    /**
+     * Import attendees orders
+     *
+     * @param Request $request
+     * @param $event_id
+     * @return mixed
+     */
+    public function postImportAttendeesOrders(Request $request, $event_id)
+    {
+        ini_set('max_execution_time', 300);
+        $rules = [
+            'ticket_id'      => 'required|exists:tickets,id,account_id,' . \Auth::user()->account_id,
+            'attendees_list' => 'required|mimes:csv,txt|max:5000|',
+        ];
+
+        $messages = [
+            'ticket_id.exists' => 'The ticket you have selected does not exist',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if ($validator->fails()) {
+            return response()->json([
+                'status'   => 'error',
+                'messages' => $validator->messages()->toArray(),
+            ]);
+
+        }
+
+        $send_orders = [];
+        $ticket_id = $request->get('ticket_id');
+        $ticket_price = 0;
+        $email_attendee = $request->get('email_ticket');
+        $num_added = 0;
+        if ($request->file('attendees_list')) {
+
+            $the_file = Excel::load($request->file('attendees_list')->getRealPath(), function ($reader) {
+            })->get();
+
+
+        DB::beginTransaction();
+
+        try {
+
+            // Loop through
+            foreach ($the_file as $rows) {
+                if (!empty($rows['first_name']) && !empty($rows['last_name']) && !empty($rows['email'])) {
+                    if(!empty($rows['coupon'])){
+                        $attendee_coupon = $rows['coupon'];
+                    }
+                    $num_added++;
+                    $attendee_first_name = $rows['first_name'];
+                    $attendee_last_name = $rows['last_name'];
+                    $attendee_email = $rows['email'];
+
+                    error_log($ticket_id . ' ' . $ticket_price . ' ' . $email_attendee);
+
+                    /**
+                     * Create the order
+                     */
+                    $order = new Order();
+                    $order->first_name = $attendee_first_name;
+                    $order->last_name = $attendee_last_name;
+                    $order->email = $attendee_email;
+                    $order->order_status_id = config('attendize.order_complete');
+                    $order->amount = $ticket_price;
+                    $order->account_id = Auth::user()->account_id;
+                    $order->event_id = $event_id;
+                    $order->is_payment_received = 1;
+                    $order->save();
+
+                    $send_orders[] = $order;
+
+                    if(isset($attendee_coupon)){
+                        $search_coupon = Coupon::where(['state'=>'Valid','ticket_id'=>$ticket_id,'coupon_code'=>$attendee_coupon])->first();
+                        if(!$search_coupon){ //exit('coupon problematic');
+                            return response()->json([
+                                'status'      => 'error',
+                                'message'          => 'Process aborted as coupon code '.$attendee_coupon.' could not be used',
+                                'redirectUrl' => route('showEventAttendees', [
+                                    'event_id' => $event_id,
+                                ]),
+                            ]);
+                        }
+                        $search_coupon->state = 'Used';
+                        $search_coupon->user = $order->id;
+                        $search_coupon->save();
+                    }
+
+                    /**
+                     * Update qty sold
+                     */
+                    $ticket = Ticket::scope()->find($ticket_id);
+                    $ticket->increment('quantity_sold');
+                    $ticket->increment('sales_volume', $ticket_price);
+                    $ticket->event->increment('sales_volume', $ticket_price);
+
+                    /**
+                     * Insert order item
+                     */
+                    $orderItem = new OrderItem();
+                    $orderItem->title = $ticket->title;
+                    $orderItem->quantity = 1;
+                    $orderItem->order_id = $order->id;
+                    $orderItem->unit_price = $ticket_price;
+                    $orderItem->save();
+
+                    /**
+                     * Update the event stats
+                     */
+                    $event_stats = new EventStats();
+                    $event_stats->updateTicketsSoldCount($event_id, 1);
+                    $event_stats->updateTicketRevenue($ticket_id, $ticket_price);
+
+                    /**
+                     * Create the attendee
+                     */
+                    $attendee = new Attendee();
+                    $attendee->first_name = $attendee_first_name;
+                    $attendee->last_name = $attendee_last_name;
+                    $attendee->email = $attendee_email;
+                    $attendee->event_id = $event_id;
+                    $attendee->order_id = $order->id;
+                    $attendee->ticket_id = $ticket_id;
+                    $attendee->account_id = Auth::user()->account_id;
+                    $attendee->reference_index = 1;
+                    $attendee->save();
+
+                    //if ($email_attendee == '1') {
+                    //    $this->dispatch(new SendAttendeeInvite($attendee));
+                    //}
+            /*
+             * Queue up some tasks - Emails to be sent, PDFs etc.
+             */
+            Log::info('Firing the event');
+            event(new OrderCompletedEvent($order));
+                }
+            };
+
+        } catch (Exception $e) {
+
+            Log::error($e);
+            DB::rollBack();
+
+
+        $errordata = [
+            'event' => $event,
+            'callbackurl' => null,
+            'messages' => 'Sorry, something beyond our realization has gone wrong while trying processing your orders. Please try again',
+            'request_details' => null,
+            'parameters' => null
+        ];
+        return view('Public.ViewEvent.EventPageErrors', $errordata);
+
+        }
+
+        DB::commit();
         }
 
         session()->flash('message', $num_added . ' Attendees Successfully Invited');

@@ -5,7 +5,7 @@ Hello {{$order->full_name}},<br><br>
 
 Welcome to {{$order->event->title}} in Dar es Salaam!<br><br>
 
-We look forward to welcoming you to our city and for you to<br><br>
+We look forward to welcoming you to our city and for you to attend our event.<br><br>
 
 Your order for the event <b>{{$order->event->title}}</b> was successful.<br><br>
 
