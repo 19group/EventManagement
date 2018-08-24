@@ -144,7 +144,7 @@
       Subtotal: <span style="float: right;"><b>{{ money($order_total + $total_booking_fee  + $donation, $event->currency) }}</b></span>
      </h5>
     </div>
-    @elseif(!(count($order_has_validdiscount)>0 && ($order_total + $donation == 0)))
+    @elseif(count($tickets)==0)
     <div class="panel-footer">
      <h5>
       Your current order list is empty.

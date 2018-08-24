@@ -1472,7 +1472,7 @@ class EventCheckoutController extends Controller
             session()->push('ticket_order_' . $event_id . '.request_data', $request->all()/*->except(['tracking_id', 'merchant_reference'])*/);
         //for skipping payment
         $order_session = session()->get('ticket_order_' . $event_id);
-        if($order_session['order_total'] + $order_session['donation'] == 0 && count($order_session['order_has_validdiscount'])>0){
+        if(($order_session['order_total'] + $order_session['donation'] == 0 && count($order_session['order_has_validdiscount'])>0) || $order_session['tickets']){
 
         session()->set('transaction_'.$event_id,'complete');
         return $this->completeOrder($event_id);
@@ -1999,6 +1999,17 @@ class EventCheckoutController extends Controller
     public function completeOrderAccommodation($event_id)
     {
         session()->set('transaction_'.$event_id,'accommodation');
+        $session_tickets = session()->get('ticket_order_'.$event_id)['tickets'];
+        if(!$session_tickets || empty($session_tickets)){
+                $errordata = [
+                    'event' => Event::findOrFail($event_id),
+                    'callbackurl' => null,
+                    'messages' => 'Sorry, you don\'t have any tickets. Choose at least one ticket to continue',
+                    'request_details' => null,
+                    'parameters' => ['event_id' => $event_id]
+                ];
+                return view('Public.ViewEvent.EventPageErrors', $errordata);
+        }
         return redirect(route('handleTransactions',['event_id'=>$event_id]));
     }
 

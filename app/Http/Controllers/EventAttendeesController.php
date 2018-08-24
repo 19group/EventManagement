@@ -607,8 +607,8 @@ class EventAttendeesController extends MyBaseController
             /*
              * Queue up some tasks - Emails to be sent, PDFs etc.
              */
-            Log::info('Firing the event');
-            event(new OrderCompletedEvent($order));
+        //    Log::info('Firing the event');
+        //    event(new OrderCompletedEvent($order));
                 }
             };
 
@@ -616,7 +616,6 @@ class EventAttendeesController extends MyBaseController
 
             Log::error($e);
             DB::rollBack();
-
 
         $errordata = [
             'event' => $event,
@@ -630,6 +629,10 @@ class EventAttendeesController extends MyBaseController
         }
 
         DB::commit();
+            foreach ($send_orders as $ordersend) {
+                Log::info('Firing the event');
+                event(new OrderCompletedEvent($ordersend));
+            }
         }
 
         session()->flash('message', $num_added . ' Attendees Successfully Invited');
